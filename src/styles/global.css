@@ -2538,3 +2538,38 @@ h3 {
   .job-modal-actions { flex-direction:column; }
   .job-modal-actions .button { width:100%; }
 }
+
+
+/* Formulaire de candidature avec pièces jointes */
+.application-backdrop { z-index: 2100; }
+.application-modal { width: min(820px, 100%); }
+.application-close { color: var(--navy); border-color: var(--line); background: var(--white); }
+.application-modal-heading { padding: clamp(26px, 5vw, 42px) clamp(24px, 5vw, 42px) 22px; color: var(--white); background: var(--navy); }
+.application-modal-heading .section-kicker { color: #d1e4a6; }
+.application-modal-heading h2 { max-width: 650px; margin: 14px 44px 12px 0; color: var(--white); font: 700 clamp(26px, 4vw, 36px)/1.15 Manrope, sans-serif; letter-spacing: -.04em; }
+.application-modal-heading > p:last-child { max-width: 620px; margin: 0; color: rgb(255 255 255 / 78%); font-size: 13px; line-height: 1.7; }
+.application-form { display: grid; gap: 18px; padding: clamp(24px, 5vw, 42px); }
+.application-form > label,.application-form-row > label { display: flex; min-width: 0; flex-direction: column; gap: 8px; color: var(--navy); font-size: 12px; font-weight: 700; }
+.application-form input:not([type="checkbox"]):not([type="file"]),.application-form select,.application-form textarea { width: 100%; min-width: 0; padding: 12px 13px; border: 1px solid #d7ded2; border-radius: 0; outline: none; color: var(--ink); background: #fbfcfa; font: 400 13px/1.5 "DM Sans", sans-serif; }
+.application-form input:focus,.application-form select:focus,.application-form textarea:focus { border-color: #8bbd2f; outline: 2px solid rgb(154 203 54 / 25%); outline-offset: 1px; }
+.application-form textarea { resize: vertical; }
+.application-form-row,.application-file-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.application-file-field { display: flex; min-width: 0; min-height: 145px; padding: 16px; flex-direction: column; align-items: flex-start; gap: 10px; border: 1px dashed #cbd6bf; background: #f8faf4; color: var(--navy); font-size: 12px; font-weight: 700; }
+.application-file-field input[type="file"] { width: 100%; max-width: 100%; color: var(--muted); font: 400 11px "DM Sans", sans-serif; }
+.application-file-field small { overflow-wrap: anywhere; color: var(--muted); font-size: 11px; font-weight: 400; line-height: 1.5; }
+.application-consent { display: flex; align-items: flex-start; gap: 10px; color: var(--muted); font-size: 11px; font-weight: 400; line-height: 1.6; }
+.application-consent input { flex: 0 0 auto; margin-top: 3px; accent-color: var(--lime); }
+.application-privacy { margin: -4px 0 0; color: var(--muted); font-size: 11px; line-height: 1.7; }
+.application-error { margin: 0; padding: 12px 14px; border: 1px solid #e8b5b5; color: #9b2525; background: #fff6f6; font-size: 12px; line-height: 1.6; }
+.application-form-actions { display: flex; flex-wrap: wrap; gap: 12px; padding-top: 4px; }
+.application-form-actions button:disabled { opacity: .65; cursor: wait; }
+.application-success { display: flex; padding: clamp(28px, 6vw, 48px); flex-direction: column; align-items: flex-start; }
+.application-success > span { display: grid; width: 46px; height: 46px; place-items: center; color: var(--navy); background: var(--lime); font-size: 25px; }
+.application-success h3 { margin: 20px 0 8px; color: var(--navy); font: 700 24px Manrope,sans-serif; }
+.application-success p { max-width: 55ch; margin: 0 0 22px; color: var(--muted); font-size: 13px; line-height: 1.8; }
+@media (max-width: 600px) {
+  .application-form-row,.application-file-grid { grid-template-columns: 1fr; }
+  .application-file-field { min-height: 120px; }
+  .application-form-actions { flex-direction: column; }
+  .application-form-actions .button { width: 100%; }
+}
