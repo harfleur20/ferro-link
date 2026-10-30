@@ -2197,3 +2197,20 @@ h3 {
   min-height: 0;
   object-fit: cover;
 }
+
+
+/* Nettoyage des petits repères numérotés et pastilles des icônes d’expertise */
+.home-expertise-icon {
+  width: auto;
+  height: auto;
+  background: transparent;
+  place-items: center start;
+}
+.home-expertise-icon svg {
+  width: 34px;
+  height: 34px;
+  color: var(--lime);
+}
+.expertise-detail-card .card-number {
+  display: none;
+}
