@@ -105,7 +105,7 @@ function HomePage() {
     </section>
 
     <section className="intro section page-width">
-      <div className="section-kicker"><span>01</span> Présentation de notre entreprise Avenir Ferro</div>
+      <div className="section-kicker"><span>01</span> Présentation de notre entreprise ferroLink</div>
       <div className="presentation-layout">
         <div className="presentation-visual">
           <img src="https://avenirferro.com/wp-content/uploads/elementor/thumbs/pexels-sami-abdullah-7359564-pye0vq5d0s3a91h1ql0dvg48bua4xl4jr3ncu3juhs.jpg" alt="Infrastructure ferroviaire" loading="lazy" />
@@ -113,8 +113,8 @@ function HomePage() {
         </div>
         <div className="presentation-copy">
           <p className="presentation-overline">Conseil & ingénierie ferroviaire</p>
-          <h2>PRÉSENTATION DE NOTRE ENTREPRISE AVENIR FERRO</h2>
-          <p className="lead"><strong>Avenir Ferro</strong> est une société de conseil spécialisée dans l’industrie ferroviaire.</p>
+          <h2>PRÉSENTATION DE NOTRE ENTREPRISE FERROLINK</h2>
+          <p className="lead"><strong>ferroLink</strong> est une société de conseil spécialisée dans l’industrie ferroviaire.</p>
           <p>Elle a pour rôle d’accompagner les clients grands comptes et industriels du ferroviaire dans la réalisation de leurs projets d’envergure et innovants allant des études jusqu’à l’industrialisation, la production, l’exploitation et la maintenance. Elle est donc présente sur l’ensemble du cycle du projet, de la définition jusqu’à la livraison.</p>
           <a className="text-link" href={paths.about}>Lire la suite <span aria-hidden="true">↗</span></a>
         </div>
@@ -162,7 +162,7 @@ function AboutPage() {
       <div className="section-kicker"><span>01</span> Notre vision</div>
       <div className="intro-grid"><h2>NOTRE VISION</h2><div className="intro-copy">
         <p className="lead">Accompagner les acteurs du ferroviaire dans la réussite de leurs projets.</p>
-        <p>Avenir Ferro est une société de conseil spécialisée dans l’industrie ferroviaire. Elle accompagne les clients grands comptes et les industriels dans leurs projets, depuis les études jusqu’à l’industrialisation, la production, l’exploitation et la maintenance.</p>
+        <p>ferroLink est une société de conseil spécialisée dans l’industrie ferroviaire. Elle accompagne les clients grands comptes et les industriels dans leurs projets, depuis les études jusqu’à l’industrialisation, la production, l’exploitation et la maintenance.</p>
         <p>Présente sur l’ensemble du cycle du projet, de la définition jusqu’à la livraison, l’entreprise mobilise ses compétences pour répondre aux besoins de ses clients.</p>
       </div></div>
     </section>
@@ -173,7 +173,7 @@ function AboutPage() {
     <section className="section page-width founders-section">
       <div className="section-heading"><div><div className="section-kicker"><span>03</span> Présentation des fondateurs</div><h2>PRÉSENTATION DES FONDATEURS</h2></div></div>
       <div className="founders-grid">
-        <article className="founder-card"><div className="founder-monogram">GA</div><div><p className="founder-role">Fondateur</p><h3>Grégory ALINE</h3><p>Contribue au développement d’Avenir Ferro et à l’accompagnement des projets de ses clients dans le secteur ferroviaire.</p></div></article>
+        <article className="founder-card"><div className="founder-monogram">GA</div><div><p className="founder-role">Fondateur</p><h3>Grégory ALINE</h3><p>Contribue au développement d’ferroLink et à l’accompagnement des projets de ses clients dans le secteur ferroviaire.</p></div></article>
         <article className="founder-card"><div className="founder-monogram">FN</div><div><p className="founder-role">Fondateur</p><h3>François NOUEDOUI</h3><p>Participe au développement de l’entreprise et à la mobilisation des compétences nécessaires aux projets ferroviaires.</p></div></article>
       </div>
       <p className="content-note">Les biographies détaillées des fondateurs peuvent être complétées avec le texte exact et les portraits du site de référence.</p>
@@ -203,7 +203,7 @@ function JobsPage() {
       <div className="jobs-callout">
         <div className="section-kicker"><span>01</span> Offres d’emploi</div>
         <h2>Construisons ensemble les projets ferroviaires de demain.</h2>
-        <p>Les offres actualisées sont publiées sur le site de référence Avenir Ferro. Consultez les annonces disponibles pour connaître les postes ouverts et les modalités de candidature.</p>
+        <p>Les offres actualisées sont publiées sur le site de référence ferroLink. Consultez les annonces disponibles pour connaître les postes ouverts et les modalités de candidature.</p>
         <a className="button button-lime" href="https://avenirferro.com/offres-demploi/" target="_blank" rel="noreferrer">Consulter les offres d’emploi <span aria-hidden="true">↗</span></a>
       </div>
       <div className="jobs-contact-card"><h3>Vous souhaitez nous transmettre votre candidature ?</h3><p>Vous pouvez contacter l’équipe pour présenter votre profil et votre projet professionnel.</p><a className="text-link" href={paths.contact}>Accéder à la page contact <span aria-hidden="true">↗</span></a><a className="text-link" href="mailto:gregory.aline@avenirferro.com">Écrire par e-mail <span aria-hidden="true">↗</span></a></div>
