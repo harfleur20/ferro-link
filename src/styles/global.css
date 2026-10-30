@@ -2146,3 +2146,37 @@ h3 {
   border-color: var(--lime);
   background: transparent;
 }
+
+
+/* Action de présentation : bouton à gauche, contact téléphonique à droite */
+.presentation-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px 24px;
+}
+.presentation-actions .text-link {
+  flex: 0 0 auto;
+  margin-top: 12px;
+}
+.presentation-actions .home-phone {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 0 0 0 22px;
+  border-top: 0;
+  border-left: 1px solid var(--line);
+}
+.presentation-actions .home-phone span {
+  color: var(--muted);
+  font-size: 11px;
+}
+.presentation-actions .home-phone a {
+  font-size: 18px;
+}
+@media (max-width: 520px) {
+  .presentation-actions { align-items: flex-start; gap: 12px; }
+  .presentation-actions .home-phone { padding-left: 0; border-left: 0; }
+}
