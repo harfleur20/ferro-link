@@ -149,8 +149,10 @@ function HomePage() {
           <h2>Accompagner les projets ferroviaires, de l’idée à la mise en service.</h2>
           <p className="lead"><strong>ferroLink</strong> est une société de conseil spécialisée dans l’industrie ferroviaire.</p>
           <p>Nous accompagnons les clients grands comptes et les industriels dans leurs projets, des études à l’industrialisation, la production, l’exploitation et la maintenance. Nos compétences s’inscrivent dans l’ensemble du cycle de vie des projets.</p>
-          <a className="text-link" href={paths.about}>Découvrir ferroLink</a>
-          <div className="home-phone"><span>Un projet à discuter ?</span><a href="tel:+33633821507">+33 6 33 82 15 07</a></div>
+          <div className="presentation-actions">
+            <a className="text-link" href={paths.about}>Découvrir ferroLink</a>
+            <div className="home-phone"><span>Un projet à discuter ?</span><a href="tel:+33633821507">+33 6 33 82 15 07</a></div>
+          </div>
         </div>
       </div>
     </section>
