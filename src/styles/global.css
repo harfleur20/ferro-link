@@ -2299,4 +2299,19 @@ h3 {
   .partner img { max-height: 64px; }
 }
 
-
+/* Miroir horizontal de la photo du bandeau de contact */
+.contact-panel {
+  position: relative;
+  isolation: isolate;
+  background: var(--navy);
+}
+.contact-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgb(7 24 43 / 96%) 0%, rgb(7 24 43 / 88%) 42%, rgb(7 24 43 / 28%) 100%),
+    url("https://nrc-app-prod.objects.frb.io/assets/_1920x1427_crop_center-center_80_none/168695/R5C23485_2023-07-31-134328_ykma.webp") center 42% / cover no-repeat;
+  transform: scaleX(-1);
+}
