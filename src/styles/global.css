@@ -2240,3 +2240,12 @@ h3 {
   .home-expertise-icon svg { width: 40px; height: 40px; }
   .expertise-detail-card .card-mark svg { width: 88px; height: 88px; }
 }
+
+
+/* Suppression des traits de séparation dans les listes d’expertise et de métiers */
+.home-expertise-list,
+.home-expertise-item,
+.home-metiers-grid,
+.home-metier-chip {
+  border: 0 !important;
+}
