@@ -81,10 +81,12 @@ video {
 }
 
 .site-header {
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
   height: 88px;
   background: var(--white);
+  box-shadow: 0 4px 18px rgb(16 26 45 / 8%);
 }
 
 .header-inner {
