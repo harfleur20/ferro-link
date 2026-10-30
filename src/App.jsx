@@ -11,11 +11,11 @@ const paths = {
 };
 
 const expertiseAreas = [
-  { title: "Signalisation & CBTC (Communication Based Train Control)", detail: "Les systèmes de signalisation et de contrôle des trains au service de la sécurité et de la performance du réseau." },
-  { title: "Matériel Roulant", detail: "L’accompagnement des projets liés aux trains, tramways et autres matériels ferroviaires." },
-  { title: "Courants forts & Energie", detail: "Les systèmes d’alimentation et les infrastructures énergétiques nécessaires à l’exploitation ferroviaire." },
-  { title: "Génie Civil & voie ferrée", detail: "Les études et travaux associés aux infrastructures et aux voies ferrées." },
-  { title: "Courants faibles & Télécoms", detail: "Les systèmes de communication et équipements courants faibles des infrastructures ferroviaires." },
+  { number: "01", title: "Signalisation & CBTC (Communication Based Train Control)", detail: "Les systèmes de signalisation et de contrôle des trains au service de la sécurité et de la performance du réseau." },
+  { number: "02", title: "Matériel Roulant", detail: "L’accompagnement des projets liés aux trains, tramways et autres matériels ferroviaires." },
+  { number: "03", title: "Courants forts & Energie", detail: "Les systèmes d’alimentation et les infrastructures énergétiques nécessaires à l’exploitation ferroviaire." },
+  { number: "04", title: "Génie Civil & voie ferrée", detail: "Les études et travaux associés aux infrastructures et aux voies ferrées." },
+  { number: "05", title: "Courants faibles & Télécoms", detail: "Les systèmes de communication et équipements courants faibles des infrastructures ferroviaires." },
 ];
 
 const metiers = [
