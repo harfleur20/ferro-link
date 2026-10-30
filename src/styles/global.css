@@ -2249,3 +2249,28 @@ h3 {
 .home-metier-chip {
   border: 0 !important;
 }
+
+
+/* Agrandir les pictogrammes de train et les libellés de la section Métiers */
+.home-metier-chip {
+  font-size: 15px;
+  line-height: 1.6;
+  gap: 16px;
+}
+.home-metier-chip .train-icon {
+  width: 27px;
+  height: 27px;
+  flex-basis: 27px;
+  margin-top: 0;
+}
+@media (max-width: 560px) {
+  .home-metier-chip {
+    font-size: 14px;
+    gap: 13px;
+  }
+  .home-metier-chip .train-icon {
+    width: 25px;
+    height: 25px;
+    flex-basis: 25px;
+  }
+}
