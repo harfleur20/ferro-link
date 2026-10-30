@@ -1415,3 +1415,151 @@ h3 {
   .jobs-contact-card { padding: 28px 22px; }
   .contact-form { padding: 26px 20px; }
 }
+
+
+/* Presentation: visual beside the company copy */
+.presentation-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(36px, 6vw, 88px);
+  align-items: center;
+}
+.presentation-visual {
+  position: relative;
+  min-height: 440px;
+  overflow: hidden;
+  background: #e8ece7;
+}
+.presentation-visual > img {
+  width: 100%;
+  height: 100%;
+  min-height: 440px;
+  object-fit: cover;
+}
+.presentation-image-caption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  min-width: 190px;
+  padding: 18px 24px;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--white);
+  background: var(--navy);
+}
+.presentation-image-caption span:first-child {
+  color: var(--lime);
+  font-family: Manrope, sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -.05em;
+}
+.presentation-image-caption span:last-child {
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.presentation-copy {
+  max-width: 570px;
+}
+.presentation-overline {
+  margin-bottom: 18px;
+  color: #719b1d;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+.presentation-copy h2 {
+  margin-bottom: 24px;
+  color: var(--navy);
+  font-size: clamp(32px, 3.6vw, 48px);
+  font-weight: 600;
+  letter-spacing: -.055em;
+  line-height: 1.1;
+}
+.presentation-copy p:not(.presentation-overline) {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.85;
+}
+.presentation-copy p.lead {
+  margin-bottom: 14px;
+  color: var(--ink);
+  font-size: 18px;
+  line-height: 1.65;
+}
+
+/* Partner logos: transparent, frameless and continuously scrolling */
+.references {
+  overflow: hidden;
+  background: var(--white);
+}
+.references .references-heading {
+  margin-bottom: 36px;
+}
+.partner-marquee {
+  width: 100%;
+  overflow: hidden;
+  padding-block: 16px;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+}
+.partner-track {
+  display: flex;
+  width: max-content;
+  align-items: center;
+  animation: partner-scroll 32s linear infinite;
+  will-change: transform;
+}
+.partner-marquee:hover .partner-track,
+.partner-marquee:focus-within .partner-track {
+  animation-play-state: paused;
+}
+.partner {
+  display: flex;
+  width: clamp(160px, 19vw, 240px);
+  min-height: 104px;
+  padding: 18px 34px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 0 !important;
+  background: transparent !important;
+}
+.partner img {
+  width: auto;
+  max-width: 100%;
+  max-height: 62px;
+  object-fit: contain;
+  mix-blend-mode: normal;
+  background: transparent !important;
+  filter: none;
+  opacity: .94;
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+.partner:hover img {
+  opacity: 1;
+  transform: scale(1.04);
+}
+@keyframes partner-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (max-width: 900px) {
+  .presentation-layout { gap: 30px; }
+  .presentation-visual,
+  .presentation-visual > img { min-height: 380px; }
+}
+@media (max-width: 700px) {
+  .presentation-layout { grid-template-columns: 1fr; gap: 30px; }
+  .presentation-visual,
+  .presentation-visual > img { min-height: 280px; max-height: 360px; }
+  .presentation-copy h2 { font-size: clamp(32px, 8vw, 42px); }
+  .partner { width: 155px; min-height: 90px; padding-inline: 22px; }
+  .partner img { max-height: 48px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .partner-track { animation: none; }
+}
