@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaTrainSubway } from "react-icons/fa6";
+import { FaTrainSubway, FaLinkedinIn, FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa6";
 import "./styles/global.css";
 
 const paths = {
@@ -117,6 +117,12 @@ function Footer() {
         <a href={paths.competences}>Nos compétences</a>
         <a href={paths.jobs}>Offres d’emploi</a>
         <a href={paths.contact}>Candidature spontanée</a>
+        <div className="footer-socials" aria-label="Réseaux sociaux ferroLink">
+          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" aria-label="LinkedIn ferroLink"><FaLinkedinIn aria-hidden="true" /></a>
+          <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" aria-label="Facebook ferroLink"><FaFacebookF aria-hidden="true" /></a>
+          <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram ferroLink"><FaInstagram aria-hidden="true" /></a>
+          <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer" aria-label="TikTok ferroLink"><FaTiktok aria-hidden="true" /></a>
+        </div>
       </div>
       <div className="footer-column">
         <h2>Nos expertises</h2>
