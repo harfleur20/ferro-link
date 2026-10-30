@@ -134,7 +134,7 @@ function HomePage() {
     <section className="intro section page-width">
       <div className="presentation-layout">
         <div className="presentation-visual">
-          <img src="https://www.norfolksouthern.com/adobe/dynamicmedia/deliver/dm-aid--561f1b88-4104-4019-aa04-5e0ecf5c?preferwebp=true&quality=85" alt="Équipe américaine de maintenance ferroviaire intervenant sur les voies" loading="lazy" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/3/37/SOUTHERN_RAILWAY_RIGHT-OF-WAY_WORK_CREW%2C_WITH_MACHINERY_USED_TO_REPLACE_THE_RAILROAD_TIES_AND_OLD_TRACK_WITH_NEW..._-_NARA_-_556885.jpg" alt="Équipe de maintenance de la Southern Railway remplaçant les traverses et les rails en Virginie, États-Unis" loading="lazy" />
           <div className="presentation-image-caption"><span>ferroLink</span><span>Conseil & ingénierie</span></div>
         </div>
         <div className="presentation-copy">
