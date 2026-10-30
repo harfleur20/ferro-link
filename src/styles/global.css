@@ -1786,9 +1786,12 @@ h3 {
   transform: none;
 }
 .contact-panel {
-  background:
-    linear-gradient(90deg, rgb(18 28 39 / 91%) 0%, rgb(18 28 39 / 75%) 52%, rgb(18 28 39 / 38%) 100%),
-    url("/images/train-hero-poster.jpg") center / cover no-repeat;
+  background-color: var(--navy);
+  background-image:
+    linear-gradient(90deg, rgb(7 24 43 / 96%) 0%, rgb(7 24 43 / 88%) 42%, rgb(7 24 43 / 28%) 100%),
+    url("https://nrc-app-prod.objects.frb.io/assets/_1920x1427_crop_center-center_80_none/168695/R5C23485_2023-07-31-134328_ykma.webp");
+  background-size: cover;
+  background-position: center 42%;
   background-attachment: scroll;
 }
 .contact-orbit {
