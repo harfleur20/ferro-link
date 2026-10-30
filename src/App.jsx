@@ -430,7 +430,6 @@ function JobsPage() {
   const [search, setSearch] = useState("");
   const [contract, setContract] = useState("Tous les contrats");
   const [location, setLocation] = useState("Toutes les localisations");
-  const [selectedJob, setSelectedJob] = useState(null);
   const [applicationJob, setApplicationJob] = useState(null);
   const filteredJobs = jobOffers.filter((job) => {
     const query = search.trim().toLocaleLowerCase("fr");
@@ -440,12 +439,6 @@ function JobsPage() {
 
   return <>
     <PageBanner kicker="Carrières & opportunités" title="Trouvez votre prochaine mission." description="Rejoignez des équipes qui font avancer les projets ferroviaires. Explorez les opportunités et trouvez le poste qui correspond à votre expertise." />
-    <section className="jobs-intro-strip">
-      <div className="page-width jobs-intro-inner">
-        <div><span className="jobs-live-dot" /> Opportunités ferroviaires</div>
-        <p>Ingénierie · Études · Travaux · Essais · Mise en service</p>
-      </div>
-    </section>
     <section className="section page-width jobs-marketplace">
       <div className="jobs-marketplace-heading">
         <div><div className="section-kicker"><span>Carrières</span> / Offres d’emploi</div><h2>Les opportunités du moment</h2><p>Parcourez les postes et filtrez les annonces selon votre recherche.</p></div>
@@ -459,14 +452,41 @@ function JobsPage() {
       </div>
       <div className="jobs-results-line"><p><strong>{filteredJobs.length}</strong> offre{filteredJobs.length > 1 ? "s" : ""} trouvée{filteredJobs.length > 1 ? "s" : ""}</p><span>Tri : les plus récentes</span></div>
       {filteredJobs.length ? <div className="jobs-offer-grid">{filteredJobs.map((job) => <article className="job-card" key={job.id}>
-        <button className="job-card-image-button" type="button" onClick={() => setSelectedJob(job)} aria-label={`Voir le détail : ${job.title}`}><img src={job.image} alt={job.imageAlt} loading="lazy" /><span className="job-category">{job.category}</span><span className="job-image-arrow" aria-hidden="true">↗</span></button>
-        <div className="job-card-content"><div className="job-card-meta"><span>{job.contract}</span><span>{job.experience}</span></div><h3><button type="button" onClick={() => setSelectedJob(job)}>{job.title}</button></h3><p className="job-card-summary">{job.summary}</p><div className="job-card-location"><span aria-hidden="true">⌖</span>{job.location}<span className="job-card-salary">{job.salary}</span></div><div className="job-card-actions"><button className="job-details-link" type="button" onClick={() => setSelectedJob(job)}>Voir l’offre <span aria-hidden="true">→</span></button><button type="button" className="job-apply-link" onClick={() => setApplicationJob(job)} aria-label={`Candidater à ${job.title}`}>Postuler ↗</button></div></div>
+        <a className="job-card-image-button" href={`${paths.jobs}/${job.id}`} aria-label={`Voir le détail : ${job.title}`}><img src={job.image} alt={job.imageAlt} loading="lazy" /><span className="job-category">{job.category}</span><span className="job-image-arrow" aria-hidden="true">↗</span></a>
+        <div className="job-card-content"><div className="job-card-meta"><span>{job.contract}</span><span>{job.experience}</span></div><h3><a href={`${paths.jobs}/${job.id}`}>{job.title}</a></h3><p className="job-card-summary">{job.summary}</p><div className="job-card-location"><span aria-hidden="true">⌖</span>{job.location}<span className="job-card-salary">{job.salary}</span></div><div className="job-card-actions"><a className="job-details-link" href={`${paths.jobs}/${job.id}`}>Voir l’offre <span aria-hidden="true">→</span></a><button type="button" className="job-apply-link" onClick={() => setApplicationJob(job)} aria-label={`Candidater à ${job.title}`}>Postuler ↗</button></div></div>
       </article>)}</div> : <div className="jobs-empty-state"><h3>Aucune offre ne correspond à ces filtres.</h3><p>Modifiez votre recherche ou envoyez-nous une candidature spontanée.</p><button type="button" className="button button-lime" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); }}>Voir toutes les offres</button><a className="text-link" href={paths.contact}>Candidature spontanée</a></div>}
     </section>
     <section className="jobs-spontaneous"><div className="page-width jobs-spontaneous-inner"><div><p className="eyebrow"><span /> Vous ne trouvez pas votre poste ?</p><h2>Votre parcours a aussi sa place chez ferroLink.</h2><p>Présentez-nous vos compétences et le type de mission que vous recherchez. Nous pourrons étudier votre candidature spontanée.</p></div><a className="button button-lime" href={paths.contact}>Envoyer une candidature <span aria-hidden="true">↗</span></a></div></section>
     <section className="section page-width jobs-values-section"><div className="section-heading"><div><div className="section-kicker"><span>Pourquoi ferroLink ?</span></div><h2>Des métiers au cœur du ferroviaire</h2></div><a className="text-link" href={paths.competences}>Découvrir nos compétences</a></div><div className="jobs-domain-list">{expertiseAreas.map((area) => <div key={area.title}><FaTrainSubway className="train-icon" aria-hidden="true" /><strong>{area.title}</strong></div>)}</div></section>
     {applicationJob && <ApplicationModal job={applicationJob} onClose={() => setApplicationJob(null)} />}
-    {selectedJob && <div className="job-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedJob(null); }}><section className="job-modal" role="dialog" aria-modal="true" aria-labelledby="job-modal-title"><button className="job-modal-close" type="button" aria-label="Fermer le détail de l’offre" onClick={() => setSelectedJob(null)}>×</button><img className="job-modal-image" src={selectedJob.image} alt={selectedJob.imageAlt} /><div className="job-modal-body"><p className="section-kicker"><span>{selectedJob.category}</span></p><h2 id="job-modal-title">{selectedJob.title}</h2><div className="job-modal-tags"><span>{selectedJob.contract}</span><span>{selectedJob.location}</span><span>{selectedJob.experience}</span><span>{selectedJob.salary}</span></div><p className="job-modal-summary">{selectedJob.summary}</p><h3>Vos missions</h3><ul>{selectedJob.missions.map((mission) => <li key={mission}>{mission}</li>)}</ul><h3>Votre profil</h3><p>{selectedJob.profile}</p><div className="job-modal-actions"><button className="button button-lime" type="button" onClick={() => { setApplicationJob(selectedJob); setSelectedJob(null); }}>Postuler à cette offre <span aria-hidden="true">↗</span></button><button className="button button-outline" type="button" onClick={() => setSelectedJob(null)}>Retour aux offres</button></div><p className="job-modal-note">Votre candidature se transmet depuis le formulaire sécurisé de candidature.</p></div></section></div>}
+  </>;
+}
+
+function JobDetailPage({ job }) {
+  const [applicationOpen, setApplicationOpen] = useState(false);
+  if (!job) return <section className="section page-width job-not-found"><p className="section-kicker"><span>Carrières</span> / Offres d’emploi</p><h1>Cette offre n’est pas disponible.</h1><p>L’offre recherchée n’existe pas ou n’est plus accessible.</p><a className="button button-lime" href={paths.jobs}>Retour aux offres d’emploi</a></section>;
+  return <>
+    <section className="job-detail-hero">
+      <img src={job.image} alt={job.imageAlt} />
+      <div className="job-detail-hero-overlay" />
+      <div className="page-width job-detail-hero-content">
+        <a href={paths.jobs} className="job-back-link">← Toutes les offres</a>
+        <p className="section-kicker"><span>{job.category}</span></p>
+        <h1>{job.title}</h1>
+        <div className="job-modal-tags"><span>{job.contract}</span><span>{job.location}</span><span>{job.experience}</span><span>{job.salary}</span></div>
+      </div>
+    </section>
+    <section className="section page-width job-detail-layout">
+      <article className="job-detail-content">
+        <p className="job-detail-lead">{job.summary}</p>
+        <section><h2>Vos missions</h2><ul>{job.missions.map((mission) => <li key={mission}>{mission}</li>)}</ul></section>
+        <section><h2>Votre profil</h2><p>{job.profile}</p></section>
+        <section><h2>Informations sur le poste</h2><dl className="job-detail-facts"><div><dt>Contrat</dt><dd>{job.contract}</dd></div><div><dt>Localisation</dt><dd>{job.location}</dd></div><div><dt>Expérience</dt><dd>{job.experience}</dd></div><div><dt>Rémunération</dt><dd>{job.salary}</dd></div></dl></section>
+        <div className="job-detail-apply-mobile"><button className="button button-lime" type="button" onClick={() => setApplicationOpen(true)}>Postuler à cette offre <span aria-hidden="true">↗</span></button></div>
+      </article>
+      <aside className="job-detail-sidebar"><p className="section-kicker"><span>Votre prochaine étape</span></p><h2>Ce poste vous intéresse ?</h2><p>Envoyez votre candidature avec vos coordonnées, votre CV et un message de motivation.</p><button className="button button-lime" type="button" onClick={() => setApplicationOpen(true)}>Postuler maintenant <span aria-hidden="true">↗</span></button><a className="job-sidebar-back" href={paths.jobs}>← Consulter les autres offres</a></aside>
+    </section>
+    {applicationOpen && <ApplicationModal job={job} onClose={() => setApplicationOpen(false)} />}
   </>;
 }
 
@@ -522,7 +542,7 @@ export default function App() {
     [paths.accueil]: <HomePage />,
     [paths.about]: <AboutPage />,
     [paths.competences]: <CompetencesPage />,
-    [paths.jobs]: <JobsPage />,
+    [paths.jobs]: window.location.pathname.replace(/\\/+$/, "") === paths.jobs ? <JobsPage /> : <JobDetailPage job={jobOffers.find((job) => job.id === window.location.pathname.replace(/\\/+$/, "").split("/").pop())} />,
     [paths.contact]: <ContactPage />,
   };
   return <>
