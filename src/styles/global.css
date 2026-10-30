@@ -1798,7 +1798,7 @@ h3 {
   inset: 0;
   background:
     linear-gradient(0deg, rgb(0 0 0 / 48%), rgb(0 0 0 / 40%)),
-    url("/images/train-hero-poster.jpg") center 55% / cover no-repeat;
+    url("https://images.pexels.com/photos/24346150/pexels-photo-24346150.jpeg?auto=compress&cs=tinysrgb&w=2000") center 55% / cover no-repeat;
 }
 .reference-hero .hero-overlay { background: rgb(0 0 0 / 22%); }
 .reference-hero .hero-content {
@@ -1892,7 +1892,7 @@ h3 {
   min-height: 260px;
   overflow: hidden;
   color: #fff;
-  background: #175a70 url("/images/train-hero-poster.jpg") center 48% / cover no-repeat;
+  background: #175a70 url("https://images.pexels.com/photos/30589063/pexels-photo-30589063.jpeg?auto=compress&cs=tinysrgb&w=1800") center 48% / cover no-repeat;
   place-items: center;
 }
 .reference-contact-overlay {
