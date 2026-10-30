@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Exo+2:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Exo+2:wght@400;500;600;700;800&family=League+Spartan:wght@400;500;600;700;800&display=swap");
 
 :root {
   color-scheme: light;
@@ -115,7 +115,8 @@ video {
   align-items: center;
   gap: clamp(22px, 3vw, 48px);
   color: var(--navy);
-  font-size: 13px;
+  font-family: "League Spartan", "Segoe UI", sans-serif;
+  font-size: 14px;
   font-weight: 600;
 }
 
