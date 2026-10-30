@@ -167,7 +167,6 @@ function HomePage() {
       <div className="page-width home-split-layout">
         <div className="home-section-visual"><img src="https://images.pexels.com/photos/30589059/pexels-photo-30589059.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Équipe ferroviaire intervenant sur les voies" loading="lazy" /><span className="visual-index">01 / EXPERTISES</span></div>
         <div className="home-section-content">
-          <div className="section-kicker"><span>02</span> Nos expertises</div>
           <h2>Des compétences au service de toute la chaîne ferroviaire.</h2>
           <p className="home-section-lead">Des expertises complémentaires pour répondre aux exigences techniques et opérationnelles des projets.</p>
           <div className="home-expertise-list">{expertiseAreas.map((area) => <a className="home-expertise-item" href={paths.competences} key={area.number}><span className="home-expertise-icon"><ExpertiseIcon number={area.number} /></span><span><strong>{area.title}</strong><small>{area.detail}</small></span><span className="home-arrow" aria-hidden="true">↗</span></a>)}</div>
@@ -179,7 +178,6 @@ function HomePage() {
     <section className="home-metiers section">
       <div className="page-width home-split-layout home-metiers-layout">
         <div className="home-section-content">
-          <div className="section-kicker"><span>03</span> Nos métiers</div>
           <h2>De l’étude au terrain, nous accompagnons les étapes clés de vos projets.</h2>
           <p className="home-section-lead">Nos équipes peuvent intervenir en appui de vos métiers et de vos opérations, selon les besoins de chaque mission.</p>
           <div className="home-metiers-grid">{metiers.map((metier,index)=><div className="home-metier-chip" key={metier}><TrainIcon />{metier}</div>)}</div>
@@ -239,7 +237,7 @@ function CompetencesPage() {
     <PageBanner kicker="Expertises ferroviaires" title="Nos principaux domaines de compétences" description="Des compétences mobilisables tout au long du cycle de vie des projets ferroviaires, des études à l’exploitation." />
     <section className="section expertise-page-section"><div className="page-width">
       <div className="section-kicker"><span>01</span> Nos domaines d’expertise</div>
-      <div className="expertise-detail-grid">{expertiseAreas.map((area) => <a className="expertise-detail-card" href={paths.contact} key={area.number} aria-label={`Contacter ferroLink au sujet de ${area.title}`}><span className="card-number">{area.number}</span><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h2>{area.title}</h2><p>{area.detail}</p><span className="text-link expertise-card-link">Échanger sur cette expertise</span></a>)}</div>
+      <div className="expertise-detail-grid">{expertiseAreas.map((area) => <a className="expertise-detail-card" href={paths.contact} key={area.number} aria-label={`Contacter ferroLink au sujet de ${area.title}`}><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h2>{area.title}</h2><p>{area.detail}</p><span className="text-link expertise-card-link">Échanger sur cette expertise</span></a>)}</div>
     </div></section>
     <section className="section page-width"><div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos métiers</div><h2>Les métiers sur lesquels nous pouvons accompagner nos clients</h2></div></div>
       <div className="metiers-grid">{metiers.map((metier, index) => <article className="metier-tile" key={metier}><TrainIcon /><h3>{metier}</h3></article>)}</div>
