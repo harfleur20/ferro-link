@@ -134,7 +134,7 @@ function HomePage() {
     <section className="intro section page-width">
       <div className="presentation-layout">
         <div className="presentation-visual">
-          <img src="https://images.pexels.com/photos/30589063/pexels-photo-30589063.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Professionnels intervenant sur une infrastructure ferroviaire" loading="lazy" />
+          <img src="https://www.norfolksouthern.com/adobe/dynamicmedia/deliver/dm-aid--561f1b88-4104-4019-aa04-5e0ecf5c?preferwebp=true&quality=85" alt="Équipe américaine de maintenance ferroviaire intervenant sur les voies" loading="lazy" />
           <div className="presentation-image-caption"><span>ferroLink</span><span>Conseil & ingénierie</span></div>
         </div>
         <div className="presentation-copy">
@@ -159,7 +159,7 @@ function HomePage() {
 
     <section className="home-expertise section">
       <div className="page-width home-split-layout">
-        <div className="home-section-visual"><img src="https://images.pexels.com/photos/30589059/pexels-photo-30589059.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Équipe ferroviaire intervenant sur les voies" loading="lazy" /><span className="visual-index">01 / EXPERTISES</span></div>
+        <div className="home-section-visual"><img src="https://cdn.mbta.com/sites/default/files/styles/max_2600x2600/public/media/2024-11/MBTA_OL_Diversion_MaldenCen_OakGrove%20103124-6445.jpg?itok=AhOC2zmw" alt="Techniciens de maintenance du réseau ferroviaire américain" loading="lazy" /><span className="visual-index">01 / EXPERTISES</span></div>
         <div className="home-section-content">
           <h2>Des compétences au service de toute la chaîne ferroviaire.</h2>
           <p className="home-section-lead">Des expertises complémentaires pour répondre aux exigences techniques et opérationnelles des projets.</p>
@@ -177,7 +177,7 @@ function HomePage() {
           <div className="home-metiers-grid">{metiers.map((metier,index)=><div className="home-metier-chip" key={metier}><FaTrainSubway className="train-icon" aria-hidden="true" />{metier}</div>)}</div>
           <a className="text-link" href={paths.competences}>Explorer nos domaines d’intervention</a>
         </div>
-        <div className="home-section-visual home-metiers-visual"><img src="https://images.pexels.com/photos/11095687/pexels-photo-11095687.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Technicien réalisant une opération de maintenance ferroviaire" loading="lazy" /><span className="visual-index">02 / MÉTIERS</span></div>
+        <div className="home-section-visual home-metiers-visual"><img src="https://www.bnsf.com/news-media/images/rt-mow-4.jpg" alt="Technicien américain inspectant une voie ferrée" loading="lazy" /><span className="visual-index">02 / MÉTIERS</span></div>
       </div>
     </section>
 
