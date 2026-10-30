@@ -1785,3 +1785,206 @@ h3 {
     background-position: 62% center;
   }
 }
+
+
+/* Homepage aligned to the supplied Avenir Ferro reference */
+.reference-hero {
+  min-height: 520px;
+  height: min(660px, calc(100svh - 72px));
+  background: #202326;
+}
+.reference-hero .hero-image {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(0deg, rgb(0 0 0 / 48%), rgb(0 0 0 / 40%)),
+    url("/images/train-hero-poster.jpg") center 55% / cover no-repeat;
+}
+.reference-hero .hero-overlay { background: rgb(0 0 0 / 22%); }
+.reference-hero .hero-content {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-block: 80px;
+  text-align: center;
+}
+.reference-hero .hero-content .eyebrow,
+.reference-hero .hero-caption { display: none; }
+.reference-hero h1 {
+  margin: 0 0 20px;
+  font-size: clamp(42px, 5vw, 66px);
+  line-height: 1.22;
+  letter-spacing: -.035em;
+}
+.reference-hero .button,
+.reference-presentation .button,
+.reference-contact-content .button {
+  min-height: 38px;
+  padding: 10px 18px;
+  border-radius: 0;
+  background: #f58220;
+  color: #241c17;
+  font-size: 11px;
+  font-weight: 600;
+  box-shadow: none;
+}
+.reference-presentation {
+  display: grid;
+  grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+  gap: clamp(38px, 8vw, 105px);
+  align-items: center;
+  padding-block: 82px;
+}
+.reference-copy h2,
+.reference-feature-copy h2 {
+  max-width: 440px;
+  margin: 0;
+  color: #573b2b;
+  font-family: "Segoe UI", sans-serif;
+  font-size: clamp(23px, 2.2vw, 32px);
+  font-weight: 650;
+  line-height: 1.32;
+}
+.reference-underline {
+  display: block;
+  width: 48px;
+  height: 3px;
+  margin: 16px 0 22px;
+  background: #f58220;
+}
+.reference-copy p {
+  max-width: 500px;
+  margin: 0 0 22px;
+  color: #6f6b67;
+  font-size: 13px;
+  line-height: 1.9;
+}
+.reference-copy .button { display: inline-flex; margin-bottom: 20px; }
+.reference-phone-label,
+.reference-phone { display: block; }
+.reference-phone-label { color: #6f6b67; font-size: 11px; }
+.reference-phone { margin-top: 5px; color: #573b2b; font-size: 19px; font-weight: 750; }
+.reference-photo-frame {
+  position: relative;
+  min-width: 0;
+  isolation: isolate;
+}
+.reference-photo-frame::after {
+  position: absolute;
+  z-index: -1;
+  inset: 22px -20px -20px 22px;
+  border: 3px solid #f58220;
+  content: "";
+}
+.reference-photo-frame img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1.08 / 1;
+  object-fit: cover;
+  box-shadow: 0 12px 32px rgb(0 0 0 / 10%);
+}
+.presentation-frame img { aspect-ratio: .92 / 1; }
+.reference-contact-banner {
+  position: relative;
+  display: grid;
+  min-height: 260px;
+  overflow: hidden;
+  color: #fff;
+  background: #175a70 url("/images/train-hero-poster.jpg") center 48% / cover no-repeat;
+  place-items: center;
+}
+.reference-contact-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgb(8 77 104 / 70%), rgb(13 69 88 / 58%));
+}
+.reference-contact-content {
+  position: relative;
+  z-index: 1;
+  padding: 40px 20px;
+  text-align: center;
+}
+.reference-contact-content h2 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(25px, 3vw, 34px);
+  font-weight: 650;
+}
+.reference-contact-content .reference-underline { margin: 14px auto 24px; }
+.reference-feature {
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1fr);
+  gap: clamp(38px, 8vw, 100px);
+  align-items: center;
+  padding-block: 88px;
+}
+.reference-feature-copy h2 { font-size: clamp(24px, 2.35vw, 32px); }
+.reference-feature-copy .reference-underline { margin: 15px 0 18px; }
+.reference-expertise-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 15px 18px;
+}
+.reference-expertise-item {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 10px;
+  color: #51453c;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+.reference-mini-icon { display: inline-flex; flex: 0 0 23px; color: #f58220; }
+.reference-mini-icon svg { width: 22px; height: 22px; stroke-width: 3.4; }
+.reference-metiers { padding-top: 40px; }
+.reference-metiers-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  gap: 7px;
+  list-style: none;
+}
+.reference-metiers-list li {
+  position: relative;
+  padding-left: 19px;
+  color: #6b625b;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.reference-metiers-list li::before {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #f58220;
+  border-radius: 3px;
+  content: "";
+}
+.reference-partners { padding-block: 42px 55px; text-align: center; }
+.reference-partners h2 {
+  margin: 0 0 18px;
+  color: #573b2b;
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 650;
+}
+.reference-partners .partner { width: clamp(150px, 18vw, 220px); min-height: 90px; }
+.reference-partners .partner-track { animation-duration: 38s; }
+@media (max-width: 700px) {
+  .reference-hero { min-height: 430px; height: 65svh; }
+  .reference-hero h1 { font-size: clamp(38px, 10vw, 52px); }
+  .reference-presentation,
+  .reference-feature { grid-template-columns: 1fr; gap: 44px; padding-block: 58px; }
+  .reference-presentation .reference-photo-frame { grid-row: 1; }
+  .reference-copy h2, .reference-feature-copy h2 { font-size: 26px; }
+  .reference-photo-frame { margin-right: 18px; margin-bottom: 18px; }
+  .reference-photo-frame::after { inset: 15px -15px -15px 15px; border-width: 2px; }
+  .reference-contact-banner { min-height: 220px; }
+  .reference-expertise-list { gap: 15px 10px; }
+  .reference-expertise-item { font-size: 11px; }
+  .reference-metiers { padding-top: 20px; }
+  .reference-partners { padding-block: 34px 40px; }
+}
