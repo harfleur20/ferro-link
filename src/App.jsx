@@ -32,13 +32,27 @@ const metiers = [
 ];
 
 function ExpertiseIcon({ number }) {
-  const common = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", viewBox: "0 0 48 48", "aria-hidden": true, focusable: "false" };
+  const common = {
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 2.8,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+    viewBox: "0 0 48 48",
+    "aria-hidden": true,
+    focusable: "false",
+  };
   const icons = [
-    <><path d="M24 5v38M5 24h38M12 12l24 24M36 12 12 36" /><circle cx="24" cy="24" r="9" /><circle cx="24" cy="24" r="3" /></>,
-    <><path d="M5 29h38l-4-10H13l-8 10Z" /><path d="M10 29v7h28v-7M15 19l4-7h10l5 7" /><circle cx="15" cy="38" r="3" /><circle cx="33" cy="38" r="3" /></>,
-    <><path d="M27 5 12 26h11l-2 17 15-23H25l2-15Z" /><path d="M6 14h7M4 20h5M36 8h6" /></>,
-    <><path d="M6 40h36M10 40V24l14-9 14 9v16" /><path d="M17 40V29h14v11M6 24l18-13 18 13" /><path d="M20 21h8" /></>,
-    <><rect x="7" y="10" width="34" height="25" rx="3" /><path d="M14 18h8M14 24h13M14 30h6M29 18l4 4 5-7" /><path d="M18 41h12M24 35v6" /></>
+    // Railway signalling: signal mast, signal heads and track indication
+    <><path d="M12 42V7" /><path d="M12 10h16v19H12" /><circle cx="20" cy="16" r="3" /><circle cx="20" cy="23" r="3" /><path d="M7 42h10M28 14h7M28 24h7M30 29v6M25 35h10" /></>,
+    // Rolling stock: front of a passenger train with windscreen, lights and rails
+    <><path d="M12 34V15c0-5 5-8 12-8s12 3 12 8v19" /><path d="M12 18h24M17 18l2-7h10l2 7" /><path d="M16 27h4M28 27h4M16 34l-4 7M32 34l4 7M18 41h12" /><path d="M19 34v-4h10v4" /></>,
+    // Traction power: overhead catenary and electrical supply
+    <><path d="M6 13h36M10 13l5 7h18l5-7M24 5v8" /><path d="M27 16 17 29h8l-2 12 10-16h-8l2-9Z" /><path d="M8 43h32" /></>,
+    // Railway civil engineering: rails, sleepers and ballast/track bed
+    <><path d="M15 6 9 39M33 6l6 33" /><path d="M12 13h24M11 20h26M10 27h28M9 34h30M7 41h34" /><path d="M15 6h18" /></>,
+    // Railway telecommunications: radio mast with signal waves and network nodes
+    <><path d="M24 17 13 42M24 17l11 25M18 30h12M15 37h18M24 17V7" /><circle cx="24" cy="5" r="2" /><path d="M16 9a11 11 0 0 0 0 16M32 9a11 11 0 0 1 0 16M11 4a18 18 0 0 0 0 26M37 4a18 18 0 0 1 0 26" /></>
   ];
   return <svg {...common}>{icons[Number(number) - 1] || icons[0]}</svg>;
 }
