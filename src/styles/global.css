@@ -1207,6 +1207,20 @@ h3 {
   border-bottom: 1px solid #dce2d7;
   background: var(--white);
 }
+.expertise-detail-card {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: background-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.expertise-detail-card:hover,
+.expertise-detail-card:focus-visible {
+  background: #f7faef;
+  box-shadow: inset 0 0 0 2px var(--lime);
+}
+.expertise-detail-card:hover { transform: translateY(-3px); }
+.expertise-detail-card:focus-visible { outline: 3px solid var(--lime); outline-offset: -3px; }
+.expertise-card-link { display: inline-flex; margin-top: 20px; }
 .expertise-detail-card h2 {
   max-width: 540px;
   margin: 25px 0 12px;
