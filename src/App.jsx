@@ -128,7 +128,7 @@ function HomePage() {
         <h1 id="hero-title">Une affaire de<br />chemin de fer</h1>
         <a className="button button-lime" href={paths.jobs}>Rejoignez-nous</a>
       </div>
-      <div className="hero-caption"><span>01</span> ferroLink — Le ferroviaire en mouvement</div>
+      <div className="hero-caption">ferroLink — Le ferroviaire en mouvement</div>
     </section>
 
     <section className="intro section page-width">
