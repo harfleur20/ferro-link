@@ -121,7 +121,7 @@ function PageBanner({ kicker, title, description }) {
 function HomePage() {
   return <>
     <section className="hero" aria-labelledby="hero-title">
-      <iframe className="hero-video" src="https://www.youtube.com/embed/htTd2MiW4KY?autoplay=1&mute=1&controls=0&loop=1&playlist=htTd2MiW4KY&playsinline=1&start=1&end=30&rel=0" title="Train ferroviaire en mouvement" allow="autoplay; encrypted-media; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" tabIndex="-1" aria-hidden="true" />
+      <video className="hero-video" autoPlay muted loop playsInline preload="metadata" tabIndex="-1" aria-hidden="true"><source src="https://videos.pexels.com/video-files/16222742/16222742-hd_1920_1080_24fps.mp4" type="video/mp4" /></video>
       <div className="hero-overlay" />
       <div className="hero-content page-width">
         <p className="eyebrow eyebrow-light"><span /> Conseil & ingénierie ferroviaire</p>
