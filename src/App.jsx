@@ -138,7 +138,7 @@ function HomePage() {
         <a className="reference-phone" href="tel:+33633821507">+336-33-82-15-07</a>
       </div>
       <div className="reference-photo-frame presentation-frame">
-        <img src="https://avenirferro.com/wp-content/uploads/elementor/thumbs/pexels-sami-abdullah-7359564-pye0vq5d0s3a91h1ql0dvg48bua4xl4jr3ncu3juhs.jpg" alt="Professionnelle sur une infrastructure ferroviaire" loading="lazy" />
+        <img src="https://images.pexels.com/photos/30589063/pexels-photo-30589063.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Professionnelle sur une infrastructure ferroviaire" loading="lazy" />
       </div>
     </section>
 
@@ -153,7 +153,7 @@ function HomePage() {
 
     <section className="reference-feature section page-width">
       <div className="reference-photo-frame">
-        <img src="/images/train-hero-poster.jpg" alt="Agent ferroviaire auprès d’un train" loading="lazy" />
+        <img src="https://images.pexels.com/photos/30589059/pexels-photo-30589059.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Agents ferroviaires en intervention sur les voies" loading="lazy" />
       </div>
       <div className="reference-feature-copy">
         <h2>Nos Principaux Domaines De Compétences</h2>
@@ -166,7 +166,7 @@ function HomePage() {
 
     <section className="reference-feature reference-metiers section page-width">
       <div className="reference-photo-frame">
-        <img src="/images/train-hero-poster.jpg" alt="Intervention de maintenance sur un train" loading="lazy" />
+        <img src="https://images.pexels.com/photos/11095687/pexels-photo-11095687.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Technicien réalisant une opération de maintenance ferroviaire" loading="lazy" />
       </div>
       <div className="reference-feature-copy">
         <h2>Les Métiers Sur Lesquels Nous Pouvons Accompagner Nos Clients</h2>
