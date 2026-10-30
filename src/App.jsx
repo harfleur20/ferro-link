@@ -138,7 +138,6 @@ function HomePage() {
     </section>
 
     <section className="intro section page-width">
-      <div className="section-kicker"><span>01</span> Présentation de notre entreprise ferroLink</div>
       <div className="presentation-layout">
         <div className="presentation-visual">
           <img src="https://images.pexels.com/photos/30589063/pexels-photo-30589063.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Professionnels intervenant sur une infrastructure ferroviaire" loading="lazy" />
