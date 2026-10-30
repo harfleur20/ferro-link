@@ -364,60 +364,40 @@ const jobOffers = [
 ];
 
 function ApplicationModal({ job, onClose }) {
-  const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [cvName, setCvName] = useState("");
   const [letterName, setLetterName] = useState("");
-  const submitApplication = async (event) => {
-    event.preventDefault();
+  const validateApplication = (event) => {
     const form = event.currentTarget;
     const data = new FormData(form);
     const cv = data.get("cv");
     const letter = data.get("letter");
     const totalSize = (cv?.size || 0) + (letter?.size || 0);
     if (!cv || !cv.size) {
+      event.preventDefault();
       setError("Merci de joindre votre CV pour envoyer la candidature.");
       return;
     }
     if (totalSize > 10 * 1024 * 1024) {
+      event.preventDefault();
       setError("Le CV et la lettre de motivation ne doivent pas dépasser 10 Mo au total.");
       return;
     }
-    setSending(true);
     setError("");
-    try {
-      const response = await fetch("https://formsubmit.co/ajax/gregory.aline@avenirferro.com", {
-        method: "POST",
-        headers: { Accept: "application/json" },
-        body: data
-      });
-      const result = await response.json();
-      if (!response.ok || result.success === "false" || result.success === false) {
-        throw new Error(result.message || "L’envoi n’a pas abouti. Réessayez ou contactez-nous par e-mail.");
-      }
-      setSuccess(true);
-      form.reset();
-      setCvName("");
-      setLetterName("");
-    } catch (err) {
-      setError(err.message || "Impossible d’envoyer la candidature pour le moment. Réessayez plus tard.");
-    } finally {
-      setSending(false);
-    }
   };
-  return <div className="job-modal-backdrop application-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !sending) onClose(); }}>
+  return <div className="job-modal-backdrop application-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
     <section className="job-modal application-modal" role="dialog" aria-modal="true" aria-labelledby="application-modal-title">
-      <button className="job-modal-close application-close" type="button" aria-label="Fermer le formulaire" onClick={onClose} disabled={sending}>×</button>
+      <button className="job-modal-close application-close" type="button" aria-label="Fermer le formulaire" onClick={onClose}>×</button>
       <div className="application-modal-heading">
         <p className="section-kicker"><span>Candidature ferroLink</span></p>
         <h2 id="application-modal-title">{job ? `Postuler : ${job.title}` : "Candidature spontanée"}</h2>
         <p>Complétez vos informations et joignez vos documents. Les champs marqués d’un * sont obligatoires.</p>
       </div>
-      {success ? <div className="application-success" role="status"><span aria-hidden="true">✓</span><h3>Candidature transmise</h3><p>Merci pour votre intérêt. Votre candidature a été envoyée. L’équipe ferroLink pourra vous contacter à l’adresse indiquée.</p><button type="button" className="button button-lime" onClick={onClose}>Fermer</button></div> : <form className="application-form" onSubmit={submitApplication} encType="multipart/form-data">
+      <form className="application-form" action="https://formsubmit.co/gregory.aline@avenirferro.com" method="POST" encType="multipart/form-data" onSubmit={validateApplication}>
         <input type="hidden" name="_subject" value={job ? `Candidature — ${job.title}` : "Candidature spontanée — ferroLink"} />
         <input type="hidden" name="offre" value={job ? job.title : "Candidature spontanée"} />
         <input type="hidden" name="_template" value="table" />
+        <input type="text" name="_honey" tabIndex="-1" autoComplete="off" aria-hidden="true" className="application-honeypot" />
         <label>Nom et prénom *<input name="name" autoComplete="name" required maxLength="120" /></label>
         <div className="application-form-row">
           <label>Adresse e-mail *<input type="email" name="email" autoComplete="email" required maxLength="160" /></label>
@@ -440,8 +420,8 @@ function ApplicationModal({ job, onClose }) {
         <label className="application-consent"><input type="checkbox" name="consentement" value="Oui" required /><span>J’accepte que les informations transmises soient utilisées par ferroLink pour examiner ma candidature et me recontacter. *</span></label>
         {error && <p className="application-error" role="alert">{error}</p>}
         <p className="application-privacy">Les documents sont transmis avec votre candidature à l’adresse de recrutement ferroLink. N’envoyez que les informations nécessaires à l’étude de votre candidature.</p>
-        <div className="application-form-actions"><button className="button button-lime" type="submit" disabled={sending}>{sending ? "Envoi en cours…" : "Envoyer ma candidature"} <span aria-hidden="true">↗</span></button><button className="button button-outline" type="button" onClick={onClose} disabled={sending}>Annuler</button></div>
-      </form>}
+        <div className="application-form-actions"><button className="button button-lime" type="submit">Envoyer ma candidature <span aria-hidden="true">↗</span></button><button className="button button-outline" type="button" onClick={onClose}>Annuler</button></div>
+      </form>
     </section>
   </div>;
 }
