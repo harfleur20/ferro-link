@@ -119,70 +119,76 @@ function PageBanner({ kicker, title, description }) {
 
 function HomePage() {
   return <>
-    <section className="hero reference-hero" aria-labelledby="hero-title">
-      <div className="hero-image" aria-hidden="true" />
+    <section className="hero" aria-labelledby="hero-title">
+      <iframe className="hero-video" src="https://www.youtube.com/embed/htTd2MiW4KY?autoplay=1&mute=1&controls=0&loop=1&playlist=htTd2MiW4KY&playsinline=1&start=1&end=30&rel=0" title="Train ferroviaire en mouvement" allow="autoplay; encrypted-media; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" tabIndex="-1" aria-hidden="true" />
       <div className="hero-overlay" />
       <div className="hero-content page-width">
+        <p className="eyebrow eyebrow-light"><span /> Conseil & ingénierie ferroviaire</p>
         <h1 id="hero-title">Une affaire de<br />chemin de fer</h1>
-        <a className="button button-lime" href={paths.jobs}>Rejoignez-nous</a>
+        <a className="button button-lime" href={paths.jobs}>Rejoignez-nous <span aria-hidden="true">↗</span></a>
       </div>
+      <div className="hero-caption"><span>01</span> ferroLink — Le ferroviaire en mouvement</div>
     </section>
 
-    <section className="reference-presentation section page-width">
-      <div className="reference-copy">
-        <h2>PRÉSENTATION DE NOTRE<br />ENTREPRISE FERROLINK</h2>
-        <span className="reference-underline" />
-        <p><strong>ferroLink</strong> est une société de conseil spécialisée dans l’industrie ferroviaire. Elle a pour rôle d’accompagner les clients grands comptes et industriels du ferroviaire dans la réalisation de leurs projets d’envergure et innovants allant des études jusqu’à l’industrialisation, la production, l’exploitation et la maintenance. Elle est donc présente sur l’ensemble du cycle du projet, de la définition jusqu’à la livraison.</p>
-        <a className="button button-lime" href={paths.about}>Lire la suite</a>
-        <span className="reference-phone-label">Appelez-nous aujourd’hui</span>
-        <a className="reference-phone" href="tel:+33633821507">+336-33-82-15-07</a>
-      </div>
-      <div className="reference-photo-frame presentation-frame">
-        <img src="https://images.pexels.com/photos/30589063/pexels-photo-30589063.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Professionnelle sur une infrastructure ferroviaire" loading="lazy" />
-      </div>
-    </section>
-
-    <section className="reference-contact-banner">
-      <div className="reference-contact-overlay" />
-      <div className="reference-contact-content">
-        <h2>Confiez Nous Vos Besoins</h2>
-        <span className="reference-underline" />
-        <a className="button button-lime" href={paths.contact}>Contactez-Nous</a>
-      </div>
-    </section>
-
-    <section className="reference-feature section page-width">
-      <div className="reference-photo-frame">
-        <img src="https://images.pexels.com/photos/30589059/pexels-photo-30589059.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Agents ferroviaires en intervention sur les voies" loading="lazy" />
-      </div>
-      <div className="reference-feature-copy">
-        <h2>Nos Principaux Domaines De Compétences</h2>
-        <span className="reference-underline" />
-        <div className="reference-expertise-list">
-          {expertiseAreas.map((area) => <div className="reference-expertise-item" key={area.number}><span className="reference-mini-icon"><ExpertiseIcon number={area.number} /></span><span>{area.title}</span></div>)}
+    <section className="intro section page-width">
+      <div className="section-kicker"><span>01</span> Présentation de notre entreprise ferroLink</div>
+      <div className="presentation-layout">
+        <div className="presentation-visual">
+          <img src="https://images.pexels.com/photos/30589063/pexels-photo-30589063.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Professionnels intervenant sur une infrastructure ferroviaire" loading="lazy" />
+          <div className="presentation-image-caption"><span>ferroLink</span><span>Conseil & ingénierie</span></div>
+        </div>
+        <div className="presentation-copy">
+          <p className="presentation-overline">Une expertise dédiée au rail</p>
+          <h2>Accompagner les projets ferroviaires, de l’idée à la mise en service.</h2>
+          <p className="lead"><strong>ferroLink</strong> est une société de conseil spécialisée dans l’industrie ferroviaire.</p>
+          <p>Nous accompagnons les clients grands comptes et les industriels dans leurs projets, des études à l’industrialisation, la production, l’exploitation et la maintenance. Nos compétences s’inscrivent dans l’ensemble du cycle de vie des projets.</p>
+          <a className="text-link" href={paths.about}>Découvrir ferroLink <span aria-hidden="true">↗</span></a>
+          <div className="home-phone"><span>Un projet à discuter ?</span><a href="tel:+33633821507">+33 6 33 82 15 07</a></div>
         </div>
       </div>
     </section>
 
-    <section className="reference-feature reference-metiers section page-width">
-      <div className="reference-photo-frame">
-        <img src="https://images.pexels.com/photos/11095687/pexels-photo-11095687.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Technicien réalisant une opération de maintenance ferroviaire" loading="lazy" />
-      </div>
-      <div className="reference-feature-copy">
-        <h2>Les Métiers Sur Lesquels Nous Pouvons Accompagner Nos Clients</h2>
-        <span className="reference-underline" />
-        <ul className="reference-metiers-list">{metiers.map((metier) => <li key={metier}>{metier}</li>)}</ul>
+    <section className="home-contact-band">
+      <div className="page-width home-contact-inner">
+        <div><p className="eyebrow"><span /> Parlons de votre projet</p><h2>Vos enjeux ferroviaires méritent une réponse adaptée.</h2></div>
+        <a className="button button-lime" href={paths.contact}>Échanger avec notre équipe <span aria-hidden="true">↗</span></a>
       </div>
     </section>
 
-    <section className="references section reference-partners">
-      <div className="page-width">
-        <h2>ILS NOUS FONT CONFIANCE</h2>
+    <section className="home-expertise section">
+      <div className="page-width home-split-layout">
+        <div className="home-section-visual"><img src="https://images.pexels.com/photos/30589059/pexels-photo-30589059.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Équipe ferroviaire intervenant sur les voies" loading="lazy" /><span className="visual-index">01 / EXPERTISES</span></div>
+        <div className="home-section-content">
+          <div className="section-kicker"><span>02</span> Nos expertises</div>
+          <h2>Des compétences au service de toute la chaîne ferroviaire.</h2>
+          <p className="home-section-lead">Des expertises complémentaires pour répondre aux exigences techniques et opérationnelles des projets.</p>
+          <div className="home-expertise-list">{expertiseAreas.map((area) => <a className="home-expertise-item" href={paths.competences} key={area.number}><span className="home-expertise-icon"><ExpertiseIcon number={area.number} /></span><span><strong>{area.title}</strong><small>{area.detail}</small></span><span className="home-arrow" aria-hidden="true">↗</span></a>)}</div>
+          <a className="text-link" href={paths.competences}>Toutes nos compétences <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section className="home-metiers section">
+      <div className="page-width home-split-layout home-metiers-layout">
+        <div className="home-section-content">
+          <div className="section-kicker"><span>03</span> Nos métiers</div>
+          <h2>De l’étude au terrain, nous accompagnons les étapes clés de vos projets.</h2>
+          <p className="home-section-lead">Nos équipes peuvent intervenir en appui de vos métiers et de vos opérations, selon les besoins de chaque mission.</p>
+          <div className="home-metiers-grid">{metiers.map((metier,index)=><div className="home-metier-chip" key={metier}><span>{String(index+1).padStart(2,"0")}</span>{metier}</div>)}</div>
+          <a className="text-link" href={paths.competences}>Explorer nos domaines d’intervention <span aria-hidden="true">↗</span></a>
+        </div>
+        <div className="home-section-visual home-metiers-visual"><img src="https://images.pexels.com/photos/11095687/pexels-photo-11095687.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Technicien réalisant une opération de maintenance ferroviaire" loading="lazy" /><span className="visual-index">02 / MÉTIERS</span></div>
+      </div>
+    </section>
+
+    <section className="references section">
+      <div className="page-width"><div className="references-heading"><div><div className="section-kicker"><span>04</span> Ils nous font confiance</div><h2>Des partenaires engagés à nos côtés.</h2></div></div>
         <div className="partner-marquee" aria-label="Logos de nos partenaires"><div className="partner-track">
           {[...partners, ...partners].map((partner, index) => <div className="partner" key={`${partner.alt}-${index}`} aria-hidden={index >= partners.length ? "true" : undefined}><img src={partner.src} alt={index >= partners.length ? "" : partner.alt} loading="lazy" /></div>)}
         </div></div>
       </div>
     </section>
+    <ContactCallout />
   </>;
 }
 
