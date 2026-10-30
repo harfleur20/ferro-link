@@ -1709,3 +1709,37 @@ h3 {
     padding: 25px;
   }
 }
+
+
+/* Larger, bolder railway-specific pictograms */
+.expertise-card .card-mark,
+.expertise-detail-card .card-mark {
+  width: 82px;
+  height: 82px;
+  margin-top: 22px;
+  border-radius: 20px;
+  background: #edf4e2;
+}
+.expertise-card .card-mark svg,
+.expertise-detail-card .card-mark svg {
+  width: 54px;
+  height: 54px;
+  stroke-width: 2.8;
+}
+.expertise-card:hover .card-mark,
+.expertise-detail-card:hover .card-mark {
+  color: var(--navy);
+  background: var(--lime);
+}
+@media (max-width: 700px) {
+  .expertise-card .card-mark,
+  .expertise-detail-card .card-mark {
+    width: 76px;
+    height: 76px;
+  }
+  .expertise-card .card-mark svg,
+  .expertise-detail-card .card-mark svg {
+    width: 50px;
+    height: 50px;
+  }
+}
