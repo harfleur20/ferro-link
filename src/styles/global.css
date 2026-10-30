@@ -2062,3 +2062,22 @@ h3 {
 @media (max-width: 760px) {
   .home-contact-band::before { background-attachment:scroll; }
 }
+
+
+/* Icône ferroviaire utilisée dans les listes de métiers */
+.train-icon {
+  display: block;
+  flex: 0 0 22px;
+  width: 22px;
+  height: 22px;
+  color: var(--lime);
+}
+.home-metier-chip .train-icon {
+  width: 18px;
+  height: 18px;
+  flex-basis: 18px;
+  margin-top: 1px;
+}
+.metier-tile .train-icon {
+  margin-bottom: 10px;
+}
