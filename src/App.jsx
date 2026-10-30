@@ -169,7 +169,7 @@ function HomePage() {
         <div className="home-section-content">
           <h2>Des compétences au service de toute la chaîne ferroviaire.</h2>
           <p className="home-section-lead">Des expertises complémentaires pour répondre aux exigences techniques et opérationnelles des projets.</p>
-          <div className="home-expertise-list">{expertiseAreas.map((area) => <a className="home-expertise-item" href={paths.competences} key={area.number}><span className="home-expertise-icon"><ExpertiseIcon number={area.number} /></span><span><strong>{area.title}</strong><small>{area.detail}</small></span><span className="home-arrow" aria-hidden="true">↗</span></a>)}</div>
+          <div className="home-expertise-list">{expertiseAreas.map((area) => <div className="home-expertise-item" key={area.number}><span className="home-expertise-icon"><ExpertiseIcon number={area.number} /></span><span><strong>{area.title}</strong><small>{area.detail}</small></span></div>)}</div>
           <a className="text-link" href={paths.competences}>Toutes nos compétences</a>
         </div>
       </div>
@@ -237,7 +237,7 @@ function CompetencesPage() {
     <PageBanner kicker="Expertises ferroviaires" title="Nos principaux domaines de compétences" description="Des compétences mobilisables tout au long du cycle de vie des projets ferroviaires, des études à l’exploitation." />
     <section className="section expertise-page-section"><div className="page-width">
       <div className="section-kicker"><span>01</span> Nos domaines d’expertise</div>
-      <div className="expertise-detail-grid">{expertiseAreas.map((area) => <a className="expertise-detail-card" href={paths.contact} key={area.number} aria-label={`Contacter ferroLink au sujet de ${area.title}`}><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h2>{area.title}</h2><p>{area.detail}</p><span className="text-link expertise-card-link">Échanger sur cette expertise</span></a>)}</div>
+      <div className="expertise-detail-grid">{expertiseAreas.map((area) => <div className="expertise-detail-card" key={area.number}><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h2>{area.title}</h2><p>{area.detail}</p></div>)}</div>
     </div></section>
     <section className="section page-width"><div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos métiers</div><h2>Les métiers sur lesquels nous pouvons accompagner nos clients</h2></div></div>
       <div className="metiers-grid">{metiers.map((metier, index) => <article className="metier-tile" key={metier}><TrainIcon /><h3>{metier}</h3></article>)}</div>
