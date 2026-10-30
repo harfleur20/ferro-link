@@ -2709,12 +2709,22 @@ h3 {
   font-size: 17px;
   transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, transform 180ms ease;
 }
-.footer-socials a:hover,
-.footer-socials a:focus-visible {
+.footer-socials a svg {
+  display: block;
+  color: inherit;
+  fill: currentColor;
+}
+.site-footer .footer-socials a:hover,
+.site-footer .footer-socials a:focus-visible {
   color: #17251e;
   background: var(--lime, #c7f36b);
   border-color: var(--lime, #c7f36b);
   transform: translateY(-2px);
+}
+.site-footer .footer-socials a:hover svg,
+.site-footer .footer-socials a:focus-visible svg {
+  color: #17251e;
+  fill: #17251e;
 }
 .footer-socials a:focus-visible {
   outline: 2px solid #fff;
