@@ -2122,3 +2122,23 @@ h3 {
     height: 72px;
   }
 }
+
+
+/* Boutons de section : contour discret, fond transparent, sans icône */
+.text-link {
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid var(--navy);
+  background: transparent;
+  gap: 0;
+  text-decoration: none;
+  transition: color 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+.text-link span {
+  display: none;
+}
+.text-link:hover {
+  color: var(--navy);
+  border-color: var(--lime);
+  background: transparent;
+}
