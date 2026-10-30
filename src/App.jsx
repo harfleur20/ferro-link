@@ -182,7 +182,7 @@ function HomePage() {
     </section>
 
     <section className="references section">
-      <div className="page-width"><div className="references-heading"><div><div className="section-kicker"><span>04</span> Ils nous font confiance</div><h2>Des partenaires engagés à nos côtés.</h2></div></div>
+      <div className="page-width"><div className="references-heading"><div><div className="section-kicker">Ils nous font confiance</div><h2>Des partenaires engagés à nos côtés.</h2></div></div>
         <div className="partner-marquee" aria-label="Logos de nos partenaires"><div className="partner-track">
           {[...partners, ...partners].map((partner, index) => <div className="partner" key={`${partner.alt}-${index}`} aria-hidden={index >= partners.length ? "true" : undefined}><img src={partner.src} alt={index >= partners.length ? "" : partner.alt} loading="lazy" /></div>)}
         </div></div>
