@@ -2403,3 +2403,32 @@ h3 {
   background: linear-gradient(90deg, rgb(7 24 43 / 96%) 0%, rgb(7 24 43 / 88%) 42%, rgb(7 24 43 / 28%) 100%);
   pointer-events: none;
 }
+
+
+/* Pied de page enrichi : identité, expertises et contact */
+.site-footer .footer-main {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(150px, 1fr));
+  gap: 42px;
+  align-items: start;
+}
+.footer-brand-column { max-width: 360px; }
+.site-footer .footer-brand { display: inline-flex; align-items: center; max-width: 280px; }
+.site-footer .footer-brand img { display: block; width: 100%; height: auto; object-fit: contain; }
+.footer-description, .footer-contact p { max-width: 38ch; color: rgb(255 255 255 / 72%); font-size: 13px; line-height: 1.8; }
+.site-footer .footer-column { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.site-footer .footer-column h2 { margin: 0 0 7px; color: var(--white); font-size: 14px; font-weight: 700; }
+.site-footer .footer-column a { color: rgb(255 255 255 / 76%); font-size: 13px; line-height: 1.6; text-decoration: none; transition: color 160ms ease; }
+.site-footer .footer-column a:hover { color: var(--lime); }
+.site-footer .footer-contact-cta { display: inline-flex; gap: 12px; align-items: center; margin-top: 6px; padding: 10px 14px; border: 1px solid var(--lime); color: var(--white) !important; }
+.site-footer .footer-contact-cta:hover { background: var(--lime); color: var(--navy) !important; }
+.site-footer .footer-bottom { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 24px; }
+@media (max-width: 900px) {
+  .site-footer .footer-main { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 34px; }
+}
+@media (max-width: 560px) {
+  .site-footer .footer-main { grid-template-columns: 1fr; gap: 28px; }
+  .footer-brand-column { max-width: none; }
+  .site-footer .footer-brand { max-width: 240px; }
+  .site-footer .footer-bottom { align-items: flex-start; flex-direction: column; }
+}
