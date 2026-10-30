@@ -231,7 +231,7 @@ function CompetencesPage() {
     <PageBanner kicker="Expertises ferroviaires" title="Nos principaux domaines de compétences" description="Des compétences mobilisables tout au long du cycle de vie des projets ferroviaires, des études à l’exploitation." />
     <section className="section expertise-page-section"><div className="page-width">
       <div className="section-kicker"><span>01</span> Nos domaines d’expertise</div>
-      <div className="expertise-detail-grid">{expertiseAreas.map((area) => <article className="expertise-detail-card" key={area.number}><span className="card-number">{area.number}</span><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h2>{area.title}</h2><p>{area.detail}</p></article>)}</div>
+      <div className="expertise-detail-grid">{expertiseAreas.map((area) => <a className="expertise-detail-card" href={paths.contact} key={area.number} aria-label={`Contacter ferroLink au sujet de ${area.title}`}><span className="card-number">{area.number}</span><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h2>{area.title}</h2><p>{area.detail}</p><span className="text-link expertise-card-link">Échanger sur cette expertise <span aria-hidden="true">↗</span></span></a>)}</div>
     </div></section>
     <section className="section page-width"><div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos métiers</div><h2>Les métiers sur lesquels nous pouvons accompagner nos clients</h2></div></div>
       <div className="metiers-grid">{metiers.map((metier, index) => <article className="metier-tile" key={metier}><span>{String(index + 1).padStart(2, "0")}</span><h3>{metier}</h3></article>)}</div>
