@@ -419,7 +419,7 @@ function ApplicationModal({ job, onClose }) {
         </div>
         <label className="application-consent"><input type="checkbox" name="consentement" value="Oui" required /><span>J’accepte que les informations transmises soient utilisées par ferroLink pour examiner ma candidature et me recontacter. *</span></label>
         {error && <p className="application-error" role="alert">{error}</p>}
-        <p className="application-privacy">Les documents sont transmis avec votre candidature à l’adresse de recrutement ferroLink. N’envoyez que les informations nécessaires à l’étude de votre candidature.</p>
+        <p className="application-privacy">Les données et documents sont envoyés à l’équipe de recrutement ferroLink via FormSubmit, un prestataire de traitement de formulaires. N’envoyez que les informations nécessaires à l’étude de votre candidature.</p>
         <div className="application-form-actions"><button className="button button-lime" type="submit">Envoyer ma candidature <span aria-hidden="true">↗</span></button><button className="button button-outline" type="button" onClick={onClose}>Annuler</button></div>
       </form>
     </section>
