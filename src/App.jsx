@@ -363,17 +363,101 @@ const jobOffers = [
   }
 ];
 
+function ApplicationModal({ job, onClose }) {
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [cvName, setCvName] = useState("");
+  const [letterName, setLetterName] = useState("");
+  const submitApplication = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const cv = data.get("cv");
+    const letter = data.get("letter");
+    const totalSize = (cv?.size || 0) + (letter?.size || 0);
+    if (!cv || !cv.size) {
+      setError("Merci de joindre votre CV pour envoyer la candidature.");
+      return;
+    }
+    if (totalSize > 10 * 1024 * 1024) {
+      setError("Le CV et la lettre de motivation ne doivent pas dépasser 10 Mo au total.");
+      return;
+    }
+    setSending(true);
+    setError("");
+    try {
+      const response = await fetch("https://formsubmit.co/ajax/gregory.aline@avenirferro.com", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: data
+      });
+      const result = await response.json();
+      if (!response.ok || result.success === "false" || result.success === false) {
+        throw new Error(result.message || "L’envoi n’a pas abouti. Réessayez ou contactez-nous par e-mail.");
+      }
+      setSuccess(true);
+      form.reset();
+      setCvName("");
+      setLetterName("");
+    } catch (err) {
+      setError(err.message || "Impossible d’envoyer la candidature pour le moment. Réessayez plus tard.");
+    } finally {
+      setSending(false);
+    }
+  };
+  return <div className="job-modal-backdrop application-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget && !sending) onClose(); }}>
+    <section className="job-modal application-modal" role="dialog" aria-modal="true" aria-labelledby="application-modal-title">
+      <button className="job-modal-close application-close" type="button" aria-label="Fermer le formulaire" onClick={onClose} disabled={sending}>×</button>
+      <div className="application-modal-heading">
+        <p className="section-kicker"><span>Candidature ferroLink</span></p>
+        <h2 id="application-modal-title">{job ? `Postuler : ${job.title}` : "Candidature spontanée"}</h2>
+        <p>Complétez vos informations et joignez vos documents. Les champs marqués d’un * sont obligatoires.</p>
+      </div>
+      {success ? <div className="application-success" role="status"><span aria-hidden="true">✓</span><h3>Candidature transmise</h3><p>Merci pour votre intérêt. Votre candidature a été envoyée. L’équipe ferroLink pourra vous contacter à l’adresse indiquée.</p><button type="button" className="button button-lime" onClick={onClose}>Fermer</button></div> : <form className="application-form" onSubmit={submitApplication} encType="multipart/form-data">
+        <input type="hidden" name="_subject" value={job ? `Candidature — ${job.title}` : "Candidature spontanée — ferroLink"} />
+        <input type="hidden" name="offre" value={job ? job.title : "Candidature spontanée"} />
+        <input type="hidden" name="_template" value="table" />
+        <label>Nom et prénom *<input name="name" autoComplete="name" required maxLength="120" /></label>
+        <div className="application-form-row">
+          <label>Adresse e-mail *<input type="email" name="email" autoComplete="email" required maxLength="160" /></label>
+          <label>Téléphone *<input type="tel" name="telephone" autoComplete="tel" required maxLength="30" /></label>
+        </div>
+        <div className="application-form-row">
+          <label>Ville de résidence *<input name="ville" autoComplete="address-level2" required maxLength="100" /></label>
+          <label>Expérience professionnelle
+            <select name="experience" defaultValue="">
+              <option value="">Sélectionner</option><option>Débutant</option><option>Moins de 2 ans</option><option>2 à 5 ans</option><option>5 à 10 ans</option><option>Plus de 10 ans</option>
+            </select>
+          </label>
+        </div>
+        <label>Disponibilité <input name="disponibilite" placeholder="Ex. : immédiate, sous un mois…" maxLength="100" /></label>
+        <label>Message de motivation *<textarea name="motivation" rows="5" required minLength="20" maxLength="3000" placeholder="Présentez brièvement votre parcours et votre intérêt pour ce poste." /></label>
+        <div className="application-file-grid">
+          <label className="application-file-field">CV (PDF, DOC ou DOCX) *<input name="cv" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required onChange={(event) => setCvName(event.target.files?.[0]?.name || "")} /><small>{cvName || "Document obligatoire"}</small></label>
+          <label className="application-file-field">Lettre de motivation (facultatif)<input name="letter" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(event) => setLetterName(event.target.files?.[0]?.name || "")} /><small>{letterName || "PDF, DOC ou DOCX"}</small></label>
+        </div>
+        <label className="application-consent"><input type="checkbox" name="consentement" value="Oui" required /><span>J’accepte que les informations transmises soient utilisées par ferroLink pour examiner ma candidature et me recontacter. *</span></label>
+        {error && <p className="application-error" role="alert">{error}</p>}
+        <p className="application-privacy">Les documents sont transmis avec votre candidature à l’adresse de recrutement ferroLink. N’envoyez que les informations nécessaires à l’étude de votre candidature.</p>
+        <div className="application-form-actions"><button className="button button-lime" type="submit" disabled={sending}>{sending ? "Envoi en cours…" : "Envoyer ma candidature"} <span aria-hidden="true">↗</span></button><button className="button button-outline" type="button" onClick={onClose} disabled={sending}>Annuler</button></div>
+      </form>}
+    </section>
+  </div>;
+}
+
 function JobsPage() {
   const [search, setSearch] = useState("");
   const [contract, setContract] = useState("Tous les contrats");
   const [location, setLocation] = useState("Toutes les localisations");
   const [selectedJob, setSelectedJob] = useState(null);
+  const [applicationJob, setApplicationJob] = useState(null);
   const filteredJobs = jobOffers.filter((job) => {
     const query = search.trim().toLocaleLowerCase("fr");
     const matchesSearch = !query || [job.title, job.category, job.location, job.summary].some((value) => value.toLocaleLowerCase("fr").includes(query));
     return matchesSearch && (contract === "Tous les contrats" || job.contract === contract) && (location === "Toutes les localisations" || job.location === location);
   });
-  const applyLink = (job) => `mailto:gregory.aline@avenirferro.com?subject=${encodeURIComponent("Candidature — " + job.title)}&body=${encodeURIComponent("Bonjour,\\n\\nJe souhaite vous proposer ma candidature pour le poste « " + job.title + " ».\\n\\nVous trouverez mon CV en pièce jointe.\\n\\nCordialement,")}`;
+
   return <>
     <PageBanner kicker="Carrières & opportunités" title="Trouvez votre prochaine mission." description="Rejoignez des équipes qui font avancer les projets ferroviaires. Explorez les opportunités et trouvez le poste qui correspond à votre expertise." />
     <section className="jobs-intro-strip">
@@ -387,7 +471,6 @@ function JobsPage() {
         <div><div className="section-kicker"><span>Carrières</span> / Offres d’emploi</div><h2>Les opportunités du moment</h2><p>Parcourez les postes et filtrez les annonces selon votre recherche.</p></div>
         <a className="button button-outline" href={paths.contact}>Candidature spontanée <span aria-hidden="true">↗</span></a>
       </div>
-      <div className="jobs-demo-note"><span aria-hidden="true">ⓘ</span><p><strong>Maquette de démonstration :</strong> ces annonces, rémunérations et localisations sont fictives. Elles illustrent le fonctionnement de la page et devront être remplacées par les offres réellement ouvertes avant publication.</p></div>
       <div className="jobs-search-panel" role="search" aria-label="Filtrer les offres d’emploi">
         <label className="jobs-search-field"><span aria-hidden="true">⌕</span><span className="visually-hidden">Rechercher une offre</span><input type="search" placeholder="Intitulé, compétence, domaine…" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
         <label className="jobs-filter"><span className="visually-hidden">Type de contrat</span><select value={contract} onChange={(event) => setContract(event.target.value)}><option>Tous les contrats</option><option>CDI</option><option>Mission</option><option>CDD</option><option>Stage</option><option>Alternance</option></select></label>
@@ -397,12 +480,13 @@ function JobsPage() {
       <div className="jobs-results-line"><p><strong>{filteredJobs.length}</strong> offre{filteredJobs.length > 1 ? "s" : ""} trouvée{filteredJobs.length > 1 ? "s" : ""}</p><span>Tri : les plus récentes</span></div>
       {filteredJobs.length ? <div className="jobs-offer-grid">{filteredJobs.map((job) => <article className="job-card" key={job.id}>
         <button className="job-card-image-button" type="button" onClick={() => setSelectedJob(job)} aria-label={`Voir le détail : ${job.title}`}><img src={job.image} alt={job.imageAlt} loading="lazy" /><span className="job-category">{job.category}</span><span className="job-image-arrow" aria-hidden="true">↗</span></button>
-        <div className="job-card-content"><div className="job-card-meta"><span>{job.contract}</span><span>{job.experience}</span></div><h3><button type="button" onClick={() => setSelectedJob(job)}>{job.title}</button></h3><p className="job-card-summary">{job.summary}</p><div className="job-card-location"><span aria-hidden="true">⌖</span>{job.location}<span className="job-card-salary">{job.salary}</span></div><div className="job-card-actions"><button className="job-details-link" type="button" onClick={() => setSelectedJob(job)}>Voir l’offre <span aria-hidden="true">→</span></button><a href={applyLink(job)} className="job-apply-link" aria-label={`Candidater à ${job.title}`}>Postuler ↗</a></div></div>
+        <div className="job-card-content"><div className="job-card-meta"><span>{job.contract}</span><span>{job.experience}</span></div><h3><button type="button" onClick={() => setSelectedJob(job)}>{job.title}</button></h3><p className="job-card-summary">{job.summary}</p><div className="job-card-location"><span aria-hidden="true">⌖</span>{job.location}<span className="job-card-salary">{job.salary}</span></div><div className="job-card-actions"><button className="job-details-link" type="button" onClick={() => setSelectedJob(job)}>Voir l’offre <span aria-hidden="true">→</span></button><button type="button" className="job-apply-link" onClick={() => setApplicationJob(job)} aria-label={`Candidater à ${job.title}`}>Postuler ↗</button></div></div>
       </article>)}</div> : <div className="jobs-empty-state"><h3>Aucune offre ne correspond à ces filtres.</h3><p>Modifiez votre recherche ou envoyez-nous une candidature spontanée.</p><button type="button" className="button button-lime" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); }}>Voir toutes les offres</button><a className="text-link" href={paths.contact}>Candidature spontanée</a></div>}
     </section>
     <section className="jobs-spontaneous"><div className="page-width jobs-spontaneous-inner"><div><p className="eyebrow"><span /> Vous ne trouvez pas votre poste ?</p><h2>Votre parcours a aussi sa place chez ferroLink.</h2><p>Présentez-nous vos compétences et le type de mission que vous recherchez. Nous pourrons étudier votre candidature spontanée.</p></div><a className="button button-lime" href={paths.contact}>Envoyer une candidature <span aria-hidden="true">↗</span></a></div></section>
     <section className="section page-width jobs-values-section"><div className="section-heading"><div><div className="section-kicker"><span>Pourquoi ferroLink ?</span></div><h2>Des métiers au cœur du ferroviaire</h2></div><a className="text-link" href={paths.competences}>Découvrir nos compétences</a></div><div className="jobs-domain-list">{expertiseAreas.map((area) => <div key={area.title}><FaTrainSubway className="train-icon" aria-hidden="true" /><strong>{area.title}</strong></div>)}</div></section>
-    {selectedJob && <div className="job-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedJob(null); }}><section className="job-modal" role="dialog" aria-modal="true" aria-labelledby="job-modal-title"><button className="job-modal-close" type="button" aria-label="Fermer le détail de l’offre" onClick={() => setSelectedJob(null)}>×</button><img className="job-modal-image" src={selectedJob.image} alt={selectedJob.imageAlt} /><div className="job-modal-body"><p className="section-kicker"><span>{selectedJob.category}</span></p><h2 id="job-modal-title">{selectedJob.title}</h2><div className="job-modal-tags"><span>{selectedJob.contract}</span><span>{selectedJob.location}</span><span>{selectedJob.experience}</span><span>{selectedJob.salary}</span></div><p className="job-modal-summary">{selectedJob.summary}</p><h3>Vos missions</h3><ul>{selectedJob.missions.map((mission) => <li key={mission}>{mission}</li>)}</ul><h3>Votre profil</h3><p>{selectedJob.profile}</p><div className="job-modal-actions"><a className="button button-lime" href={applyLink(selectedJob)}>Postuler à cette offre <span aria-hidden="true">↗</span></a><button className="button button-outline" type="button" onClick={() => setSelectedJob(null)}>Retour aux offres</button></div><p className="job-modal-note">Pensez à joindre votre CV et, si possible, quelques lignes de motivation à votre e-mail.</p></div></section></div>}
+    {applicationJob && <ApplicationModal job={applicationJob} onClose={() => setApplicationJob(null)} />}
+    {selectedJob && <div className="job-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedJob(null); }}><section className="job-modal" role="dialog" aria-modal="true" aria-labelledby="job-modal-title"><button className="job-modal-close" type="button" aria-label="Fermer le détail de l’offre" onClick={() => setSelectedJob(null)}>×</button><img className="job-modal-image" src={selectedJob.image} alt={selectedJob.imageAlt} /><div className="job-modal-body"><p className="section-kicker"><span>{selectedJob.category}</span></p><h2 id="job-modal-title">{selectedJob.title}</h2><div className="job-modal-tags"><span>{selectedJob.contract}</span><span>{selectedJob.location}</span><span>{selectedJob.experience}</span><span>{selectedJob.salary}</span></div><p className="job-modal-summary">{selectedJob.summary}</p><h3>Vos missions</h3><ul>{selectedJob.missions.map((mission) => <li key={mission}>{mission}</li>)}</ul><h3>Votre profil</h3><p>{selectedJob.profile}</p><div className="job-modal-actions"><button className="button button-lime" type="button" onClick={() => { setApplicationJob(selectedJob); setSelectedJob(null); }}>Postuler à cette offre <span aria-hidden="true">↗</span></button><button className="button button-outline" type="button" onClick={() => setSelectedJob(null)}>Retour aux offres</button></div><p className="job-modal-note">Votre candidature se transmet depuis le formulaire sécurisé de candidature.</p></div></section></div>}
   </>;
 }
 
