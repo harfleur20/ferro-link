@@ -2010,7 +2010,6 @@ h3 {
 .home-phone a { color:var(--navy); font-family:Manrope,sans-serif; font-size:20px; font-weight:800; }
 .home-contact-band { position:relative; isolation:isolate; overflow:hidden; color:var(--white); background:var(--navy); }
 .home-contact-band::before { position:absolute; z-index:-1; inset:0; background-image:linear-gradient(90deg, rgb(8 28 48 / 94%) 0%, rgb(8 28 48 / 82%) 52%, rgb(8 28 48 / 58%) 100%), url("https://images.pexels.com/photos/30589059/pexels-photo-30589059.jpeg?auto=compress&cs=tinysrgb&w=2000"); background-position:center; background-size:cover; background-attachment:fixed; content:""; }
-.home-contact-band::after { position:absolute; z-index:-1; top:-100px; right:8%; width:360px; height:360px; border:1px solid rgb(154 203 54 / 24%); border-radius:50%; box-shadow:0 0 0 45px rgb(154 203 54 / 5%),0 0 0 90px rgb(154 203 54 / 4%); content:""; pointer-events:none; }
 .home-contact-inner { position:relative; z-index:1; display:flex; min-height:250px; padding-block:54px; align-items:center; justify-content:space-between; gap:36px; }
 .home-contact-inner .eyebrow { color:rgb(255 255 255 / 70%); }
 .home-contact-inner .eyebrow span { width:24px; height:2px; background:var(--lime); }
