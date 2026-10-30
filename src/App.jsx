@@ -533,6 +533,7 @@ function ContactCallout() {
 
 function getRoute() {
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
+  if (path.startsWith(paths.jobs + "/")) return paths.jobs;
   return Object.values(paths).includes(path) ? path : paths.accueil;
 }
 
