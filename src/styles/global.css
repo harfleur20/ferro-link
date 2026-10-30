@@ -2633,3 +2633,5 @@ h3 {
 .job-detail-sidebar {
   border: 0;
 }
+
+.job-card-meta .job-published-date { flex-basis: 100%; color: var(--muted); background: transparent; padding: 3px 0 0; font-weight: 500; }
