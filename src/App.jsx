@@ -119,58 +119,70 @@ function PageBanner({ kicker, title, description }) {
 
 function HomePage() {
   return <>
-    <section className="hero" aria-labelledby="hero-title">
-      <iframe className="hero-video" src="https://www.youtube.com/embed/htTd2MiW4KY?autoplay=1&mute=1&controls=0&loop=1&playlist=htTd2MiW4KY&playsinline=1&start=1&end=30&rel=0" title="Train ferroviaire en mouvement" allow="autoplay; encrypted-media; picture-in-picture" referrerPolicy="strict-origin-when-cross-origin" tabIndex="-1" aria-hidden="true" />
+    <section className="hero reference-hero" aria-labelledby="hero-title">
+      <div className="hero-image" aria-hidden="true" />
       <div className="hero-overlay" />
       <div className="hero-content page-width">
-        <p className="eyebrow eyebrow-light"><span /> Conseil & ingénierie ferroviaire</p>
         <h1 id="hero-title">Une affaire de<br />chemin de fer</h1>
-        <a className="button button-lime" href={paths.jobs}>Rejoignez-nous <span aria-hidden="true">↗</span></a>
-      </div>
-      <div className="hero-caption"><span>01</span> ferroLink — Le ferroviaire en mouvement</div>
-    </section>
-
-    <section className="intro section page-width">
-      <div className="section-kicker"><span>01</span> Présentation de notre entreprise ferroLink</div>
-      <div className="presentation-layout">
-        <div className="presentation-visual">
-          <img src="https://avenirferro.com/wp-content/uploads/elementor/thumbs/pexels-sami-abdullah-7359564-pye0vq5d0s3a91h1ql0dvg48bua4xl4jr3ncu3juhs.jpg" alt="Infrastructure ferroviaire" loading="lazy" />
-          <div className="presentation-image-caption"><span>100 %</span><span>du cycle du projet</span></div>
-        </div>
-        <div className="presentation-copy">
-          <p className="presentation-overline">Conseil & ingénierie ferroviaire</p>
-          <h2>PRÉSENTATION DE NOTRE ENTREPRISE FERROLINK</h2>
-          <p className="lead"><strong>ferroLink</strong> est une société de conseil spécialisée dans l’industrie ferroviaire.</p>
-          <p>Elle a pour rôle d’accompagner les clients grands comptes et industriels du ferroviaire dans la réalisation de leurs projets d’envergure et innovants allant des études jusqu’à l’industrialisation, la production, l’exploitation et la maintenance. Elle est donc présente sur l’ensemble du cycle du projet, de la définition jusqu’à la livraison.</p>
-          <a className="text-link" href={paths.about}>Lire la suite <span aria-hidden="true">↗</span></a>
-        </div>
+        <a className="button button-lime" href={paths.jobs}>Rejoignez-nous</a>
       </div>
     </section>
 
-    <section className="expertise section">
+    <section className="reference-presentation section page-width">
+      <div className="reference-copy">
+        <h2>PRÉSENTATION DE NOTRE<br />ENTREPRISE FERROLINK</h2>
+        <span className="reference-underline" />
+        <p><strong>ferroLink</strong> est une société de conseil spécialisée dans l’industrie ferroviaire. Elle a pour rôle d’accompagner les clients grands comptes et industriels du ferroviaire dans la réalisation de leurs projets d’envergure et innovants allant des études jusqu’à l’industrialisation, la production, l’exploitation et la maintenance. Elle est donc présente sur l’ensemble du cycle du projet, de la définition jusqu’à la livraison.</p>
+        <a className="button button-lime" href={paths.about}>Lire la suite</a>
+        <span className="reference-phone-label">Appelez-nous aujourd’hui</span>
+        <a className="reference-phone" href="tel:+33633821507">+336-33-82-15-07</a>
+      </div>
+      <div className="reference-photo-frame presentation-frame">
+        <img src="https://avenirferro.com/wp-content/uploads/elementor/thumbs/pexels-sami-abdullah-7359564-pye0vq5d0s3a91h1ql0dvg48bua4xl4jr3ncu3juhs.jpg" alt="Professionnelle sur une infrastructure ferroviaire" loading="lazy" />
+      </div>
+    </section>
+
+    <section className="reference-contact-banner">
+      <div className="reference-contact-overlay" />
+      <div className="reference-contact-content">
+        <h2>Confiez Nous Vos Besoins</h2>
+        <span className="reference-underline" />
+        <a className="button button-lime" href={paths.contact}>Contactez-Nous</a>
+      </div>
+    </section>
+
+    <section className="reference-feature section page-width">
+      <div className="reference-photo-frame">
+        <img src="/images/train-hero-poster.jpg" alt="Agent ferroviaire auprès d’un train" loading="lazy" />
+      </div>
+      <div className="reference-feature-copy">
+        <h2>Nos Principaux Domaines De Compétences</h2>
+        <span className="reference-underline" />
+        <div className="reference-expertise-list">
+          {expertiseAreas.map((area) => <div className="reference-expertise-item" key={area.number}><span className="reference-mini-icon"><ExpertiseIcon number={area.number} /></span><span>{area.title}</span></div>)}
+        </div>
+      </div>
+    </section>
+
+    <section className="reference-feature reference-metiers section page-width">
+      <div className="reference-photo-frame">
+        <img src="/images/train-hero-poster.jpg" alt="Intervention de maintenance sur un train" loading="lazy" />
+      </div>
+      <div className="reference-feature-copy">
+        <h2>Les Métiers Sur Lesquels Nous Pouvons Accompagner Nos Clients</h2>
+        <span className="reference-underline" />
+        <ul className="reference-metiers-list">{metiers.map((metier) => <li key={metier}>{metier}</li>)}</ul>
+      </div>
+    </section>
+
+    <section className="references section reference-partners">
       <div className="page-width">
-        <div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos principaux domaines de compétences</div><h2>Nos principaux domaines de compétences</h2></div><a className="text-link" href={paths.competences}>Découvrir nos compétences <span aria-hidden="true">↗</span></a></div>
-        <div className="expertise-grid">
-          {expertiseAreas.map((area) => <article className="expertise-card" key={area.number}><span className="card-number">{area.number}</span><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h3>{area.title}</h3><p>{area.detail}</p></article>)}
-        </div>
+        <h2>ILS NOUS FONT CONFIANCE</h2>
+        <div className="partner-marquee" aria-label="Logos de nos partenaires"><div className="partner-track">
+          {[...partners, ...partners].map((partner, index) => <div className="partner" key={`${partner.alt}-${index}`} aria-hidden={index >= partners.length ? "true" : undefined}><img src={partner.src} alt={index >= partners.length ? "" : partner.alt} loading="lazy" /></div>)}
+        </div></div>
       </div>
     </section>
-
-    <section className="approach section page-width">
-      <div className="approach-heading"><div className="section-kicker"><span>03</span> Nos métiers</div><h2>Les métiers sur lesquels nous pouvons accompagner nos clients</h2><p>Nous intervenons à différentes étapes du cycle de vie des projets ferroviaires, des études à la mise en service.</p><a className="text-link" href={paths.competences}>Voir nos domaines d’intervention <span aria-hidden="true">↗</span></a></div>
-      <div className="approach-steps">{metiers.slice(0, 5).map((metier, index) => <article className="approach-step" key={metier}><span className="step-index">{String(index + 1).padStart(2, "0")}</span><h3>{metier}</h3></article>)}</div>
-    </section>
-
-    <section className="references section">
-      <div className="page-width"><div className="references-heading"><div><div className="section-kicker"><span>04</span> Ils nous font confiance</div><h2>ILS NOUS FONT CONFIANCE</h2></div></div>
-        <div className="partner-marquee" aria-label="Logos de nos partenaires">
-          <div className="partner-track">
-            {[...partners, ...partners].map((partner, index) => <div className="partner" key={`${partner.alt}-${index}`} aria-hidden={index >= partners.length ? "true" : undefined}><img src={partner.src} alt={index >= partners.length ? "" : partner.alt} loading="lazy" /></div>)}
-          </div>
-        </div>
-      </div>
-    </section>
-    <ContactCallout />
   </>;
 }
 
