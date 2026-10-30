@@ -2214,3 +2214,13 @@ h3 {
 .expertise-detail-card .card-number {
   display: none;
 }
+
+
+/* Éléments d’expertise statiques : aucun clic ni animation au survol */
+.home-expertise-item,
+.expertise-detail-card { cursor: default; transition: none !important; }
+.home-expertise-item:hover { padding-inline: 0; background: transparent; }
+.expertise-detail-card:hover,
+.expertise-detail-card:focus-visible { transform: none; box-shadow: none; outline: none; }
+.home-expertise-item .home-arrow,
+.expertise-card-link { display: none !important; }
