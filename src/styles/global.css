@@ -2573,3 +2573,5 @@ h3 {
   .application-form-actions { flex-direction: column; }
   .application-form-actions .button { width: 100%; }
 }
+
+.application-honeypot { position:absolute !important; left:-10000px !important; width:1px !important; height:1px !important; overflow:hidden !important; }
