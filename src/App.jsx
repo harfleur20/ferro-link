@@ -294,7 +294,6 @@ function ContactPage() {
 function ContactCallout() {
   return <section className="contact section page-width"><div className="contact-panel">
     <div className="contact-content"><div className="section-kicker section-kicker-light"><span>Parlons de votre projet</span></div><h2>Confiez-nous vos besoins</h2><p>Contactez notre équipe pour échanger sur vos projets et vos besoins en ingénierie ferroviaire.</p><a className="button button-lime" href={paths.contact}>Contactez-nous <span aria-hidden="true">↗</span></a></div>
-    <div className="contact-orbit" aria-hidden="true"><div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="orbit-core"><span>FL</span></div><span className="orbit-node" /></div>
   </div></section>;
 }
 
