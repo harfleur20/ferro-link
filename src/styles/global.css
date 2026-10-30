@@ -2274,3 +2274,19 @@ h3 {
     flex-basis: 25px;
   }
 }
+
+
+/* Logos partenaires : visibilité renforcée */
+.partner {
+  width: clamp(180px, 21vw, 270px);
+  min-height: 126px;
+  padding: 20px 36px;
+}
+.partner img {
+  max-height: 82px;
+  max-width: 100%;
+}
+@media (max-width: 700px) {
+  .partner { width: 175px; min-height: 104px; padding-inline: 20px; }
+  .partner img { max-height: 64px; }
+}
