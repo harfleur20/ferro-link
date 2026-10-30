@@ -1743,3 +1743,45 @@ h3 {
     height: 50px;
   }
 }
+
+
+/* Railway expertise icons: high-contrast orange pictograms */
+.expertise-card .card-mark,
+.expertise-detail-card .card-mark {
+  background: transparent;
+  color: #ff5b1a;
+  border-radius: 0;
+  box-shadow: none;
+}
+.expertise-card .card-mark svg,
+.expertise-detail-card .card-mark svg {
+  width: 58px;
+  height: 58px;
+  color: #ff5b1a;
+  stroke-width: 3.2;
+}
+.expertise-card:hover .card-mark,
+.expertise-detail-card:hover .card-mark {
+  background: transparent;
+  color: #ff5b1a;
+  transform: none;
+}
+.contact-panel {
+  background:
+    linear-gradient(90deg, rgb(18 28 39 / 91%) 0%, rgb(18 28 39 / 75%) 52%, rgb(18 28 39 / 38%) 100%),
+    url("/images/train-hero-poster.jpg") center / cover no-repeat;
+  background-attachment: scroll;
+}
+.contact-orbit {
+  opacity: .22;
+}
+@media (max-width: 700px) {
+  .expertise-card .card-mark svg,
+  .expertise-detail-card .card-mark svg {
+    width: 54px;
+    height: 54px;
+  }
+  .contact-panel {
+    background-position: 62% center;
+  }
+}
