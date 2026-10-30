@@ -255,11 +255,11 @@ function JobsPage() {
         <div className="section-kicker"><span>01</span> Offres d’emploi</div>
         <h2>Construisons ensemble les projets ferroviaires de demain.</h2>
         <p>Les offres actualisées sont publiées sur le site de référence ferroLink. Consultez les annonces disponibles pour connaître les postes ouverts et les modalités de candidature.</p>
-        <a className="button button-lime" href="https://avenirferro.com/offres-demploi/" target="_blank" rel="noreferrer">Consulter les offres d’emploi <span aria-hidden="true">↗</span></a>
+        <a className="button button-lime" href={paths.contact}>Nous transmettre votre candidature <span aria-hidden="true">↗</span></a>
       </div>
       <div className="jobs-contact-card"><h3>Vous souhaitez nous transmettre votre candidature ?</h3><p>Vous pouvez contacter l’équipe pour présenter votre profil et votre projet professionnel.</p><a className="text-link" href={paths.contact}>Accéder à la page contact</a><a className="text-link" href="mailto:gregory.aline@avenirferro.com">Écrire par e-mail</a></div>
     </section>
-    <section className="section values-section"><div className="page-width"><div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos domaines</div><h2>Des projets au cœur du ferroviaire</h2></div><a className="text-link" href={paths.competences}>Découvrir nos compétences</a></div><div className="jobs-domain-list">{expertiseAreas.map((area) => <div key={area.number}><span>{area.number}</span><strong>{area.title}</strong></div>)}</div></div></section>
+    <section className="section values-section"><div className="page-width"><div className="section-heading"><div><div className="section-kicker">Nos domaines</div><h2>Des projets au cœur du ferroviaire</h2></div><a className="text-link" href={paths.competences}>Découvrir nos compétences</a></div><div className="jobs-domain-list">{expertiseAreas.map((area) => <div key={area.number}><span>{area.number}</span><strong>{area.title}</strong></div>)}</div></div></section>
   </>;
 }
 
