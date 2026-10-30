@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaTrainSubway } from "react-icons/fa6";
 import "./styles/global.css";
 
 const paths = {
@@ -30,13 +31,6 @@ const metiers = [
   "Vérification et validation",
   "Essais et mise en service",
 ];
-
-function TrainIcon() {
-  return <svg className="train-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false">
-    <path d="M7 3.5h10a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3Z"/>
-    <path d="M4.5 10h15M8 6.5h8M8 14h.01M16 14h.01M8 18.5l-2 2M16 18.5l2 2M9 20.5h6"/>
-  </svg>;
-}
 
 function ExpertiseIcon({ number }) {
   const common = {
@@ -180,7 +174,7 @@ function HomePage() {
         <div className="home-section-content">
           <h2>De l’étude au terrain, nous accompagnons les étapes clés de vos projets.</h2>
           <p className="home-section-lead">Nos équipes peuvent intervenir en appui de vos métiers et de vos opérations, selon les besoins de chaque mission.</p>
-          <div className="home-metiers-grid">{metiers.map((metier,index)=><div className="home-metier-chip" key={metier}><TrainIcon />{metier}</div>)}</div>
+          <div className="home-metiers-grid">{metiers.map((metier,index)=><div className="home-metier-chip" key={metier}><FaTrainSubway className="train-icon" aria-hidden="true" />{metier}</div>)}</div>
           <a className="text-link" href={paths.competences}>Explorer nos domaines d’intervention</a>
         </div>
         <div className="home-section-visual home-metiers-visual"><img src="https://images.pexels.com/photos/11095687/pexels-photo-11095687.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Technicien réalisant une opération de maintenance ferroviaire" loading="lazy" /><span className="visual-index">02 / MÉTIERS</span></div>
@@ -240,7 +234,7 @@ function CompetencesPage() {
       <div className="expertise-detail-grid">{expertiseAreas.map((area) => <div className="expertise-detail-card" key={area.number}><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h2>{area.title}</h2><p>{area.detail}</p></div>)}</div>
     </div></section>
     <section className="section page-width"><div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos métiers</div><h2>Les métiers sur lesquels nous pouvons accompagner nos clients</h2></div></div>
-      <div className="metiers-grid">{metiers.map((metier, index) => <article className="metier-tile" key={metier}><TrainIcon /><h3>{metier}</h3></article>)}</div>
+      <div className="metiers-grid">{metiers.map((metier, index) => <article className="metier-tile" key={metier}><FaTrainSubway className="train-icon" aria-hidden="true" /><h3>{metier}</h3></article>)}</div>
     </section>
     <ContactCallout />
   </>;
