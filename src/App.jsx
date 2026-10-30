@@ -104,17 +104,40 @@ function Header({ current }) {
 function Footer() {
   return <footer className="site-footer">
     <div className="page-width footer-main">
-      <a className="footer-brand" href={paths.accueil} aria-label="ferroLink, retour à l'accueil"><span className="footer-mark" aria-hidden="true">F<span>L</span></span><span className="footer-name">ferro<span>Link</span></span></a>
-      <p className="footer-tagline">Une affaire de chemin de fer.</p>
-      <nav className="footer-navigation" aria-label="Navigation de pied de page">
-        {navItems.slice(1).map(([label, href]) => <a href={href} key={href}>{label}</a>)}
-      </nav>
-      <div className="footer-contact"><span>Appelez-nous aujourd'hui</span><a href="tel:+33633821507">+336-33-82-15-07</a><a href={paths.contact}>Nous contacter <span aria-hidden="true">↗</span></a></div>
+      <div className="footer-brand-column">
+        <a className="footer-brand" href={paths.accueil} aria-label="ferroLink, retour à l'accueil">
+          <img src="/images/ferrolink-logo.png" alt="ferroLink" width="995" height="157" loading="lazy" />
+        </a>
+        <p className="footer-tagline">Une affaire de chemin de fer.</p>
+        <p className="footer-description">Conseil et ingénierie ferroviaire : nous accompagnons les acteurs du secteur dans leurs projets, des études à la mise en service, en passant par la conception, les travaux, l’exploitation et la maintenance.</p>
+      </div>
+      <div className="footer-column">
+        <h2>Découvrir ferroLink</h2>
+        <a href={paths.about}>À propos de nous</a>
+        <a href={paths.competences}>Nos compétences</a>
+        <a href={paths.jobs}>Offres d’emploi</a>
+        <a href={paths.contact}>Candidature spontanée</a>
+      </div>
+      <div className="footer-column">
+        <h2>Nos expertises</h2>
+        {expertiseAreas.map((area) => <a href={paths.competences} key={area.title}>{area.title}</a>)}
+      </div>
+      <div className="footer-column footer-contact">
+        <h2>Parlons de votre projet</h2>
+        <p>Vous avez un besoin en ingénierie ferroviaire ou souhaitez rejoindre nos équipes ? Échangeons sur votre projet.</p>
+        <a href="tel:+33633821507">+33 6 33 82 15 07</a>
+        <a href="tel:+33650142309">+33 6 50 14 23 09</a>
+        <a href="mailto:gregory.aline@avenirferro.com">Nous écrire ↗</a>
+        <a className="footer-contact-cta" href={paths.contact}>Contacter l’équipe <span aria-hidden="true">→</span></a>
+      </div>
     </div>
-    <div className="page-width footer-bottom"><span>© {new Date().getFullYear()} ferroLink. Tous droits réservés.</span><a href={paths.accueil}>Retour à l’accueil ↑</a></div>
+    <div className="page-width footer-bottom">
+      <span>© {new Date().getFullYear()} ferroLink. Tous droits réservés.</span>
+      <span>Conseil · Ingénierie · Projets ferroviaires</span>
+      <a href={paths.accueil}>Retour en haut ↑</a>
+    </div>
   </footer>;
 }
-
 function PageBanner({ kicker, title, description }) {
   return <section className="page-banner">
     <div className="page-width page-banner-content">
