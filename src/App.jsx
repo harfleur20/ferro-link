@@ -174,7 +174,7 @@ function HomePage() {
         <div className="home-section-content">
           <h2>De l’étude au terrain, nous accompagnons les étapes clés de vos projets.</h2>
           <p className="home-section-lead">Nos équipes peuvent intervenir en appui de vos métiers et de vos opérations, selon les besoins de chaque mission.</p>
-          <div className="home-metiers-grid home-metiers-cards">{metiers.map((metier,index)=><article className="home-metier-card" key={metier}><span className="home-metier-number">{String(index + 1).padStart(2, "0")}</span><span className="home-metier-label">{metier}</span></article>)}</div>
+          <div className="home-metiers-grid">{metiers.map((metier,index)=><div className="home-metier-chip" key={metier}><FaTrainSubway className="train-icon" aria-hidden="true" />{metier}</div>)}</div>
           <a className="text-link" href={paths.competences}>Explorer nos domaines d’intervention</a>
         </div>
         <div className="home-section-visual home-metiers-visual"><img src="https://www.bnsf.com/news-media/images/rt-mow-4.jpg" alt="Technicien américain inspectant une voie ferrée" loading="lazy" /><span className="visual-index">02 / MÉTIERS</span></div>
