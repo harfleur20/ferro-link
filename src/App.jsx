@@ -279,7 +279,7 @@ const jobOffers = [
     location: "Île-de-France",
     experience: "3 à 5 ans",
     salary: "42–52 k€ brut/an",
-    date: "Publication récente",
+    date: "2026-10-30",
     image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=85",
     imageAlt: "Voies ferrées traversant un paysage",
     summary: "Participez aux études et à la validation de systèmes de signalisation qui contribuent à la sécurité et à la performance des réseaux.",
@@ -294,7 +294,7 @@ const jobOffers = [
     location: "Lyon",
     experience: "5 ans et +",
     salary: "45–58 k€ brut/an",
-    date: "Publication récente",
+    date: "2026-10-30",
     image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=85",
     imageAlt: "Infrastructure ferroviaire et lignes de rails",
     summary: "Pilotez la préparation et le suivi d’opérations ferroviaires en lien avec les équipes terrain, les partenaires et le client.",
@@ -309,7 +309,7 @@ const jobOffers = [
     location: "Lille",
     experience: "1 à 3 ans",
     salary: "Selon profil",
-    date: "Publication récente",
+    date: "2026-10-30",
     image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=85",
     imageAlt: "Infrastructure de transport et équipements techniques",
     summary: "Contribuez aux essais sur site et à la mise en service d’équipements ferroviaires, dans le respect des procédures et exigences de sécurité.",
@@ -324,7 +324,7 @@ const jobOffers = [
     location: "Île-de-France",
     experience: "3 à 5 ans",
     salary: "40–50 k€ brut/an",
-    date: "Publication récente",
+    date: "2026-10-30",
     image: "https://images.unsplash.com/photo-1532105956626-9569c03602f6?auto=format&fit=crop&w=1200&q=85",
     imageAlt: "Train de voyageurs sur une ligne ferroviaire",
     summary: "Accompagnez les équipes dans l’analyse technique, la fiabilité et le suivi des évolutions du matériel roulant.",
@@ -339,7 +339,7 @@ const jobOffers = [
     location: "Bordeaux",
     experience: "3 à 5 ans",
     salary: "40–52 k€ brut/an",
-    date: "Publication récente",
+    date: "2026-10-30",
     image: "https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?auto=format&fit=crop&w=1200&q=85",
     imageAlt: "Réseau de transport et infrastructure électrique",
     summary: "Intervenez sur les études d’alimentation électrique et les interfaces énergie des projets ferroviaires.",
@@ -354,7 +354,7 @@ const jobOffers = [
     location: "Marseille",
     experience: "3 à 5 ans",
     salary: "40–50 k€ brut/an",
-    date: "Publication récente",
+    date: "2026-10-30",
     image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=85",
     imageAlt: "Équipements et technologies de communication",
     summary: "Contribuez à la conception et à l’intégration des systèmes de communication et de sûreté des infrastructures ferroviaires.",
@@ -426,6 +426,10 @@ function ApplicationModal({ job, onClose }) {
   </div>;
 }
 
+function formatPublicationDate(date) {
+  return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
+}
+
 function JobsPage() {
   const [search, setSearch] = useState("");
   const [contract, setContract] = useState("Tous les contrats");
@@ -453,7 +457,7 @@ function JobsPage() {
       <div className="jobs-results-line"><p><strong>{filteredJobs.length}</strong> offre{filteredJobs.length > 1 ? "s" : ""} trouvée{filteredJobs.length > 1 ? "s" : ""}</p><span>Tri : les plus récentes</span></div>
       {filteredJobs.length ? <div className="jobs-offer-grid">{filteredJobs.map((job) => <article className="job-card" key={job.id}>
         <a className="job-card-image-button" href={`${paths.jobs}/${job.id}`} aria-label={`Voir le détail : ${job.title}`}><img src={job.image} alt={job.imageAlt} loading="lazy" /><span className="job-category">{job.category}</span><span className="job-image-arrow" aria-hidden="true">↗</span></a>
-        <div className="job-card-content"><div className="job-card-meta"><span>{job.contract}</span><span>{job.experience}</span></div><h3><a href={`${paths.jobs}/${job.id}`}>{job.title}</a></h3><p className="job-card-summary">{job.summary}</p><div className="job-card-location"><span aria-hidden="true">⌖</span>{job.location}<span className="job-card-salary">{job.salary}</span></div><div className="job-card-actions"><a className="job-details-link" href={`${paths.jobs}/${job.id}`}>Voir l’offre <span aria-hidden="true">→</span></a><button type="button" className="job-apply-link" onClick={() => setApplicationJob(job)} aria-label={`Candidater à ${job.title}`}>Postuler ↗</button></div></div>
+        <div className="job-card-content"><div className="job-card-meta"><span>{job.contract}</span><span>{job.experience}</span><span className="job-published-date">Publié le {formatPublicationDate(job.date)}</span></div><h3><a href={`${paths.jobs}/${job.id}`}>{job.title}</a></h3><p className="job-card-summary">{job.summary}</p><div className="job-card-location"><span aria-hidden="true">⌖</span>{job.location}<span className="job-card-salary">{job.salary}</span></div><div className="job-card-actions"><a className="job-details-link" href={`${paths.jobs}/${job.id}`}>Voir l’offre <span aria-hidden="true">→</span></a><button type="button" className="job-apply-link" onClick={() => setApplicationJob(job)} aria-label={`Candidater à ${job.title}`}>Postuler ↗</button></div></div>
       </article>)}</div> : <div className="jobs-empty-state"><h3>Aucune offre ne correspond à ces filtres.</h3><p>Modifiez votre recherche ou envoyez-nous une candidature spontanée.</p><button type="button" className="button button-lime" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); }}>Voir toutes les offres</button><a className="text-link" href={paths.contact}>Candidature spontanée</a></div>}
     </section>
     <section className="jobs-spontaneous"><div className="page-width jobs-spontaneous-inner"><div><p className="eyebrow"><span /> Vous ne trouvez pas votre poste ?</p><h2>Votre parcours a aussi sa place chez ferroLink.</h2><p>Présentez-nous vos compétences et le type de mission que vous recherchez. Nous pourrons étudier votre candidature spontanée.</p></div><a className="button button-lime" href={paths.contact}>Envoyer une candidature <span aria-hidden="true">↗</span></a></div></section>
@@ -481,7 +485,7 @@ function JobDetailPage({ job }) {
         <p className="job-detail-lead">{job.summary}</p>
         <section><h2>Vos missions</h2><ul>{job.missions.map((mission) => <li key={mission}>{mission}</li>)}</ul></section>
         <section><h2>Votre profil</h2><p>{job.profile}</p></section>
-        <section><h2>Informations sur le poste</h2><dl className="job-detail-facts"><div><dt>Contrat</dt><dd>{job.contract}</dd></div><div><dt>Localisation</dt><dd>{job.location}</dd></div><div><dt>Expérience</dt><dd>{job.experience}</dd></div><div><dt>Rémunération</dt><dd>{job.salary}</dd></div></dl></section>
+        <section><h2>Informations sur le poste</h2><dl className="job-detail-facts"><div><dt>Contrat</dt><dd>{job.contract}</dd></div><div><dt>Localisation</dt><dd>{job.location}</dd></div><div><dt>Expérience</dt><dd>{job.experience}</dd></div><div><dt>Rémunération</dt><dd>{job.salary}</dd></div><div><dt>Date de publication</dt><dd>{formatPublicationDate(job.date)}</dd></div></dl></section>
         <div className="job-detail-apply-mobile"><button className="button button-lime" type="button" onClick={() => setApplicationOpen(true)}>Postuler à cette offre <span aria-hidden="true">↗</span></button></div>
       </article>
       <aside className="job-detail-sidebar"><p className="section-kicker"><span>Votre prochaine étape</span></p><h2>Ce poste vous intéresse ?</h2><p>Envoyez votre candidature avec vos coordonnées, votre CV et un message de motivation.</p><button className="button button-lime" type="button" onClick={() => setApplicationOpen(true)}>Postuler maintenant <span aria-hidden="true">↗</span></button><a className="job-sidebar-back" href={paths.jobs}>← Consulter les autres offres</a></aside>
