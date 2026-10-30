@@ -156,7 +156,7 @@ function HomePage() {
       <div className="hero-content page-width">
         <p className="eyebrow eyebrow-light"><span /> Conseil & ingénierie ferroviaire</p>
         <h1 id="hero-title">Une affaire de<br />chemin de fer</h1>
-        <a className="button button-lime" href={paths.jobs}>Rejoignez-nous</a>
+        <a className="button button-lime" href={paths.jobs}>Consulter les offres</a>
       </div>
       <div className="hero-caption">ferroLink — Le ferroviaire en mouvement</div>
     </section>
