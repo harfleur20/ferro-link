@@ -31,6 +31,18 @@ const metiers = [
   "Essais et mise en service",
 ];
 
+function ExpertiseIcon({ number }) {
+  const common = { fill: "none", stroke: "currentColor", strokeWidth: 1.8, strokeLinecap: "round", strokeLinejoin: "round", viewBox: "0 0 48 48", "aria-hidden": true, focusable: "false" };
+  const icons = [
+    <><path d="M24 5v38M5 24h38M12 12l24 24M36 12 12 36" /><circle cx="24" cy="24" r="9" /><circle cx="24" cy="24" r="3" /></>,
+    <><path d="M5 29h38l-4-10H13l-8 10Z" /><path d="M10 29v7h28v-7M15 19l4-7h10l5 7" /><circle cx="15" cy="38" r="3" /><circle cx="33" cy="38" r="3" /></>,
+    <><path d="M27 5 12 26h11l-2 17 15-23H25l2-15Z" /><path d="M6 14h7M4 20h5M36 8h6" /></>,
+    <><path d="M6 40h36M10 40V24l14-9 14 9v16" /><path d="M17 40V29h14v11M6 24l18-13 18 13" /><path d="M20 21h8" /></>,
+    <><rect x="7" y="10" width="34" height="25" rx="3" /><path d="M14 18h8M14 24h13M14 30h6M29 18l4 4 5-7" /><path d="M18 41h12M24 35v6" /></>
+  ];
+  return <svg {...common}>{icons[Number(number) - 1] || icons[0]}</svg>;
+}
+
 const partners = [
   { src: "/images/partner-1.png", alt: "Egis" },
   { src: "/images/partner-2.png", alt: "Colas Rail" },
@@ -125,7 +137,7 @@ function HomePage() {
       <div className="page-width">
         <div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos principaux domaines de compétences</div><h2>Nos principaux domaines de compétences</h2></div><a className="text-link" href={paths.competences}>Découvrir nos compétences <span aria-hidden="true">↗</span></a></div>
         <div className="expertise-grid">
-          {expertiseAreas.map((area) => <article className="expertise-card" key={area.number}><span className="card-number">{area.number}</span><div className="card-mark" aria-hidden="true"><span className="rail-symbol">✳</span></div><h3>{area.title}</h3><p>{area.detail}</p></article>)}
+          {expertiseAreas.map((area) => <article className="expertise-card" key={area.number}><span className="card-number">{area.number}</span><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h3>{area.title}</h3><p>{area.detail}</p></article>)}
         </div>
       </div>
     </section>
