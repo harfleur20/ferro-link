@@ -2224,3 +2224,19 @@ h3 {
 .expertise-detail-card:focus-visible { transform: none; box-shadow: none; outline: none; }
 .home-expertise-item .home-arrow,
 .expertise-card-link { display: none !important; }
+
+
+/* Icônes d’expertise agrandies, sans pastille de fond */
+.home-expertise-icon svg {
+  width: 46px;
+  height: 46px;
+  stroke-width: 2.4;
+}
+.expertise-detail-card .card-mark svg {
+  width: 108px;
+  height: 108px;
+}
+@media (max-width: 700px) {
+  .home-expertise-icon svg { width: 40px; height: 40px; }
+  .expertise-detail-card .card-mark svg { width: 88px; height: 88px; }
+}
