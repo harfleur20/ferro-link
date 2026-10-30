@@ -106,9 +106,14 @@ function HomePage() {
 
     <section className="intro section page-width">
       <div className="section-kicker"><span>01</span> Présentation de notre entreprise Avenir Ferro</div>
-      <div className="intro-grid">
-        <h2>PRÉSENTATION DE NOTRE ENTREPRISE AVENIR FERRO</h2>
-        <div className="intro-copy">
+      <div className="presentation-layout">
+        <div className="presentation-visual">
+          <img src="https://avenirferro.com/wp-content/uploads/elementor/thumbs/pexels-sami-abdullah-7359564-pye0vq5d0s3a91h1ql0dvg48bua4xl4jr3ncu3juhs.jpg" alt="Infrastructure ferroviaire" loading="lazy" />
+          <div className="presentation-image-caption"><span>100 %</span><span>du cycle du projet</span></div>
+        </div>
+        <div className="presentation-copy">
+          <p className="presentation-overline">Conseil & ingénierie ferroviaire</p>
+          <h2>PRÉSENTATION DE NOTRE ENTREPRISE AVENIR FERRO</h2>
           <p className="lead"><strong>Avenir Ferro</strong> est une société de conseil spécialisée dans l’industrie ferroviaire.</p>
           <p>Elle a pour rôle d’accompagner les clients grands comptes et industriels du ferroviaire dans la réalisation de leurs projets d’envergure et innovants allant des études jusqu’à l’industrialisation, la production, l’exploitation et la maintenance. Elle est donc présente sur l’ensemble du cycle du projet, de la définition jusqu’à la livraison.</p>
           <a className="text-link" href={paths.about}>Lire la suite <span aria-hidden="true">↗</span></a>
@@ -132,7 +137,11 @@ function HomePage() {
 
     <section className="references section">
       <div className="page-width"><div className="references-heading"><div><div className="section-kicker"><span>04</span> Ils nous font confiance</div><h2>ILS NOUS FONT CONFIANCE</h2></div></div>
-        <div className="partner-grid">{partners.map((partner) => <div className="partner" key={partner.alt}><img src={partner.src} alt={partner.alt} loading="lazy" /></div>)}</div>
+        <div className="partner-marquee" aria-label="Logos de nos partenaires">
+          <div className="partner-track">
+            {[...partners, ...partners].map((partner, index) => <div className="partner" key={`${partner.alt}-${index}`} aria-hidden={index >= partners.length ? "true" : undefined}><img src={partner.src} alt={index >= partners.length ? "" : partner.alt} loading="lazy" /></div>)}
+          </div>
+        </div>
       </div>
     </section>
     <ContactCallout />
