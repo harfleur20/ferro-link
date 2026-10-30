@@ -121,7 +121,7 @@ function PageBanner({ kicker, title, description }) {
 function HomePage() {
   return <>
     <section className="hero" aria-labelledby="hero-title">
-      <video className="hero-video" autoPlay muted loop playsInline preload="metadata" tabIndex="-1" aria-hidden="true"><source src="https://videos.pexels.com/video-files/16222742/16222742-hd_1920_1080_24fps.mp4" type="video/mp4" /></video>
+      <video className="hero-video" autoPlay muted loop playsInline preload="metadata" tabIndex="-1" aria-hidden="true"><source src="https://videos.pexels.com/video-files/19497508/19497508-hd_1920_1080_25fps.mp4" type="video/mp4" /></video>
       <div className="hero-overlay" />
       <div className="hero-content page-width">
         <p className="eyebrow eyebrow-light"><span /> Conseil & ingénierie ferroviaire</p>
