@@ -270,19 +270,139 @@ function CompetencesPage() {
   </>;
 }
 
+const jobOffers = [
+  {
+    id: "ingenieur-signalisation",
+    title: "Ingénieur signalisation ferroviaire H/F",
+    category: "Signalisation & CBTC",
+    contract: "CDI",
+    location: "Île-de-France",
+    experience: "3 à 5 ans",
+    salary: "42–52 k€ brut/an",
+    date: "Publication récente",
+    image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=85",
+    imageAlt: "Voies ferrées traversant un paysage",
+    summary: "Participez aux études et à la validation de systèmes de signalisation qui contribuent à la sécurité et à la performance des réseaux.",
+    missions: ["Contribuer aux études de signalisation et à la rédaction des livrables techniques.", "Coordonner les interfaces avec les équipes systèmes, travaux et essais.", "Participer aux revues techniques, à la vérification et à la validation."],
+    profile: "Formation ingénieur ou équivalent en systèmes ferroviaires, automatique ou électronique. Une expérience en signalisation ferroviaire est appréciée."
+  },
+  {
+    id: "chef-projet-travaux",
+    title: "Chef de projet travaux ferroviaires H/F",
+    category: "Génie civil & voie ferrée",
+    contract: "CDI",
+    location: "Lyon",
+    experience: "5 ans et +",
+    salary: "45–58 k€ brut/an",
+    date: "Publication récente",
+    image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=85",
+    imageAlt: "Infrastructure ferroviaire et lignes de rails",
+    summary: "Pilotez la préparation et le suivi d’opérations ferroviaires en lien avec les équipes terrain, les partenaires et le client.",
+    missions: ["Planifier les phases de travaux et suivre les jalons du projet.", "Coordonner les entreprises et les parties prenantes.", "Suivre la qualité, les risques, la sécurité et le reporting d’avancement."],
+    profile: "Expérience en conduite de projets d’infrastructure, travaux publics ou ferroviaires. Organisation, communication et culture sécurité indispensables."
+  },
+  {
+    id: "technicien-essais",
+    title: "Technicien essais & mise en service H/F",
+    category: "Essais & validation",
+    contract: "Mission",
+    location: "Lille",
+    experience: "1 à 3 ans",
+    salary: "Selon profil",
+    date: "Publication récente",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=85",
+    imageAlt: "Infrastructure de transport et équipements techniques",
+    summary: "Contribuez aux essais sur site et à la mise en service d’équipements ferroviaires, dans le respect des procédures et exigences de sécurité.",
+    missions: ["Préparer les séquences d’essais et les moyens de contrôle.", "Réaliser les vérifications et consigner les résultats.", "Remonter les écarts et participer à leur résolution avec les équipes projet."],
+    profile: "Formation technique en électrotechnique, électronique ou systèmes industriels. Mobilité sur site et rigueur documentaire attendues."
+  },
+  {
+    id: "ingenieur-materiel",
+    title: "Ingénieur matériel roulant H/F",
+    category: "Matériel roulant",
+    contract: "CDI",
+    location: "Île-de-France",
+    experience: "3 à 5 ans",
+    salary: "40–50 k€ brut/an",
+    date: "Publication récente",
+    image: "https://images.unsplash.com/photo-1532105956626-9569c03602f6?auto=format&fit=crop&w=1200&q=85",
+    imageAlt: "Train de voyageurs sur une ligne ferroviaire",
+    summary: "Accompagnez les équipes dans l’analyse technique, la fiabilité et le suivi des évolutions du matériel roulant.",
+    missions: ["Analyser les exigences et les dossiers techniques.", "Assurer le suivi des anomalies et des modifications.", "Participer aux échanges entre fournisseurs, exploitants et équipes d’ingénierie."],
+    profile: "Formation ingénieur en mécanique, électromécanique ou systèmes embarqués. Une expérience ferroviaire constitue un atout."
+  },
+  {
+    id: "ingenieur-energie",
+    title: "Ingénieur énergie & traction électrique H/F",
+    category: "Courants forts & énergie",
+    contract: "CDI",
+    location: "Bordeaux",
+    experience: "3 à 5 ans",
+    salary: "40–52 k€ brut/an",
+    date: "Publication récente",
+    image: "https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?auto=format&fit=crop&w=1200&q=85",
+    imageAlt: "Réseau de transport et infrastructure électrique",
+    summary: "Intervenez sur les études d’alimentation électrique et les interfaces énergie des projets ferroviaires.",
+    missions: ["Réaliser ou vérifier les études techniques et notes de calcul.", "Analyser les interfaces entre alimentation, équipements et exploitation.", "Participer aux réunions de coordination et au suivi des livrables."],
+    profile: "Diplôme en génie électrique ou électrotechnique. Connaissance des installations de traction ou des réseaux électriques appréciée."
+  },
+  {
+    id: "ingenieur-telecom",
+    title: "Ingénieur systèmes télécoms ferroviaires H/F",
+    category: "Courants faibles & télécoms",
+    contract: "CDI",
+    location: "Marseille",
+    experience: "3 à 5 ans",
+    salary: "40–50 k€ brut/an",
+    date: "Publication récente",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=85",
+    imageAlt: "Équipements et technologies de communication",
+    summary: "Contribuez à la conception et à l’intégration des systèmes de communication et de sûreté des infrastructures ferroviaires.",
+    missions: ["Analyser les besoins et exigences systèmes.", "Suivre les interfaces entre réseaux, équipements et lots techniques.", "Préparer les essais d’intégration et la documentation associée."],
+    profile: "Formation ingénieur ou universitaire en télécoms, réseaux ou systèmes. Une expérience dans les transports est appréciée."
+  }
+];
+
 function JobsPage() {
+  const [search, setSearch] = useState("");
+  const [contract, setContract] = useState("Tous les contrats");
+  const [location, setLocation] = useState("Toutes les localisations");
+  const [selectedJob, setSelectedJob] = useState(null);
+  const filteredJobs = jobOffers.filter((job) => {
+    const query = search.trim().toLocaleLowerCase("fr");
+    const matchesSearch = !query || [job.title, job.category, job.location, job.summary].some((value) => value.toLocaleLowerCase("fr").includes(query));
+    return matchesSearch && (contract === "Tous les contrats" || job.contract === contract) && (location === "Toutes les localisations" || job.location === location);
+  });
+  const applyLink = (job) => `mailto:gregory.aline@avenirferro.com?subject=${encodeURIComponent("Candidature — " + job.title)}&body=${encodeURIComponent("Bonjour,\\n\\nJe souhaite vous proposer ma candidature pour le poste « " + job.title + " ».\\n\\nVous trouverez mon CV en pièce jointe.\\n\\nCordialement,")}`;
   return <>
-    <PageBanner kicker="Carrières" title="Rejoignez-nous" description="Vous souhaitez contribuer à des projets d’envergure dans l’industrie ferroviaire ? Découvrez les opportunités et prenez contact avec notre équipe." />
-    <section className="section page-width jobs-content">
-      <div className="jobs-callout">
-        <div className="section-kicker"><span>01</span> Offres d’emploi</div>
-        <h2>Construisons ensemble les projets ferroviaires de demain.</h2>
-        <p>Les offres actualisées sont publiées sur le site de référence ferroLink. Consultez les annonces disponibles pour connaître les postes ouverts et les modalités de candidature.</p>
-        <a className="button button-lime" href={paths.contact}>Nous transmettre votre candidature <span aria-hidden="true">↗</span></a>
+    <PageBanner kicker="Carrières & opportunités" title="Trouvez votre prochaine mission." description="Rejoignez des équipes qui font avancer les projets ferroviaires. Explorez les opportunités et trouvez le poste qui correspond à votre expertise." />
+    <section className="jobs-intro-strip">
+      <div className="page-width jobs-intro-inner">
+        <div><span className="jobs-live-dot" /> Opportunités ferroviaires</div>
+        <p>Ingénierie · Études · Travaux · Essais · Mise en service</p>
       </div>
-      <div className="jobs-contact-card"><h3>Vous souhaitez nous transmettre votre candidature ?</h3><p>Vous pouvez contacter l’équipe pour présenter votre profil et votre projet professionnel.</p><a className="text-link" href={paths.contact}>Accéder à la page contact</a><a className="text-link" href="mailto:gregory.aline@avenirferro.com">Écrire par e-mail</a></div>
     </section>
-    <section className="section values-section"><div className="page-width"><div className="section-heading"><div><div className="section-kicker">Nos domaines</div><h2>Des projets au cœur du ferroviaire</h2></div><a className="text-link" href={paths.competences}>Découvrir nos compétences</a></div><div className="jobs-domain-list">{expertiseAreas.map((area) => <div key={area.title}><FaTrainSubway className="train-icon" aria-hidden="true" /><strong>{area.title}</strong></div>)}</div></div></section>
+    <section className="section page-width jobs-marketplace">
+      <div className="jobs-marketplace-heading">
+        <div><div className="section-kicker"><span>Carrières</span> / Offres d’emploi</div><h2>Les opportunités du moment</h2><p>Parcourez les postes et filtrez les annonces selon votre recherche.</p></div>
+        <a className="button button-outline" href={paths.contact}>Candidature spontanée <span aria-hidden="true">↗</span></a>
+      </div>
+      <div className="jobs-demo-note"><span aria-hidden="true">ⓘ</span><p><strong>Maquette de démonstration :</strong> ces annonces, rémunérations et localisations sont fictives. Elles illustrent le fonctionnement de la page et devront être remplacées par les offres réellement ouvertes avant publication.</p></div>
+      <div className="jobs-search-panel" role="search" aria-label="Filtrer les offres d’emploi">
+        <label className="jobs-search-field"><span aria-hidden="true">⌕</span><span className="visually-hidden">Rechercher une offre</span><input type="search" placeholder="Intitulé, compétence, domaine…" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
+        <label className="jobs-filter"><span className="visually-hidden">Type de contrat</span><select value={contract} onChange={(event) => setContract(event.target.value)}><option>Tous les contrats</option><option>CDI</option><option>Mission</option><option>CDD</option><option>Stage</option><option>Alternance</option></select></label>
+        <label className="jobs-filter"><span className="visually-hidden">Localisation</span><select value={location} onChange={(event) => setLocation(event.target.value)}><option>Toutes les localisations</option>{[...new Set(jobOffers.map((job) => job.location))].map((place) => <option key={place}>{place}</option>)}</select></label>
+        <button className="jobs-reset" type="button" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); }}>Réinitialiser</button>
+      </div>
+      <div className="jobs-results-line"><p><strong>{filteredJobs.length}</strong> offre{filteredJobs.length > 1 ? "s" : ""} trouvée{filteredJobs.length > 1 ? "s" : ""}</p><span>Tri : les plus récentes</span></div>
+      {filteredJobs.length ? <div className="jobs-offer-grid">{filteredJobs.map((job) => <article className="job-card" key={job.id}>
+        <button className="job-card-image-button" type="button" onClick={() => setSelectedJob(job)} aria-label={`Voir le détail : ${job.title}`}><img src={job.image} alt={job.imageAlt} loading="lazy" /><span className="job-category">{job.category}</span><span className="job-image-arrow" aria-hidden="true">↗</span></button>
+        <div className="job-card-content"><div className="job-card-meta"><span>{job.contract}</span><span>{job.experience}</span></div><h3><button type="button" onClick={() => setSelectedJob(job)}>{job.title}</button></h3><p className="job-card-summary">{job.summary}</p><div className="job-card-location"><span aria-hidden="true">⌖</span>{job.location}<span className="job-card-salary">{job.salary}</span></div><div className="job-card-actions"><button className="job-details-link" type="button" onClick={() => setSelectedJob(job)}>Voir l’offre <span aria-hidden="true">→</span></button><a href={applyLink(job)} className="job-apply-link" aria-label={`Candidater à ${job.title}`}>Postuler ↗</a></div></div>
+      </article>)}</div> : <div className="jobs-empty-state"><h3>Aucune offre ne correspond à ces filtres.</h3><p>Modifiez votre recherche ou envoyez-nous une candidature spontanée.</p><button type="button" className="button button-lime" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); }}>Voir toutes les offres</button><a className="text-link" href={paths.contact}>Candidature spontanée</a></div>}
+    </section>
+    <section className="jobs-spontaneous"><div className="page-width jobs-spontaneous-inner"><div><p className="eyebrow"><span /> Vous ne trouvez pas votre poste ?</p><h2>Votre parcours a aussi sa place chez ferroLink.</h2><p>Présentez-nous vos compétences et le type de mission que vous recherchez. Nous pourrons étudier votre candidature spontanée.</p></div><a className="button button-lime" href={paths.contact}>Envoyer une candidature <span aria-hidden="true">↗</span></a></div></section>
+    <section className="section page-width jobs-values-section"><div className="section-heading"><div><div className="section-kicker"><span>Pourquoi ferroLink ?</span></div><h2>Des métiers au cœur du ferroviaire</h2></div><a className="text-link" href={paths.competences}>Découvrir nos compétences</a></div><div className="jobs-domain-list">{expertiseAreas.map((area) => <div key={area.title}><FaTrainSubway className="train-icon" aria-hidden="true" /><strong>{area.title}</strong></div>)}</div></section>
+    {selectedJob && <div className="job-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setSelectedJob(null); }}><section className="job-modal" role="dialog" aria-modal="true" aria-labelledby="job-modal-title"><button className="job-modal-close" type="button" aria-label="Fermer le détail de l’offre" onClick={() => setSelectedJob(null)}>×</button><img className="job-modal-image" src={selectedJob.image} alt={selectedJob.imageAlt} /><div className="job-modal-body"><p className="section-kicker"><span>{selectedJob.category}</span></p><h2 id="job-modal-title">{selectedJob.title}</h2><div className="job-modal-tags"><span>{selectedJob.contract}</span><span>{selectedJob.location}</span><span>{selectedJob.experience}</span><span>{selectedJob.salary}</span></div><p className="job-modal-summary">{selectedJob.summary}</p><h3>Vos missions</h3><ul>{selectedJob.missions.map((mission) => <li key={mission}>{mission}</li>)}</ul><h3>Votre profil</h3><p>{selectedJob.profile}</p><div className="job-modal-actions"><a className="button button-lime" href={applyLink(selectedJob)}>Postuler à cette offre <span aria-hidden="true">↗</span></a><button className="button button-outline" type="button" onClick={() => setSelectedJob(null)}>Retour aux offres</button></div><p className="job-modal-note">Pensez à joindre votre CV et, si possible, quelques lignes de motivation à votre e-mail.</p></div></section></div>}
   </>;
 }
 
