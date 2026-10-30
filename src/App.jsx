@@ -77,7 +77,8 @@ const navItems = [
 
 function Header({ current }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const closeMenu = () => setMenuOpen(false);
+  const [jobsMenuOpen, setJobsMenuOpen] = useState(false);
+  const closeMenu = () => { setMenuOpen(false); setJobsMenuOpen(false); };
   return <header className="site-header">
     <div className="header-inner">
       <a className="brand" href={paths.accueil} aria-label="ferroLink, accueil">
@@ -87,7 +88,13 @@ function Header({ current }) {
         <span /><span />
       </button>
       <nav className={`main-navigation ${menuOpen ? "is-open" : ""}`} id="main-navigation" aria-label="Navigation principale">
-        {navItems.map(([label, href]) => <a key={href} className={current === href ? "is-active" : ""} aria-current={current === href ? "page" : undefined} href={href} onClick={closeMenu}>{label}</a>)}
+        {navItems.map(([label, href]) => href === paths.jobs ? <div className={`nav-dropdown ${current === paths.jobs ? "is-active" : ""} ${jobsMenuOpen ? "is-open" : ""}`} key={href}>
+          <button className="nav-dropdown-trigger" type="button" aria-expanded={jobsMenuOpen} aria-haspopup="true" onClick={() => setJobsMenuOpen(!jobsMenuOpen)}>{label}<span className="nav-chevron" aria-hidden="true">⌄</span></button>
+          <div className="nav-dropdown-menu">
+            <a href={paths.jobs} className={current === paths.jobs ? "is-active" : ""} aria-current={current === paths.jobs ? "page" : undefined} onClick={closeMenu}>Offres d'emploi</a>
+            <a href={paths.contact} onClick={closeMenu}>Candidature spontanée</a>
+          </div>
+        </div> : <a key={href} className={current === href ? "is-active" : ""} aria-current={current === href ? "page" : undefined} href={href} onClick={closeMenu}>{label}</a>)}
         <a className="button button-small" href={paths.jobs} onClick={closeMenu}>Rejoignez-nous</a>
       </nav>
     </div>
