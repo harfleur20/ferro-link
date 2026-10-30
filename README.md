@@ -1,18 +1,26 @@
 # ferroLink
 
-Site vitrine ferroLink construit avec Astro.
+Site vitrine ferroLink construit avec React et Vite.
 
-## Développement
+## Prérequis
+
+- Node.js 20.19+ ou 22.12+
+- npm
+
+## Développement local
 
 ```sh
 npm install
 npm run dev
-```
+``
 
-Le build de production se génère avec `npm run build`.
+## Build de production
 
-## Vidéo du hero
+```sh
+npm run build
+npm run preview
+``
 
-Le hero reprend la vidéo de train du site Avenir Ferro, intégrée depuis YouTube en lecture
-automatique muette et en boucle. L'image extraite de la maquette reste visible si la vidéo
-ne peut pas être chargée ou si le visiteur préfère réduire les animations.
+Les images du site sont conservées dans `public/images`. La page principale est construite avec React dans `src/App.jsx` et les styles sont dans `src/styles/global.css`.
+
+La vidéo du hero utilise une intégration YouTube en lecture muette et en boucle. L’image de fond locale sert de repli lorsque la vidéo ne se charge pas ou si le visiteur préfère réduire les animations.
