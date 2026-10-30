@@ -88,7 +88,7 @@ function Header({ current }) {
       </button>
       <nav className={`main-navigation ${menuOpen ? "is-open" : ""}`} id="main-navigation" aria-label="Navigation principale">
         {navItems.map(([label, href]) => <a key={href} className={current === href ? "is-active" : ""} aria-current={current === href ? "page" : undefined} href={href} onClick={closeMenu}>{label}</a>)}
-        <a className="button button-small" href={paths.jobs} onClick={closeMenu}>Rejoignez-nous <span aria-hidden="true">↗</span></a>
+        <a className="button button-small" href={paths.jobs} onClick={closeMenu}>Rejoignez-nous</a>
       </nav>
     </div>
   </header>;
