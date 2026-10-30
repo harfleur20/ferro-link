@@ -149,7 +149,7 @@ function HomePage() {
           <h2>Accompagner les projets ferroviaires, de l’idée à la mise en service.</h2>
           <p className="lead"><strong>ferroLink</strong> est une société de conseil spécialisée dans l’industrie ferroviaire.</p>
           <p>Nous accompagnons les clients grands comptes et les industriels dans leurs projets, des études à l’industrialisation, la production, l’exploitation et la maintenance. Nos compétences s’inscrivent dans l’ensemble du cycle de vie des projets.</p>
-          <a className="text-link" href={paths.about}>Découvrir ferroLink <span aria-hidden="true">↗</span></a>
+          <a className="text-link" href={paths.about}>Découvrir ferroLink</a>
           <div className="home-phone"><span>Un projet à discuter ?</span><a href="tel:+33633821507">+33 6 33 82 15 07</a></div>
         </div>
       </div>
@@ -170,7 +170,7 @@ function HomePage() {
           <h2>Des compétences au service de toute la chaîne ferroviaire.</h2>
           <p className="home-section-lead">Des expertises complémentaires pour répondre aux exigences techniques et opérationnelles des projets.</p>
           <div className="home-expertise-list">{expertiseAreas.map((area) => <a className="home-expertise-item" href={paths.competences} key={area.number}><span className="home-expertise-icon"><ExpertiseIcon number={area.number} /></span><span><strong>{area.title}</strong><small>{area.detail}</small></span><span className="home-arrow" aria-hidden="true">↗</span></a>)}</div>
-          <a className="text-link" href={paths.competences}>Toutes nos compétences <span aria-hidden="true">↗</span></a>
+          <a className="text-link" href={paths.competences}>Toutes nos compétences</a>
         </div>
       </div>
     </section>
@@ -182,7 +182,7 @@ function HomePage() {
           <h2>De l’étude au terrain, nous accompagnons les étapes clés de vos projets.</h2>
           <p className="home-section-lead">Nos équipes peuvent intervenir en appui de vos métiers et de vos opérations, selon les besoins de chaque mission.</p>
           <div className="home-metiers-grid">{metiers.map((metier,index)=><div className="home-metier-chip" key={metier}><TrainIcon />{metier}</div>)}</div>
-          <a className="text-link" href={paths.competences}>Explorer nos domaines d’intervention <span aria-hidden="true">↗</span></a>
+          <a className="text-link" href={paths.competences}>Explorer nos domaines d’intervention</a>
         </div>
         <div className="home-section-visual home-metiers-visual"><img src="https://images.pexels.com/photos/11095687/pexels-photo-11095687.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Technicien réalisant une opération de maintenance ferroviaire" loading="lazy" /><span className="visual-index">02 / MÉTIERS</span></div>
       </div>
@@ -238,7 +238,7 @@ function CompetencesPage() {
     <PageBanner kicker="Expertises ferroviaires" title="Nos principaux domaines de compétences" description="Des compétences mobilisables tout au long du cycle de vie des projets ferroviaires, des études à l’exploitation." />
     <section className="section expertise-page-section"><div className="page-width">
       <div className="section-kicker"><span>01</span> Nos domaines d’expertise</div>
-      <div className="expertise-detail-grid">{expertiseAreas.map((area) => <a className="expertise-detail-card" href={paths.contact} key={area.number} aria-label={`Contacter ferroLink au sujet de ${area.title}`}><span className="card-number">{area.number}</span><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h2>{area.title}</h2><p>{area.detail}</p><span className="text-link expertise-card-link">Échanger sur cette expertise <span aria-hidden="true">↗</span></span></a>)}</div>
+      <div className="expertise-detail-grid">{expertiseAreas.map((area) => <a className="expertise-detail-card" href={paths.contact} key={area.number} aria-label={`Contacter ferroLink au sujet de ${area.title}`}><span className="card-number">{area.number}</span><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h2>{area.title}</h2><p>{area.detail}</p><span className="text-link expertise-card-link">Échanger sur cette expertise</span></a>)}</div>
     </div></section>
     <section className="section page-width"><div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos métiers</div><h2>Les métiers sur lesquels nous pouvons accompagner nos clients</h2></div></div>
       <div className="metiers-grid">{metiers.map((metier, index) => <article className="metier-tile" key={metier}><TrainIcon /><h3>{metier}</h3></article>)}</div>
@@ -257,9 +257,9 @@ function JobsPage() {
         <p>Les offres actualisées sont publiées sur le site de référence ferroLink. Consultez les annonces disponibles pour connaître les postes ouverts et les modalités de candidature.</p>
         <a className="button button-lime" href="https://avenirferro.com/offres-demploi/" target="_blank" rel="noreferrer">Consulter les offres d’emploi <span aria-hidden="true">↗</span></a>
       </div>
-      <div className="jobs-contact-card"><h3>Vous souhaitez nous transmettre votre candidature ?</h3><p>Vous pouvez contacter l’équipe pour présenter votre profil et votre projet professionnel.</p><a className="text-link" href={paths.contact}>Accéder à la page contact <span aria-hidden="true">↗</span></a><a className="text-link" href="mailto:gregory.aline@avenirferro.com">Écrire par e-mail <span aria-hidden="true">↗</span></a></div>
+      <div className="jobs-contact-card"><h3>Vous souhaitez nous transmettre votre candidature ?</h3><p>Vous pouvez contacter l’équipe pour présenter votre profil et votre projet professionnel.</p><a className="text-link" href={paths.contact}>Accéder à la page contact</a><a className="text-link" href="mailto:gregory.aline@avenirferro.com">Écrire par e-mail</a></div>
     </section>
-    <section className="section values-section"><div className="page-width"><div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos domaines</div><h2>Des projets au cœur du ferroviaire</h2></div><a className="text-link" href={paths.competences}>Découvrir nos compétences <span aria-hidden="true">↗</span></a></div><div className="jobs-domain-list">{expertiseAreas.map((area) => <div key={area.number}><span>{area.number}</span><strong>{area.title}</strong></div>)}</div></div></section>
+    <section className="section values-section"><div className="page-width"><div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos domaines</div><h2>Des projets au cœur du ferroviaire</h2></div><a className="text-link" href={paths.competences}>Découvrir nos compétences</a></div><div className="jobs-domain-list">{expertiseAreas.map((area) => <div key={area.number}><span>{area.number}</span><strong>{area.title}</strong></div>)}</div></div></section>
   </>;
 }
 
