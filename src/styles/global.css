@@ -1988,3 +1988,59 @@ h3 {
   .reference-metiers { padding-top: 20px; }
   .reference-partners { padding-block: 34px 40px; }
 }
+
+
+/* FerroLink homepage refresh: keep the original video hero and brand system */
+.home-phone { display:flex; margin-top:26px; padding-top:18px; flex-direction:column; gap:5px; border-top:1px solid var(--line); }
+.home-phone span { color:var(--muted); font-size:11px; }
+.home-phone a { color:var(--navy); font-family:Manrope,sans-serif; font-size:20px; font-weight:800; }
+.home-contact-band { position:relative; overflow:hidden; color:var(--white); background:var(--navy); }
+.home-contact-band::after { position:absolute; top:-100px; right:8%; width:360px; height:360px; border:1px solid rgb(154 203 54 / 24%); border-radius:50%; box-shadow:0 0 0 45px rgb(154 203 54 / 5%),0 0 0 90px rgb(154 203 54 / 4%); content:""; pointer-events:none; }
+.home-contact-inner { position:relative; z-index:1; display:flex; min-height:250px; padding-block:54px; align-items:center; justify-content:space-between; gap:36px; }
+.home-contact-inner .eyebrow { color:rgb(255 255 255 / 70%); }
+.home-contact-inner .eyebrow span { width:24px; height:2px; background:var(--lime); }
+.home-contact-inner h2 { max-width:670px; margin:0; color:var(--white); font-size:clamp(28px,3.5vw,44px); letter-spacing:-.045em; line-height:1.15; }
+.home-contact-inner .button { flex:0 0 auto; }
+.home-expertise { background:var(--paper); }
+.home-split-layout { display:grid; grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr); gap:clamp(42px,7vw,100px); align-items:center; }
+.home-section-visual { position:relative; min-width:0; }
+.home-section-visual img { width:100%; aspect-ratio: .9 / 1; object-fit:cover; }
+.home-section-visual::before { position:absolute; z-index:0; top:18px; left:-18px; width:100%; height:100%; border:1px solid var(--lime); content:""; pointer-events:none; }
+.home-section-visual img { position:relative; z-index:1; }
+.visual-index { position:absolute; z-index:2; right:0; bottom:0; padding:13px 18px; color:var(--navy); background:var(--lime); font-size:10px; font-weight:800; letter-spacing:.13em; }
+.home-section-content { min-width:0; }
+.home-section-content h2 { max-width:640px; margin:18px 0 16px; color:var(--navy); font-size:clamp(30px,3.4vw,45px); letter-spacing:-.055em; line-height:1.13; }
+.home-section-lead { max-width:600px; margin-bottom:28px; color:var(--muted); font-size:14px; line-height:1.8; }
+.home-expertise-list { margin:0 0 25px; border-top:1px solid #dce3d7; }
+.home-expertise-item { display:grid; grid-template-columns:48px minmax(0,1fr) 20px; gap:14px; align-items:center; padding:16px 0; border-bottom:1px solid #dce3d7; transition:padding 180ms ease,background 180ms ease; }
+.home-expertise-item:hover { padding-inline:10px; background:rgb(255 255 255 / 70%); }
+.home-expertise-icon { display:grid; width:44px; height:44px; color:var(--lime); background:var(--navy); place-items:center; }
+.home-expertise-icon svg { width:30px; height:30px; stroke-width:2.5; }
+.home-expertise-item strong { display:block; color:var(--navy); font-size:14px; line-height:1.4; }
+.home-expertise-item small { display:block; margin-top:4px; color:var(--muted); font-size:11px; line-height:1.55; }
+.home-arrow { color:var(--navy); font-size:18px; }
+.home-metiers { overflow:hidden; }
+.home-metiers-layout { grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr); }
+.home-metiers-visual::before { top:18px; right:-18px; left:auto; }
+.home-metiers-visual img { aspect-ratio:.9 / 1; }
+.home-metiers-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 24px; margin:26px 0 25px; border-top:1px solid var(--line); }
+.home-metier-chip { display:flex; min-width:0; padding:13px 0; align-items:flex-start; gap:12px; border-bottom:1px solid var(--line); color:var(--ink); font-size:12px; font-weight:600; line-height:1.5; }
+.home-metier-chip span { flex:0 0 auto; color:#789d28; font-size:10px; font-weight:800; letter-spacing:.08em; }
+.references-heading h2 { color:var(--navy); font-size:clamp(27px,3vw,38px); letter-spacing:-.04em; }
+@media (max-width:800px) {
+ .home-contact-inner { align-items:flex-start; flex-direction:column; justify-content:center; }
+ .home-split-layout,.home-metiers-layout { grid-template-columns:1fr; gap:42px; }
+ .home-metiers-layout .home-section-content { order:1; }
+ .home-metiers-layout .home-section-visual { order:2; }
+ .home-section-visual img { aspect-ratio:1.25 / 1; }
+ .home-section-content h2 { font-size:clamp(30px,7vw,40px); }
+}
+@media (max-width:560px) {
+ .home-contact-inner { padding-block:42px; }
+ .home-expertise-list .home-expertise-item { grid-template-columns:40px minmax(0,1fr) 16px; gap:10px; }
+ .home-expertise-icon { width:38px; height:38px; }
+ .home-expertise-icon svg { width:27px; height:27px; }
+ .home-expertise-item strong { font-size:12px; }
+ .home-expertise-item small { font-size:10px; }
+ .home-metiers-grid { grid-template-columns:1fr; }
+}
