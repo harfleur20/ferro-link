@@ -2626,3 +2626,10 @@ h3 {
   .job-detail-facts { grid-template-columns:1fr 1fr; }
   .job-detail-sidebar { padding:22px; }
 }
+
+/* Suppression des bordures des cartes d'offres et du bloc de candidature */
+.job-card,
+.job-card:hover,
+.job-detail-sidebar {
+  border: 0;
+}
