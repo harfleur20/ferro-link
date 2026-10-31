@@ -79,6 +79,18 @@ app.post("/api/jobs/:id/applications", requireAuth, async (req, res, next) => {
     next(err);
   }
 });
+app.get("/api/applications/:id/cv", requireAuth, requireStaff, async (req, res, next) => {
+  try {
+    const application = await prisma.application.findUnique({ where: { id: req.params.id }, select: { resumeUrl: true } });
+    const filename = application?.resumeUrl?.split("|")[0];
+    if (!filename || path.basename(filename) !== filename) return res.status(404).json({ error: "CV introuvable." });
+    const filePath = path.join(uploadDir, filename);
+    try { await access(filePath); } catch { return res.status(404).json({ error: "CV introuvable." }); }
+    res.setHeader("Content-Disposition", `attachment; filename="CV-${req.params.id}${path.extname(filename)}"`);
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    createReadStream(filePath).pipe(res);
+  } catch (err) { next(err); }
+});
 app.get("/api/applications", requireAuth, async (req, res, next) => {
   try {
     const isStaff = ["RECRUITER","RECRUITMENT_ADMIN","SUPER_ADMIN"].includes(req.session.user.role);
