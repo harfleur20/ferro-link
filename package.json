@@ -13,7 +13,7 @@
     "vite": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "react-icons": "^5.5.0",
-    "@supabase/supabase-js": "^2.57.0"
-  }
+    "react-icons": "^5.5.0"
+  },
+  "devDependencies": {}
 }
