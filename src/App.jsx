@@ -95,7 +95,7 @@ function Header({ current }) {
             <a href={paths.contact} onClick={closeMenu}>Candidature spontanée</a>
           </div>
         </div> : <a key={href} className={current === href ? "is-active" : ""} aria-current={current === href ? "page" : undefined} href={href} onClick={closeMenu}>{label}</a>)}
-        <a className="button button-small" href={paths.jobs} onClick={closeMenu}>Rejoignez-nous</a>
+        <a className="button button-small" href="/connexion" onClick={closeMenu}>Se connecter</a>
       </nav>
     </div>
   </header>;
