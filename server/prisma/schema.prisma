@@ -52,7 +52,8 @@ model Application {
   experience String?
   availability String?
   consentAt DateTime
-  jobId String
+  jobId String?
+  jobTitle String
   status ApplicationStatus @default(RECEIVED)
   coverLetter String? @db.Text
   resumeUrl String?
@@ -61,7 +62,7 @@ model Application {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   candidate User? @relation("CandidateApplications", fields: [candidateId], references: [id], onDelete: SetNull)
-  job Job @relation(fields: [jobId], references: [id], onDelete: Restrict)
+  job Job? @relation(fields: [jobId], references: [id], onDelete: SetNull)
   reviewedBy User? @relation("ApplicationReviewer", fields: [reviewedById], references: [id])
   @@index([status, createdAt])
   @@index([candidateId, createdAt])
