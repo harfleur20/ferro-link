@@ -74,18 +74,18 @@ app.delete("/api/jobs/:id", requireAuth, requireStaff, async (req, res, next) =>
     res.json({ job });
   } catch (err) { next(err); }
 });
-app.post("/api/jobs/:id/applications", upload.fields([{ name: "cv", maxCount: 1 }, { name: "letter", maxCount: 1 }]), async (req, res, next) => {
+app.post("/api/applications/public", upload.fields([{ name: "cv", maxCount: 1 }, { name: "letter", maxCount: 1 }]), async (req, res, next) => {
  try {
-  const job = await prisma.job.findFirst({ where: { id: req.params.id, status: "PUBLISHED" } });
-  if (!job) return res.status(404).json({ error: "Cette offre n'est pas disponible." });
-  const body = req.body || {};
-  if (body._honey) return res.status(400).json({ error: "Formulaire invalide." });
-  if (!body.name?.trim() || !body.email?.trim() || !body.telephone?.trim() || !body.ville?.trim() || !body.motivation?.trim() || body.consentement !== "Oui" || !req.files?.cv?.[0]) return res.status(400).json({ error: "Merci de renseigner les champs obligatoires, d'accepter le traitement des données et de joindre votre CV." });
-  const cv = req.files.cv[0], letter = req.files.letter?.[0], email = String(body.email).trim().toLowerCase();
-  if (!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email)) return res.status(400).json({ error: "Adresse e-mail invalide." });
-  const application = await prisma.application.create({ data: { jobId: job.id, applicantName: String(body.name).trim().slice(0,120), applicantEmail: email, applicantPhone: String(body.telephone).trim().slice(0,30), applicantCity: String(body.ville).trim().slice(0,100), experience: String(body.experience || "").slice(0,100) || null, availability: String(body.disponibilite || "").slice(0,100) || null, coverLetter: String(body.motivation).trim().slice(0,3000), resumeUrl: cv.filename + (letter ? "|" + letter.filename : ""), consentAt: new Date() }, include: { job: { select: { id: true, title: true, location: true } } } });
-  res.status(201).json({ message: "Votre candidature a bien été envoyée.", application: { id: application.id } });
- } catch (err) { next(err); }
+  const body=req.body||{};
+  if(body._honey)return res.status(400).json({error:"Formulaire invalide."});
+  if(!body.name?.trim()||!body.email?.trim()||!body.telephone?.trim()||!body.ville?.trim()||!body.motivation?.trim()||body.consentement!=="Oui"||!req.files?.cv?.[0])return res.status(400).json({error:"Merci de renseigner les champs obligatoires, d'accepter le traitement des données et de joindre votre CV."});
+  const email=String(body.email).trim().toLowerCase();
+  if(!/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))return res.status(400).json({error:"Adresse e-mail invalide."});
+  const cv=req.files.cv[0],letter=req.files.letter?.[0];
+  const jobTitle=String(body.offre||"Candidature spontanée").trim().slice(0,180);
+  const application=await prisma.application.create({data:{jobTitle,applicantName:String(body.name).trim().slice(0,120),applicantEmail:email,applicantPhone:String(body.telephone).trim().slice(0,30),applicantCity:String(body.ville).trim().slice(0,100),experience:String(body.experience||"").slice(0,100)||null,availability:String(body.disponibilite||"").slice(0,100)||null,coverLetter:String(body.motivation).trim().slice(0,3000),resumeUrl:cv.filename+(letter?"|"+letter.filename:""),consentAt:new Date()},include:{job:{select:{id:true,title:true,location:true}}}});
+  res.status(201).json({message:"Votre candidature a bien été envoyée.",application:{id:application.id}});
+ }catch(err){next(err)}
 });
 app.get("/api/applications/:id/cv", requireAuth, requireStaff, async (req, res, next) => {
  try { const application = await prisma.application.findUnique({ where: { id: req.params.id }, select: { resumeUrl: true } }); const filename = application?.resumeUrl?.split("|")[0]; if (!filename || path.basename(filename) !== filename) return res.status(404).json({ error: "CV introuvable." }); const filePath = path.join(uploadDir, filename); try { await access(filePath); } catch { return res.status(404).json({ error: "CV introuvable." }); } res.setHeader("Content-Disposition", `attachment; filename="CV-${req.params.id}${path.extname(filename)}"`); res.setHeader("X-Content-Type-Options", "nosniff"); createReadStream(filePath).pipe(res); } catch (err) { next(err); }
@@ -110,7 +110,7 @@ app.patch("/api/applications/:id/status", requireAuth, requireStaff, async (req,
       data: { status, reviewerNote, reviewedById: req.session.user.id },
       include: { job: { select: { title: true } } }
     });
-    if (application.candidateId) await prisma.notification.create({ data: { userId: application.candidateId, title: "Mise à jour de candidature", message: "Le statut de votre candidature à « " + application.job.title + " » a été actualisé." } });
+    if (application.candidateId) await prisma.notification.create({ data: { userId: application.candidateId, title: "Mise à jour de candidature", message: "Le statut de votre candidature à « " + application.jobTitle + " » a été actualisé." } });
     res.json({ application });
   } catch (err) { next(err); }
 });
