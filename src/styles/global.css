@@ -2733,3 +2733,36 @@ h3 {
   outline: 2px solid #fff;
   outline-offset: 3px;
 }
+
+
+/* Navigation offres d'emploi : lien direct + chevron de sous-menu distinct */
+.nav-dropdown-heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.nav-dropdown-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 0;
+}
+.nav-dropdown-link:hover { color: #699617; }
+.nav-dropdown-trigger {
+  display: inline-grid;
+  width: 24px;
+  height: 32px;
+  padding: 0;
+  place-items: center;
+}
+.nav-chevron {
+  display: block;
+  width: 13px;
+  height: 13px;
+  font-size: initial;
+  transition: transform 160ms ease;
+}
+@media (max-width: 900px) {
+  .nav-dropdown-heading { justify-content: space-between; }
+  .nav-dropdown-link { flex: 1; }
+  .nav-dropdown-trigger { width: 36px; }
+}
