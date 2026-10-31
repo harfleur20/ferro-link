@@ -1,95 +1,78 @@
 generator client {
   provider = "prisma-client-js"
 }
-
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
-enum UserRole {
-  CANDIDATE
-  RECRUITER
-  RECRUITMENT_ADMIN
-  SUPER_ADMIN
-}
-
-enum JobStatus {
-  DRAFT
-  PUBLISHED
-  CLOSED
-}
-
-enum ApplicationStatus {
-  RECEIVED
-  UNDER_REVIEW
-  INTERVIEW
-  ACCEPTED
-  REJECTED
-}
-
+enum UserRole { CANDIDATE RECRUITER RECRUITMENT_ADMIN SUPER_ADMIN }
+enum JobStatus { DRAFT PUBLISHED CLOSED }
+enum ApplicationStatus { RECEIVED UNDER_REVIEW INTERVIEW ACCEPTED REJECTED }
 model User {
-  id             String         @id @default(cuid())
-  email          String         @unique
-  passwordHash   String?
-  googleId       String?        @unique
-  fullName       String
-  avatarUrl      String?
-  role           UserRole       @default(CANDIDATE)
-  isActive       Boolean        @default(true)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
-  applications   Application[]  @relation("CandidateApplications")
-  reviewedApps   Application[]  @relation("ApplicationReviewer")
-  createdJobs    Job[]          @relation("JobCreator")
-  notifications  Notification[]
+  id String @id @default(cuid())
+  email String @unique
+  passwordHash String?
+  googleId String? @unique
+  fullName String
+  avatarUrl String?
+  role UserRole @default(CANDIDATE)
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  applications Application[] @relation("CandidateApplications")
+  reviewedApps Application[] @relation("ApplicationReviewer")
+  createdJobs Job[] @relation("JobCreator")
+  notifications Notification[]
   @@index([role])
 }
-
 model Job {
-  id           String      @id @default(cuid())
-  title        String
-  department   String?
-  location     String?
+  id String @id @default(cuid())
+  title String
+  department String?
+  location String?
   contractType String?
-  description  String      @db.Text
-  requirements String?     @db.Text
-  status       JobStatus   @default(DRAFT)
-  publishedAt  DateTime?
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-  createdById  String
-  createdBy    User        @relation("JobCreator", fields: [createdById], references: [id])
+  description String @db.Text
+  requirements String? @db.Text
+  status JobStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdById String
+  createdBy User @relation("JobCreator", fields: [createdById], references: [id])
   applications Application[]
   @@index([status, publishedAt])
 }
-
 model Application {
-  id           String            @id @default(cuid())
-  candidateId  String
-  jobId        String
-  status       ApplicationStatus @default(RECEIVED)
-  coverLetter  String?           @db.Text
-  resumeUrl    String?
-  reviewerNote String?           @db.Text
+  id String @id @default(cuid())
+  candidateId String
+  jobId String
+  status ApplicationStatus @default(RECEIVED)
+  coverLetter String? @db.Text
+  resumeUrl String?
+  reviewerNote String? @db.Text
   reviewedById String?
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
-  candidate    User              @relation("CandidateApplications", fields: [candidateId], references: [id], onDelete: Cascade)
-  job          Job               @relation(fields: [jobId], references: [id], onDelete: Restrict)
-  reviewedBy   User?             @relation("ApplicationReviewer", fields: [reviewedById], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  candidate User @relation("CandidateApplications", fields: [candidateId], references: [id], onDelete: Cascade)
+  job Job @relation(fields: [jobId], references: [id], onDelete: Restrict)
+  reviewedBy User? @relation("ApplicationReviewer", fields: [reviewedById], references: [id])
   @@unique([candidateId, jobId])
   @@index([status, createdAt])
   @@index([candidateId, createdAt])
 }
-
 model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  title     String
-  message   String
-  readAt    DateTime?
+  id String @id @default(cuid())
+  userId String
+  title String
+  message String
+  readAt DateTime?
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId, createdAt])
+}
+model Session {
+  sid String @id
+  data String @db.Text
+  expiresAt DateTime
+  @@index([expiresAt])
 }
