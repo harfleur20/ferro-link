@@ -2766,3 +2766,33 @@ h3 {
   .nav-dropdown-link { flex: 1; }
   .nav-dropdown-trigger { width: 36px; }
 }
+
+
+/* Correctif : conserver le pointeur entre le déclencheur et les sous-onglets */
+.nav-dropdown-menu {
+  top: 100%;
+  left: -18px;
+  padding-top: 12px;
+  border-top: 0;
+}
+.nav-dropdown-menu::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 100%;
+  left: 0;
+  height: 13px;
+}
+.nav-dropdown-menu a {
+  position: relative;
+  z-index: 1;
+  display: block;
+  cursor: pointer;
+  pointer-events: auto;
+}
+.nav-dropdown-heading,
+.nav-dropdown-link,
+.nav-dropdown-trigger {
+  position: relative;
+  z-index: 2;
+}
