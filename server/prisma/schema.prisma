@@ -53,7 +53,7 @@ model Application {
   availability String?
   consentAt DateTime
   jobId String?
-  jobTitle String
+  jobTitle String @default("Candidature")
   status ApplicationStatus @default(RECEIVED)
   coverLetter String? @db.Text
   resumeUrl String?
