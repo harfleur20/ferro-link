@@ -550,7 +550,7 @@ function getRoute() {
 }
 
 export default function App() {
-  const pathname = window.location.pathname.replace(/\\/+$/, "") || "/";
+  const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
   if (pathname === "/connexion" || pathname === "/inscription") return <AuthPage />;
   if (pathname === "/espace-candidat") return <PortalApp />;
   if (pathname === "/administration") return <PortalApp admin />;
