@@ -44,7 +44,14 @@ model Job {
 }
 model Application {
   id String @id @default(cuid())
-  candidateId String
+  candidateId String?
+  applicantName String
+  applicantEmail String
+  applicantPhone String
+  applicantCity String?
+  experience String?
+  availability String?
+  consentAt DateTime
   jobId String
   status ApplicationStatus @default(RECEIVED)
   coverLetter String? @db.Text
@@ -53,10 +60,9 @@ model Application {
   reviewedById String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  candidate User @relation("CandidateApplications", fields: [candidateId], references: [id], onDelete: Cascade)
+  candidate User? @relation("CandidateApplications", fields: [candidateId], references: [id], onDelete: SetNull)
   job Job @relation(fields: [jobId], references: [id], onDelete: Restrict)
   reviewedBy User? @relation("ApplicationReviewer", fields: [reviewedById], references: [id])
-  @@unique([candidateId, jobId])
   @@index([status, createdAt])
   @@index([candidateId, createdAt])
 }
