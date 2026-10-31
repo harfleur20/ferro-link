@@ -2483,6 +2483,8 @@ h3 {
 .job-card-summary { margin:0 0 18px; color:var(--muted); font-size:12px; line-height:1.75; }
 .job-card-location { display:flex; flex-wrap:wrap; align-items:center; gap:7px; margin-top:auto; padding:13px 0; border-top:1px solid #edf0e9; color:var(--navy); font-size:11px; }
 .job-card-location > span:first-child { color:#719b1d; font-size:17px; }
+.job-card-location .job-location-icon { display:inline-flex; flex:0 0 auto; align-items:center; justify-content:center; }
+.job-card-location .job-location-icon svg { display:block; width:17px; height:17px; }
 .job-card-salary { margin-left:auto; color:var(--muted); font-size:10px; }
 .job-card-actions { display:flex; align-items:center; justify-content:space-between; gap:12px; padding-top:14px; border-top:1px solid var(--line); }
 .job-details-link,.job-apply-link { padding:0; border:0; color:var(--navy); background:transparent; font:700 12px "DM Sans",sans-serif; cursor:pointer; }
