@@ -97,7 +97,7 @@ function Header({ current }) {
             <a href={paths.contact} onClick={closeMenu}>Candidature spontanée</a>
           </div>
         </div> : <a key={href} className={current === href ? "is-active" : ""} aria-current={current === href ? "page" : undefined} href={href} onClick={closeMenu}>{label}</a>)}
-        <a className="button button-small" href="/connexion" onClick={closeMenu}>Se connecter</a>
+        <a className="button button-small" href="/acces-equipe" onClick={closeMenu}>Accès équipe</a>
       </nav>
     </div>
   </header>;
@@ -164,7 +164,7 @@ function HomePage() {
       <div className="hero-content page-width">
         <p className="eyebrow eyebrow-light"><span /> Conseil & ingénierie ferroviaire</p>
         <h1 id="hero-title">Une affaire de<br />chemin de fer</h1>
-        <a className="button button-lime" href={paths.jobs}>Consulter les offres</a>
+        <a className="button button-lime" href={paths.jobs}>Rejoignez-nous</a>
       </div>
       <div className="hero-caption">ferroLink — Le ferroviaire en mouvement</div>
     </section>
@@ -551,8 +551,7 @@ function getRoute() {
 
 export default function App() {
   const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
-  if (pathname === "/connexion" || pathname === "/inscription") return <AuthPage />;
-  if (pathname === "/espace-candidat") return <PortalApp />;
+  if (pathname === "/acces-equipe") return <AuthPage />;
   if (pathname === "/administration") return <PortalApp admin />;
   const current = getRoute();
   const pages = {
