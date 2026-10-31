@@ -372,68 +372,16 @@ const jobOffers = [
 ];
 
 function ApplicationModal({ job, onClose }) {
-  const [error, setError] = useState("");
-  const [cvName, setCvName] = useState("");
-  const [letterName, setLetterName] = useState("");
-  const validateApplication = (event) => {
-    const form = event.currentTarget;
-    const data = new FormData(form);
-    const cv = data.get("cv");
-    const letter = data.get("letter");
-    const totalSize = (cv?.size || 0) + (letter?.size || 0);
-    if (!cv || !cv.size) {
-      event.preventDefault();
-      setError("Merci de joindre votre CV pour envoyer la candidature.");
-      return;
-    }
-    if (totalSize > 10 * 1024 * 1024) {
-      event.preventDefault();
-      setError("Le CV et la lettre de motivation ne doivent pas dépasser 10 Mo au total.");
-      return;
-    }
-    setError("");
-  };
-  return <div className="job-modal-backdrop application-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-    <section className="job-modal application-modal" role="dialog" aria-modal="true" aria-labelledby="application-modal-title">
-      <button className="job-modal-close application-close" type="button" aria-label="Fermer le formulaire" onClick={onClose}>×</button>
-      <div className="application-modal-heading">
-        <p className="section-kicker"><span>Candidature ferroLink</span></p>
-        <h2 id="application-modal-title">{job ? `Postuler : ${job.title}` : "Candidature spontanée"}</h2>
-        <p>Complétez vos informations et joignez vos documents. Les champs marqués d’un * sont obligatoires.</p>
-      </div>
-      <form className="application-form" action="https://formsubmit.co/gregory.aline@avenirferro.com" method="POST" encType="multipart/form-data" onSubmit={validateApplication}>
-        <input type="hidden" name="_subject" value={job ? `Candidature — ${job.title}` : "Candidature spontanée — ferroLink"} />
-        <input type="hidden" name="offre" value={job ? job.title : "Candidature spontanée"} />
-        <input type="hidden" name="_template" value="table" />
-        <input type="text" name="_honey" tabIndex="-1" autoComplete="off" aria-hidden="true" className="application-honeypot" />
-        <label>Nom et prénom *<input name="name" autoComplete="name" required maxLength="120" /></label>
-        <div className="application-form-row">
-          <label>Adresse e-mail *<input type="email" name="email" autoComplete="email" required maxLength="160" /></label>
-          <label>Téléphone *<input type="tel" name="telephone" autoComplete="tel" required maxLength="30" /></label>
-        </div>
-        <div className="application-form-row">
-          <label>Ville de résidence *<input name="ville" autoComplete="address-level2" required maxLength="100" /></label>
-          <label>Expérience professionnelle
-            <select name="experience" defaultValue="">
-              <option value="">Sélectionner</option><option>Débutant</option><option>Moins de 2 ans</option><option>2 à 5 ans</option><option>5 à 10 ans</option><option>Plus de 10 ans</option>
-            </select>
-          </label>
-        </div>
-        <label>Disponibilité <input name="disponibilite" placeholder="Ex. : immédiate, sous un mois…" maxLength="100" /></label>
-        <label>Message de motivation *<textarea name="motivation" rows="5" required minLength="20" maxLength="3000" placeholder="Présentez brièvement votre parcours et votre intérêt pour ce poste." /></label>
-        <div className="application-file-grid">
-          <label className="application-file-field">CV (PDF, DOC ou DOCX) *<input name="cv" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required onChange={(event) => setCvName(event.target.files?.[0]?.name || "")} /><small>{cvName || "Document obligatoire"}</small></label>
-          <label className="application-file-field">Lettre de motivation (facultatif)<input name="letter" type="file" accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" onChange={(event) => setLetterName(event.target.files?.[0]?.name || "")} /><small>{letterName || "PDF, DOC ou DOCX"}</small></label>
-        </div>
-        <label className="application-consent"><input type="checkbox" name="consentement" value="Oui" required /><span>J’accepte que les informations transmises soient utilisées par ferroLink pour examiner ma candidature et me recontacter. *</span></label>
-        {error && <p className="application-error" role="alert">{error}</p>}
-        <p className="application-privacy">Les données et documents sont envoyés à l’équipe de recrutement ferroLink via FormSubmit, un prestataire de traitement de formulaires. N’envoyez que les informations nécessaires à l’étude de votre candidature.</p>
-        <div className="application-form-actions"><button className="button button-lime" type="submit">Envoyer ma candidature <span aria-hidden="true">↗</span></button><button className="button button-outline" type="button" onClick={onClose}>Annuler</button></div>
-      </form>
-    </section>
-  </div>;
+ const [error,setError]=useState(""),[success,setSuccess]=useState(""),[submitting,setSubmitting]=useState(false),[cvName,setCvName]=useState(""),[letterName,setLetterName]=useState("");
+ const submitApplication=async event=>{event.preventDefault();setError("");setSuccess("");const form=event.currentTarget,data=new FormData(form),cv=data.get("cv"),letter=data.get("letter");if(!cv?.size)return setError("Merci de joindre votre CV.");if((cv.size+(letter?.size||0))>10*1024*1024)return setError("Le CV et la lettre ne doivent pas dépasser 10 Mo au total.");setSubmitting(true);try{const api=import.meta.env.VITE_API_URL||"http://localhost:4000";const response=await fetch(`${api}/api/jobs/${encodeURIComponent(job.id)}/applications`,{method:"POST",body:data});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||"Impossible d'envoyer la candidature.");setSuccess("Votre candidature a bien été envoyée. Merci !");form.reset();setCvName("");setLetterName("")}catch(e){setError(e.message||"Une erreur est survenue. Réessayez.")}finally{setSubmitting(false)}};
+ return <div className="job-modal-backdrop application-backdrop" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)onClose()}}><section className="job-modal application-modal" role="dialog" aria-modal="true" aria-labelledby="application-modal-title"><button className="job-modal-close application-close" type="button" aria-label="Fermer le formulaire" onClick={onClose}>×</button><div className="application-modal-heading"><p className="section-kicker"><span>Candidature ferroLink</span></p><h2 id="application-modal-title">Postuler : {job.title}</h2><p>Pas besoin de créer un compte. Les champs marqués d’un * sont obligatoires.</p></div>
+ <form className="application-form" encType="multipart/form-data" onSubmit={submitApplication}><input type="text" name="_honey" tabIndex="-1" autoComplete="off" aria-hidden="true" className="application-honeypot"/>
+ <label>Nom et prénom *<input name="name" autoComplete="name" required maxLength="120"/></label><div className="application-form-row"><label>Adresse e-mail *<input type="email" name="email" autoComplete="email" required maxLength="160"/></label><label>Téléphone *<input type="tel" name="telephone" autoComplete="tel" required maxLength="30"/></label></div>
+ <div className="application-form-row"><label>Ville de résidence *<input name="ville" autoComplete="address-level2" required maxLength="100"/></label><label>Expérience professionnelle<select name="experience" defaultValue=""><option value="">Sélectionner</option><option>Débutant</option><option>Moins de 2 ans</option><option>2 à 5 ans</option><option>5 à 10 ans</option><option>Plus de 10 ans</option></select></label></div>
+ <label>Disponibilité<input name="disponibilite" placeholder="Ex. : immédiate, sous un mois…" maxLength="100"/></label><label>Message de motivation *<textarea name="motivation" rows="5" required minLength="20" maxLength="3000" placeholder="Présentez brièvement votre parcours et votre intérêt pour ce poste."/></label>
+ <div className="application-file-grid"><label className="application-file-field">CV (PDF, DOC ou DOCX) *<input name="cv" type="file" accept=".pdf,.doc,.docx" required onChange={e=>setCvName(e.target.files?.[0]?.name||"")}/><small>{cvName||"Document obligatoire — 10 Mo maximum"}</small></label><label className="application-file-field">Lettre de motivation (facultatif)<input name="letter" type="file" accept=".pdf,.doc,.docx" onChange={e=>setLetterName(e.target.files?.[0]?.name||"")}/><small>{letterName||"PDF, DOC ou DOCX"}</small></label></div>
+ <label className="application-consent"><input type="checkbox" name="consentement" value="Oui" required/><span>J’accepte que mes informations soient utilisées par ferroLink pour examiner ma candidature et me recontacter. *</span></label>{error&&<p className="application-error" role="alert">{error}</p>}{success&&<p role="status">{success}</p>}<p className="application-privacy">Votre candidature est enregistrée dans la base ferroLink. Les documents restent privés et accessibles à l’équipe de recrutement autorisée.</p><div className="application-form-actions"><button className="button button-lime" type="submit" disabled={submitting}>{submitting?"Envoi en cours…":"Envoyer ma candidature"} <span aria-hidden="true">↗</span></button><button className="button button-outline" type="button" onClick={onClose}>Annuler</button></div></form></section></div>;
 }
-
 function formatPublicationDate(date) {
   return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
 }
