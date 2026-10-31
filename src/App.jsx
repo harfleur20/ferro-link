@@ -1,4 +1,6 @@
 import { useState } from "react";
+import AuthPage from "./portals/AuthPage.jsx";
+import PortalApp from "./portals/PortalApp.jsx";
 import { FaTrainSubway, FaLinkedinIn, FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa6";
 import "./styles/global.css";
 
@@ -548,6 +550,10 @@ function getRoute() {
 }
 
 export default function App() {
+  const pathname = window.location.pathname.replace(/\\/+$/, "") || "/";
+  if (pathname === "/connexion" || pathname === "/inscription") return <AuthPage />;
+  if (pathname === "/espace-candidat") return <PortalApp />;
+  if (pathname === "/administration") return <PortalApp admin />;
   const current = getRoute();
   const pages = {
     [paths.accueil]: <HomePage />,
