@@ -662,10 +662,26 @@
 .users-invite h4 { margin: 0; }
 .users-invite-link { display: grid; gap: 8px; margin-bottom: 20px; padding: 14px; border-radius: 8px; background: #fff7e6; color: #5f4706; font-size: 13px; }
 .users-invite-link p { margin: 0; }
-.users-invite-link input { width: 100%; min-width: 0; padding: 8px 10px; border: 1px solid #e0c98c; border-radius: 6px; font: inherit; }
+.users-invite-copy { display: flex; gap: 8px; }
+.users-invite-link input { flex: 1; width: 100%; min-width: 0; padding: 8px 10px; border: 1px solid #e0c98c; border-radius: 6px; font: inherit; }
+.users-invite-copy button { display: grid; flex: none; width: 38px; place-items: center; border: 0; border-radius: 6px; background: #17243b; color: #fff; font-size: 14px; cursor: pointer; }
+.users-invite-copy button:hover { background: #2a3a55; }
+.users-invite-copy button:focus-visible { outline: 2px solid #9acb36; outline-offset: 2px; }
 .users-actions { display: flex; flex-wrap: wrap; gap: 6px 14px; }
 .portal-danger-button { padding: 8px 14px; border: 1px solid #c0392b; border-radius: 6px; background: transparent; color: #c0392b; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
 .portal-danger-button:hover:not(:disabled) { background: #c0392b; color: #fff; }
 .portal-danger-button:disabled { opacity: .6; cursor: not-allowed; }
 .portal-delete-zone { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 24px; padding-top: 18px; border-top: 1px solid #e4e8ee; font-size: 13px; }
 .contact-message-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px 12px; }
+
+.portal-toasts { position: fixed; z-index: 200; right: 24px; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 10px; width: min(380px, calc(100vw - 32px)); }
+.portal-toast { display: flex; align-items: flex-start; gap: 12px; padding: 14px 12px 14px 16px; border-left: 3px solid #9acb36; background: #fff; box-shadow: 0 10px 30px #17243b26; color: #17243b; font-size: 13px; line-height: 1.5; animation: portal-toast-in .2s ease-out; }
+.portal-toast > svg { flex: none; margin-top: 2px; color: #6f9a1e; font-size: 16px; }
+.portal-toast.error { border-left-color: #c0392b; }
+.portal-toast.error > svg { color: #c0392b; }
+.portal-toast p { flex: 1; min-width: 0; margin: 0; overflow-wrap: anywhere; }
+.portal-toast button { display: grid; flex: none; width: 22px; height: 22px; padding: 0; place-items: center; border: 0; background: transparent; color: #647083; cursor: pointer; }
+.portal-toast button:hover { color: #17243b; }
+@keyframes portal-toast-in { from { opacity: 0; transform: translateY(8px); } }
+@media (prefers-reduced-motion: reduce) { .portal-toast { animation: none; } }
+@media (max-width: 640px) { .portal-toasts { right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); } }

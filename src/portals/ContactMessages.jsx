@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "./toast.jsx";
 
 export default function ContactMessages({ api, canDelete }) {
   const [messages, setMessages] = useState(null);
@@ -14,22 +15,21 @@ export default function ContactMessages({ api, canDelete }) {
   }, [api]);
 
   const markRead = async (message) => {
-    setError("");
     try {
       await api(`/api/staff/contact-messages/${message.id}/read`, { method: "PATCH" });
       setMessages((current) => current.map((item) => item.id === message.id ? { ...item, readAt: new Date().toISOString() } : item));
     } catch (updateError) {
-      setError(updateError.message);
+      toast.error(updateError.message);
     }
   };
 
   const remove = async (message) => {
-    setError("");
     try {
       await api(`/api/staff/contact-messages/${message.id}`, { method: "DELETE" });
       setMessages((current) => current.filter((item) => item.id !== message.id));
+      toast.success("Message supprimé.");
     } catch (deleteError) {
-      setError(deleteError.message);
+      toast.error(deleteError.message);
     }
   };
 

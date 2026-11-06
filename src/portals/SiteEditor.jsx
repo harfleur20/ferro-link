@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { defaultSiteSettings, mergeSiteSettings, resolveSiteAssetUrl } from "../siteSettings.js";
 import { serverFetch } from "../serverFetch.js";
+import { toast } from "./toast.jsx";
 
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
@@ -49,8 +50,6 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
   const [draft, setDraft] = useState(() => mergeSiteSettings(settings || defaultSiteSettings));
   const [saving, setSaving] = useState(false);
   const [uploadingLogo, setUploadingLogo] = useState("");
-  const [feedback, setFeedback] = useState("");
-  const [saveError, setSaveError] = useState("");
   const previewRef = useRef(null);
   const sectionTabRefs = useRef([]);
   const dirty = JSON.stringify(draft) !== JSON.stringify(settings || defaultSiteSettings);
@@ -78,8 +77,6 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
 
   const update = (group, field, value) => {
     setDraft((current) => ({ ...current, [group]: { ...current[group], [field]: value } }));
-    setFeedback("");
-    setSaveError("");
   };
 
   const updatePartner = (index, field, value) => {
@@ -92,8 +89,6 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
           : partner),
       },
     }));
-    setFeedback("");
-    setSaveError("");
   };
 
   const updateListItem = (group, field, index, key, value) => {
@@ -106,8 +101,6 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
           : item),
       },
     }));
-    setFeedback("");
-    setSaveError("");
   };
 
   const removeListItem = (group, field, index) => {
@@ -124,13 +117,11 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
     if (!file) return;
     const maxSize = assetType === "logo" ? 256 * 1024 : 5 * 1024 * 1024;
     if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > maxSize) {
-      setSaveError(`Choisissez une image PNG, JPEG ou WebP de ${assetType === "logo" ? "256 Ko" : "5 Mo"} maximum.`);
+      toast.error(`Choisissez une image PNG, JPEG ou WebP de ${assetType === "logo" ? "256 Ko" : "5 Mo"} maximum.`);
       input.value = "";
       return;
     }
     setUploadingLogo(field);
-    setSaveError("");
-    setFeedback("");
     try {
       const formData = new FormData();
       formData.append("assetType", assetType);
@@ -143,9 +134,9 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || "Impossible d’importer ce logo.");
       onImported(result.url);
-      setFeedback("Logo importé. Enregistrez et publiez pour l’afficher sur le site.");
+      toast.success("Logo importé. Enregistrez et publiez pour l’afficher sur le site.");
     } catch (error) {
-      setSaveError(error.message || "Impossible d’importer ce logo.");
+      toast.error(error.message || "Impossible d’importer ce logo.");
     } finally {
       setUploadingLogo("");
       input.value = "";
@@ -164,8 +155,6 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
   const save = async (event) => {
     event.preventDefault();
     setSaving(true);
-    setFeedback("");
-    setSaveError("");
     try {
       const response = await serverFetch(`${API}/api/site-settings`, {
         method: "PUT",
@@ -176,9 +165,9 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || "Impossible d’enregistrer le site.");
       onSaved(result.settings, result.updatedAt);
-      setFeedback("Modifications publiées sur le site.");
+      toast.success("Modifications publiées sur le site.");
     } catch (error) {
-      setSaveError(error.message || "Impossible d’enregistrer le site.");
+      toast.error(error.message || "Impossible d’enregistrer le site.");
     } finally {
       setSaving(false);
     }
@@ -463,8 +452,6 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
         </>}
 
         <div className="site-editor-actions">
-          {feedback && <span className="portal-alert success" role="status">{feedback}</span>}
-          {saveError && <span className="portal-alert error" role="alert">{saveError}</span>}
           <button className="portal-primary-button site-editor-save" type="submit" disabled={!dirty || saving || Boolean(uploadingLogo)}>
             {uploadingLogo ? "Import du logo…" : saving ? "Publication…" : "Enregistrer et publier"}
           </button>

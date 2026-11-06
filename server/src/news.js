@@ -10,7 +10,8 @@ export const newsRouter = Router();
 // Only the title, a short extract, the cover image address and a link are kept: full articles stay on the publisher's site.
 const sources = [
   { name: "Rail Passion", url: "https://www.railpassion.fr/feed/", language: "fr" },
-  { name: "Railway Gazette", url: "https://www.railwaygazette.com/rss", language: "en" },
+  // Railway Gazette and RailFreight.com refuse requests from hosting servers. "Supplier News" is promotional content.
+  { name: "Railway-News", url: "https://railway-news.com/feed/", language: "en", ignoredCategories: ["Supplier News"] },
 ];
 const excerptLength = 280;
 const pageSize = 12;
@@ -134,7 +135,8 @@ export async function refreshNews() {
         parser.parseURL(source.url),
         new Promise((_, reject) => { setTimeout(() => reject(new Error("Délai dépassé")), 15000).unref(); }),
       ]);
-      const data = feed.items.map((item) => toArticle(item, source)).filter((article) => article && article.publishedAt >= oldestAllowed);
+      const items = feed.items.filter((item) => !item.categories?.some((category) => source.ignoredCategories?.includes(category)));
+      const data = items.map((item) => toArticle(item, source)).filter((article) => article && article.publishedAt >= oldestAllowed);
       const result = await prisma.newsArticle.createMany({ data, skipDuplicates: true });
       added += result.count;
     } catch (err) {

@@ -21,6 +21,7 @@ import JobEditor from "./JobEditor.jsx";
 import NewsAdmin from "./NewsAdmin.jsx";
 import SiteEditor from "./SiteEditor.jsx";
 import UsersAdmin from "./UsersAdmin.jsx";
+import { toast, Toaster } from "./toast.jsx";
 import { defaultSiteSettings, mergeSiteSettings } from "../siteSettings.js";
 import "../styles/portals.css";
 import { serverFetch } from "../serverFetch.js";
@@ -96,7 +97,6 @@ export default function AdminPortal() {
   const avatarInputRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const [applications, setApplications] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [jobEditor, setJobEditor] = useState(null);
@@ -211,12 +211,11 @@ export default function AdminPortal() {
   };
 
   const logout = async () => {
-    setError("");
     try {
       await api("/api/auth/logout", { method: "POST" });
       location.replace("/acces-equipe");
     } catch (logoutError) {
-      setError(logoutError.message);
+      toast.error(logoutError.message);
     }
   };
 
@@ -225,11 +224,10 @@ export default function AdminPortal() {
     const file = input.files?.[0];
     if (!file) return;
     if (!["image/png", "image/jpeg", "image/webp"].includes(file.type) || file.size > 2 * 1024 * 1024) {
-      setError("Choisissez une image PNG, JPEG ou WebP de 2 Mo maximum.");
+      toast.error("Choisissez une image PNG, JPEG ou WebP de 2 Mo maximum.");
       input.value = "";
       return;
     }
-    setError("");
     setAvatarUploading(true);
     try {
       const formData = new FormData();
@@ -243,8 +241,9 @@ export default function AdminPortal() {
       if (!response.ok) throw new Error(result.error || "Impossible d’importer la photo de profil.");
       setUser((current) => ({ ...current, ...result.user }));
       setAccountOpen(false);
+      toast.success("Photo de profil mise à jour.");
     } catch (uploadError) {
-      setError(uploadError.message || "Impossible d’importer la photo de profil.");
+      toast.error(uploadError.message || "Impossible d’importer la photo de profil.");
     } finally {
       setAvatarUploading(false);
       input.value = "";
@@ -266,14 +265,13 @@ export default function AdminPortal() {
   };
 
   const updateApplicationStatus = async (application, status) => {
-    setError("");
-    setNotice("");
     try {
       const result = await saveApplication(application, { status });
-      if (result.notice) setNotice(result.notice);
-      if (result.warning) setError(result.warning);
+      if (result.cancelled) return;
+      toast.success(result.notice || "Statut de la candidature mis à jour.");
+      if (result.warning) toast.error(result.warning);
     } catch (updateError) {
-      setError(updateError.message);
+      toast.error(updateError.message);
     }
   };
 
@@ -281,18 +279,19 @@ export default function AdminPortal() {
     await api(`/api/applications/${application.id}`, { method: "DELETE" });
     setApplications((previous) => previous.filter((item) => item.id !== application.id));
     setSelectedApplicationId(null);
+    toast.success("Candidature supprimée.");
   };
 
   const updateJobStatus = async (job, status) => {
-    setError("");
     try {
       const { job: updated } = await api(`/api/jobs/${job.id}`, {
         method: "PATCH",
         body: JSON.stringify({ status }),
       });
       setJobs((previous) => previous.map((item) => item.id === job.id ? updated : item));
+      toast.success("Statut de l’offre mis à jour.");
     } catch (updateError) {
-      setError(updateError.message);
+      toast.error(updateError.message);
     }
   };
 
@@ -304,17 +303,17 @@ export default function AdminPortal() {
     });
     setJobs((previous) => current ? previous.map((item) => item.id === job.id ? job : item) : [job, ...previous]);
     setJobEditor(null);
+    toast.success(current ? "Offre enregistrée." : "Offre créée.");
   };
 
   const markNotificationRead = async (notification) => {
-    setError("");
     try {
       await api(`/api/notifications/${notification.id}/read`, { method: "PATCH" });
       setNotifications((previous) => previous.map((item) => item.id === notification.id
         ? { ...item, readAt: new Date().toISOString() }
         : item));
     } catch (updateError) {
-      setError(updateError.message);
+      toast.error(updateError.message);
     }
   };
 
@@ -338,6 +337,7 @@ export default function AdminPortal() {
   ];
 
   return <div className="portal-shell">
+    <Toaster />
     <aside className={`portal-sidebar ${menuOpen ? "open" : ""}`}>
       <a className="portal-sidebar-brand" href="/" aria-label="ferroLink, retour à l'accueil">
         <img src="/images/logo-pied-page.png" alt="ferroLink" width="3472" height="490" />
@@ -396,7 +396,6 @@ export default function AdminPortal() {
 
       <main className="portal-content">
         {error && <div className="portal-alert error" role="alert">{error}</div>}
-        {notice && <div className="portal-alert success" role="status">{notice}</div>}
 
         {active === "dashboard" && <>
           <section className="portal-welcome">

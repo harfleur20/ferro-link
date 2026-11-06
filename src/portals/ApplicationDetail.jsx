@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "./toast.jsx";
 
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 const statuses = [["RECEIVED", "Reçue"], ["UNDER_REVIEW", "En étude"], ["INTERVIEW", "Entretien"], ["ACCEPTED", "Acceptée"], ["REJECTED", "Refusée"]];
@@ -11,34 +12,29 @@ export default function ApplicationDetail({ application, onSave, onDelete, onBac
   const [status, setStatus] = useState(application.status);
   const [note, setNote] = useState(application.reviewerNote || "");
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [saved, setSaved] = useState("");
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const submit = async (event) => {
     event.preventDefault();
-    setError("");
-    setSaved("");
     setSaving(true);
     try {
       const result = await onSave(application, { status, reviewerNote: note });
       if (result.cancelled) return;
-      setSaved(`Modifications enregistrées. ${result.notice}`.trim());
-      if (result.warning) setError(result.warning);
+      toast.success(result.notice || "Modifications enregistrées.");
+      if (result.warning) toast.error(result.warning);
     } catch (saveError) {
-      setError(saveError.message);
+      toast.error(saveError.message);
     } finally {
       setSaving(false);
     }
   };
 
   const remove = async () => {
-    setError("");
     setSaving(true);
     try {
       await onDelete(application);
     } catch (deleteError) {
-      setError(deleteError.message);
+      toast.error(deleteError.message);
       setSaving(false);
     }
   };
@@ -73,8 +69,6 @@ export default function ApplicationDetail({ application, onSave, onDelete, onBac
         <textarea value={note} onChange={(event) => setNote(event.target.value)} rows="4" maxLength="5000" />
         <small>Visible uniquement par l’équipe de recrutement.</small>
       </label>
-      {error && <p className="portal-alert error" role="alert">{error}</p>}
-      {saved && <p className="portal-alert success" role="status">{saved}</p>}
       <div className="job-editor-actions"><button className="portal-primary-button" type="submit" disabled={saving}>{saving ? "Enregistrement…" : "Enregistrer"}</button></div>
     </form>
     {onDelete && <div className="portal-delete-zone">

@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { FaCopy } from "react-icons/fa6";
+import { toast } from "./toast.jsx";
 
 const staffRoles = [["RECRUITER", "Chargé de recrutement"], ["RECRUITMENT_ADMIN", "Business Manager"], ["SUPER_ADMIN", "SuperAdmin"]];
 const emptyInvitation = { fullName: "", email: "", role: "RECRUITER" };
@@ -8,57 +10,92 @@ function accountStatus(account) {
   return account.invitationPending ? ["status-reviewing", "Invitation en attente"] : ["status-accepted", "Actif"];
 }
 
+function InvitationLink({ email, url }) {
+  const field = useRef(null);
+
+  // Browsers disable the Clipboard API on plain HTTP addresses, such as a temporary Coolify domain.
+  const copy = async () => {
+    try {
+      if (navigator.clipboard) await navigator.clipboard.writeText(url);
+      else {
+        field.current.select();
+        if (!document.execCommand("copy")) throw new Error("copy refused");
+      }
+      toast.success("Lien d’invitation copié.");
+    } catch {
+      field.current.select();
+      toast.error("Copie impossible : le lien est sélectionné, copiez-le avec Ctrl+C.");
+    }
+  };
+
+  return <div className="users-invite-link" role="status">
+    <p>Aucun e-mail n’a pu être envoyé à {email}. Transmettez-lui ce lien, valable 7 jours :</p>
+    <div className="users-invite-copy">
+      <input ref={field} readOnly value={url} aria-label="Lien d’invitation" onFocus={(event) => event.target.select()} />
+      <button type="button" onClick={copy} aria-label="Copier le lien d’invitation" title="Copier le lien"><FaCopy aria-hidden="true" /></button>
+    </div>
+  </div>;
+}
+
 export default function UsersAdmin({ api, currentUser, users, setUsers }) {
   const [search, setSearch] = useState("");
   const [invitation, setInvitation] = useState(emptyInvitation);
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
   const [result, setResult] = useState(null);
 
   const filteredUsers = users.filter((account) => `${account.fullName} ${account.email}`.toLowerCase().includes(search.toLowerCase()));
   const updateField = (event) => setInvitation((current) => ({ ...current, [event.target.name]: event.target.value }));
   const updateAccount = (id, changes) => setUsers((previous) => previous.map((item) => item.id === id ? { ...item, ...changes } : item));
 
+  const showInvitation = ({ email, emailSent, inviteUrl }) => {
+    if (emailSent) {
+      toast.success(`Invitation envoyée à ${email}.`);
+      return;
+    }
+    setResult({ email, inviteUrl });
+    toast.success("Invitation créée. Copiez le lien pour la transmettre.");
+  };
+
   const invite = async (event) => {
     event.preventDefault();
-    setError("");
     setResult(null);
     setSending(true);
     try {
       const { user, emailSent, inviteUrl } = await api("/api/users", { method: "POST", body: JSON.stringify(invitation) });
       setUsers((previous) => [user, ...previous]);
-      setResult({ email: user.email, emailSent, inviteUrl });
+      showInvitation({ email: user.email, emailSent, inviteUrl });
       setInvitation(emptyInvitation);
     } catch (inviteError) {
-      setError(inviteError.message);
+      toast.error(inviteError.message);
     } finally {
       setSending(false);
     }
   };
 
   const run = async (action) => {
-    setError("");
     setResult(null);
     try {
       await action();
     } catch (actionError) {
-      setError(actionError.message);
+      toast.error(actionError.message);
     }
   };
 
   const resend = (account) => run(async () => {
     const { emailSent, inviteUrl } = await api(`/api/users/${account.id}/invitation`, { method: "POST" });
-    setResult({ email: account.email, emailSent, inviteUrl });
+    showInvitation({ email: account.email, emailSent, inviteUrl });
   });
 
   const changeRole = (account, role) => run(async () => {
     await api(`/api/users/${account.id}/role`, { method: "PATCH", body: JSON.stringify({ role }) });
     updateAccount(account.id, { role });
+    toast.success(`Rôle de ${account.fullName} mis à jour.`);
   });
 
   const setActive = (account, isActive) => run(async () => {
     await api(`/api/users/${account.id}/active`, { method: "PATCH", body: JSON.stringify({ isActive }) });
     updateAccount(account.id, { isActive });
+    toast.success(`Compte de ${account.fullName} ${isActive ? "réactivé" : "désactivé"}.`);
   });
 
   return <section className="portal-panel">
@@ -81,12 +118,7 @@ export default function UsersAdmin({ api, currentUser, users, setUsers }) {
       <div className="job-editor-actions"><button className="portal-primary-button" type="submit" disabled={sending}>{sending ? "Envoi…" : "Envoyer l’invitation"}</button></div>
     </form>
 
-    {error && <p className="portal-alert error" role="alert">{error}</p>}
-    {result?.emailSent && <p className="portal-alert success" role="status">Invitation envoyée à {result.email}.</p>}
-    {result && !result.emailSent && <div className="users-invite-link" role="status">
-      <p>Aucun e-mail n’a pu être envoyé à {result.email}. Transmettez-lui ce lien, valable 7 jours :</p>
-      <input readOnly value={result.inviteUrl} aria-label="Lien d’invitation" onFocus={(event) => event.target.select()} />
-    </div>}
+    {result && <InvitationLink email={result.email} url={result.inviteUrl} />}
 
     <label className="portal-search-label">Rechercher un utilisateur
       <input className="portal-search" type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Nom ou adresse e-mail" />

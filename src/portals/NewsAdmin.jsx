@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { toast } from "./toast.jsx";
 
 export default function NewsAdmin({ api }) {
   const [articles, setArticles] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState("");
-  const [feedback, setFeedback] = useState("");
 
   useEffect(() => {
     let alive = true;
@@ -15,28 +15,27 @@ export default function NewsAdmin({ api }) {
   }, [api]);
 
   const refresh = async () => {
-    setError("");
-    setFeedback("");
     setRefreshing(true);
     try {
       const { added, failed } = await api("/api/staff/news/refresh", { method: "POST" });
       const { articles: latest } = await api("/api/staff/news");
       setArticles(latest);
-      setFeedback(`${added} nouvel${added > 1 ? "s" : ""} article${added > 1 ? "s" : ""}.${failed.length ? ` Flux indisponible : ${failed.join(", ")}.` : ""}`);
+      toast.success(`${added} nouvel${added > 1 ? "s" : ""} article${added > 1 ? "s" : ""}.`);
+      if (failed.length) toast.error(`Flux indisponible : ${failed.join(", ")}.`);
     } catch (refreshError) {
-      setError(refreshError.message);
+      toast.error(refreshError.message);
     } finally {
       setRefreshing(false);
     }
   };
 
   const toggle = async (article) => {
-    setError("");
     try {
       await api(`/api/staff/news/${article.id}`, { method: "PATCH", body: JSON.stringify({ hidden: !article.hidden }) });
       setArticles((current) => current.map((item) => item.id === article.id ? { ...item, hidden: !article.hidden } : item));
+      toast.success(article.hidden ? "Article réaffiché sur le site." : "Article masqué du site.");
     } catch (updateError) {
-      setError(updateError.message);
+      toast.error(updateError.message);
     }
   };
 
@@ -47,7 +46,6 @@ export default function NewsAdmin({ api }) {
     </div>
     <p className="portal-muted portal-permission-note">Les flux sont relus automatiquement toutes les heures. Un article masqué n’apparaît plus sur le site.</p>
     {error && <p className="portal-alert error" role="alert">{error}</p>}
-    {feedback && <p className="portal-alert success" role="status">{feedback}</p>}
     {articles === null && !error && <p className="portal-empty" role="status">Chargement…</p>}
     {articles?.length === 0 && <p className="portal-empty">Aucun article pour le moment.</p>}
     {articles?.length > 0 && <div className="portal-table-wrap">
