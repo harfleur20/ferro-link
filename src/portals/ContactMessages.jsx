@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 
-export default function ContactMessages({ api }) {
+export default function ContactMessages({ api, canDelete }) {
   const [messages, setMessages] = useState(null);
   const [error, setError] = useState("");
+  const [confirmingId, setConfirmingId] = useState(null);
 
   useEffect(() => {
     let alive = true;
@@ -22,6 +23,16 @@ export default function ContactMessages({ api }) {
     }
   };
 
+  const remove = async (message) => {
+    setError("");
+    try {
+      await api(`/api/staff/contact-messages/${message.id}`, { method: "DELETE" });
+      setMessages((current) => current.filter((item) => item.id !== message.id));
+    } catch (deleteError) {
+      setError(deleteError.message);
+    }
+  };
+
   return <section className="portal-panel">
     <div className="portal-panel-heading"><div><span className="portal-eyebrow">FORMULAIRE DE CONTACT</span><h3>Messages reçus</h3></div></div>
     {error && <p className="portal-alert error" role="alert">{error}</p>}
@@ -33,7 +44,12 @@ export default function ContactMessages({ api }) {
         <small>{message.name} · <a href={`mailto:${message.email}`}>{message.email}</a> · {new Date(message.createdAt).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" })}</small>
         <p>{message.message}</p>
       </div>
-      {!message.readAt && <button className="portal-text-button" type="button" onClick={() => markRead(message)}>Marquer comme lu</button>}
+      <div className="contact-message-actions">
+        {!message.readAt && <button className="portal-text-button" type="button" onClick={() => markRead(message)}>Marquer comme lu</button>}
+        {canDelete && (confirmingId === message.id
+          ? <><button className="portal-danger-button" type="button" onClick={() => remove(message)}>Confirmer</button><button className="portal-text-button" type="button" onClick={() => setConfirmingId(null)}>Annuler</button></>
+          : <button className="portal-text-button" type="button" onClick={() => setConfirmingId(message.id)}>Supprimer</button>)}
+      </div>
     </article>)}
   </section>;
 }

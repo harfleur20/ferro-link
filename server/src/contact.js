@@ -3,7 +3,7 @@ import { z } from "zod";
 import { prisma } from "./db.js";
 import { contactLimiter } from "./limits.js";
 import { adminUrl, getActiveStaff, notificationRecipients, sendMailSafely } from "./mailer.js";
-import { requireAuth, requireStaff } from "./middleware.js";
+import { requireAuth, requireBusinessManager, requireStaff } from "./middleware.js";
 
 export const contactRouter = Router();
 
@@ -42,6 +42,14 @@ contactRouter.get("/staff/contact-messages", requireAuth, requireStaff, async (_
   try {
     const messages = await prisma.contactMessage.findMany({ orderBy: { createdAt: "desc" }, take: 200 });
     res.json({ messages });
+  } catch (err) { next(err); }
+});
+
+contactRouter.delete("/staff/contact-messages/:id", requireAuth, requireBusinessManager, async (req, res, next) => {
+  try {
+    const result = await prisma.contactMessage.deleteMany({ where: { id: req.params.id } });
+    if (!result.count) return res.status(404).json({ error: "Message introuvable." });
+    res.status(204).end();
   } catch (err) { next(err); }
 });
 

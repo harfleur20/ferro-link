@@ -20,6 +20,7 @@ import ContactMessages from "./ContactMessages.jsx";
 import JobEditor from "./JobEditor.jsx";
 import NewsAdmin from "./NewsAdmin.jsx";
 import SiteEditor from "./SiteEditor.jsx";
+import UsersAdmin from "./UsersAdmin.jsx";
 import { defaultSiteSettings, mergeSiteSettings } from "../siteSettings.js";
 import "../styles/portals.css";
 
@@ -95,7 +96,6 @@ export default function AdminPortal() {
   const [selectedApplicationId, setSelectedApplicationId] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [users, setUsers] = useState([]);
-  const [userSearch, setUserSearch] = useState("");
   const [siteSettings, setSiteSettings] = useState(defaultSiteSettings);
   const [siteSettingsUpdatedAt, setSiteSettingsUpdatedAt] = useState(null);
   const [siteSettingsLoadError, setSiteSettingsLoadError] = useState("");
@@ -234,6 +234,12 @@ export default function AdminPortal() {
     setApplications((previous) => previous.map((item) => item.id === application.id ? { ...item, ...updated } : item));
   };
 
+  const deleteApplication = async (application) => {
+    await api(`/api/applications/${application.id}`, { method: "DELETE" });
+    setApplications((previous) => previous.filter((item) => item.id !== application.id));
+    setSelectedApplicationId(null);
+  };
+
   const updateJobStatus = async (job, status) => {
     setError("");
     try {
@@ -255,19 +261,6 @@ export default function AdminPortal() {
     });
     setJobs((previous) => current ? previous.map((item) => item.id === job.id ? job : item) : [job, ...previous]);
     setJobEditor(null);
-  };
-
-  const updateUserRole = async (account, role) => {
-    setError("");
-    try {
-      const { user: updated } = await api(`/api/users/${account.id}/role`, {
-        method: "PATCH",
-        body: JSON.stringify({ role }),
-      });
-      setUsers((previous) => previous.map((item) => item.id === account.id ? { ...item, ...updated } : item));
-    } catch (updateError) {
-      setError(updateError.message);
-    }
   };
 
   const markNotificationRead = async (notification) => {
@@ -295,7 +288,6 @@ export default function AdminPortal() {
   const pendingApplications = applications.filter((application) => ["RECEIVED", "UNDER_REVIEW"].includes(application.status)).length;
   const selectedApplication = applications.find((application) => application.id === selectedApplicationId);
   const publishedJobs = jobs.filter((job) => job.status === "PUBLISHED").length;
-  const filteredUsers = users.filter((account) => `${account.fullName} ${account.email}`.toLowerCase().includes(userSearch.toLowerCase()));
   const stats = [
     { label: "Candidatures à traiter", value: pendingApplications, icon: FaClock },
     { label: "Offres publiées", value: publishedJobs, icon: FaBriefcase },
@@ -396,7 +388,7 @@ export default function AdminPortal() {
           </section>
         </>}
 
-        {active === "applications" && selectedApplication && <ApplicationDetail key={selectedApplication.id} application={selectedApplication} onSave={saveApplication} onBack={() => setSelectedApplicationId(null)} />}
+        {active === "applications" && selectedApplication && <ApplicationDetail key={selectedApplication.id} application={selectedApplication} onSave={saveApplication} onDelete={permissions.canManageSite ? deleteApplication : null} onBack={() => setSelectedApplicationId(null)} />}
 
         {active === "applications" && !selectedApplication && <section className="portal-panel">
           <div className="portal-panel-heading">
@@ -446,7 +438,7 @@ export default function AdminPortal() {
           </div>}
         </section>}
 
-        {active === "messages" && <ContactMessages api={api} />}
+        {active === "messages" && <ContactMessages api={api} canDelete={permissions.canManageSite} />}
 
         {active === "news" && permissions.canManageSite && <NewsAdmin api={api} />}
 
@@ -461,28 +453,7 @@ export default function AdminPortal() {
           }}
         />}
 
-        {active === "users" && permissions.canManageUsers && <section className="portal-panel">
-          <div className="portal-panel-heading">
-            <div><span className="portal-eyebrow">ACCÈS À LA PLATEFORME</span><h3>Utilisateurs & rôles</h3></div>
-            <span className="portal-muted">{users.length} compte{users.length > 1 ? "s" : ""}</span>
-          </div>
-          <label className="portal-search-label">Rechercher un utilisateur
-            <input className="portal-search" type="search" value={userSearch} onChange={(event) => setUserSearch(event.target.value)} placeholder="Nom ou adresse e-mail" />
-          </label>
-          {filteredUsers.length === 0 ? <p className="portal-empty">Aucun utilisateur ne correspond à cette recherche.</p> : <div className="portal-table-wrap">
-            <table className="portal-table">
-              <thead><tr><th>Nom</th><th>E-mail</th><th>Rôle</th><th>Compte</th><th>Créé le</th></tr></thead>
-              <tbody>{filteredUsers.map((account) => <tr key={account.id}>
-                <td>{account.fullName}</td><td>{account.email}</td>
-                <td><select aria-label={`Rôle de ${account.fullName}`} value={account.role} disabled={account.id === user.id} onChange={(event) => updateUserRole(account, event.target.value)}>
-                  <option value="CANDIDATE">Candidat</option><option value="RECRUITER">Chargé de recrutement</option><option value="RECRUITMENT_ADMIN">Business Manager</option><option value="SUPER_ADMIN">SuperAdmin</option>
-                </select></td>
-                <td><span className={`portal-status ${account.isActive ? "status-accepted" : "status-rejected"}`}>{account.isActive ? "Actif" : "Désactivé"}</span></td>
-                <td>{formatDate(account.createdAt)}</td>
-              </tr>)}</tbody>
-            </table>
-          </div>}
-        </section>}
+        {active === "users" && permissions.canManageUsers && <UsersAdmin api={api} currentUser={user} users={users} setUsers={setUsers} />}
 
         {active === "notifications" && <section className="portal-panel">
           <div className="portal-panel-heading"><div><span className="portal-eyebrow">INFORMATIONS</span><h3>Notifications</h3></div></div>

@@ -16,6 +16,8 @@ const paths = {
   news: "/actualites",
   contact: "/contact",
   spontaneous: "/candidature-spontanee",
+  legal: "/mentions-legales",
+  privacy: "/confidentialite",
 };
 
 function ExpertiseIcon({ number }) {
@@ -119,6 +121,7 @@ function Footer() {
     <div className="page-width footer-bottom">
       <span>© {new Date().getFullYear()} ferroLink. {siteSettings.footer.copyright}</span>
       <span>{siteSettings.footer.signature}</span>
+      <span className="footer-legal-links"><a href={paths.legal}>Mentions légales</a><a href={paths.privacy}>Confidentialité</a></span>
       <a href={paths.accueil}>{siteSettings.footer.backToTop} ↑</a>
     </div>
   </footer>;
@@ -311,7 +314,7 @@ function ApplicationForm({ job, onCancel }) {
     <label className="application-consent"><input type="checkbox" name="consentement" value="Oui" required /><span>J’accepte que mes informations soient utilisées par ferroLink pour examiner ma candidature et me recontacter. *</span></label>
     {error && <p className="application-error" role="alert">{error}</p>}
     {success && <p role="status">{success}</p>}
-    <p className="application-privacy">Votre candidature est enregistrée dans la base ferroLink. Les documents restent privés et accessibles à l’équipe de recrutement autorisée.</p>
+    <p className="application-privacy">Votre candidature est enregistrée dans la base ferroLink. Les documents restent privés, accessibles à l’équipe de recrutement autorisée et conservés 24 mois au plus. <a href={paths.privacy} target="_blank" rel="noreferrer">Politique de confidentialité</a></p>
     <div className="application-form-actions"><button className="button button-lime" type="submit" disabled={submitting}>{submitting ? "Envoi en cours…" : "Envoyer ma candidature"} <span aria-hidden="true">↗</span></button>{onCancel && <button className="button button-outline" type="button" onClick={onCancel}>Annuler</button>}</div>
   </form>;
 }
@@ -489,7 +492,7 @@ function ContactPage() {
         <button className="button button-lime" type="submit" disabled={sending}>{sending ? "Envoi en cours…" : contact.submitLabel} <span aria-hidden="true">↗</span></button>
         {error && <p className="application-error" role="alert">{error}</p>}
         {submitted && <p className="form-feedback" role="status">{contact.successText}</p>}
-        <p className="form-note">{contact.privacyText}</p>
+        <p className="form-note">{contact.privacyText} <a href={paths.privacy} target="_blank" rel="noreferrer">Politique de confidentialité</a></p>
       </form>
     </section>
   </>;
@@ -545,6 +548,61 @@ function ContactCallout() {
   return <section className="contact section page-width" style={{ "--contact-panel-image": `url("${resolveSiteAssetUrl(siteSettings.callout.backgroundImage, API)}")` }}><div className="contact-panel">
     <div className="contact-content"><div className="section-kicker section-kicker-light"><span>{siteSettings.callout.kicker}</span></div><h2>{siteSettings.callout.title}</h2><p>{siteSettings.callout.description}</p><a className="button button-lime" href={paths.contact}>{siteSettings.callout.button} <span aria-hidden="true">↗</span></a></div>
   </div></section>;
+}
+
+function LegalNoticePage() {
+  const { legal, contact } = useContext(SiteSettingsContext);
+  return <>
+    <PageBanner kicker="Informations légales" title="Mentions légales" />
+    <section className="section page-width legal-page">
+      <h2>Éditeur du site</h2>
+      <dl>
+        <div><dt>Dénomination</dt><dd>{legal.companyName}</dd></div>
+        <div><dt>Forme juridique</dt><dd>{legal.legalForm}</dd></div>
+        <div><dt>SIRET</dt><dd>{legal.siret}</dd></div>
+        <div><dt>Siège social</dt><dd>{contact.addressLines.join(", ")}</dd></div>
+        <div><dt>Téléphone</dt><dd>{contact.phones[0]}</dd></div>
+        <div><dt>E-mail</dt><dd>{contact.emails[0]}</dd></div>
+        <div><dt>Directeur de la publication</dt><dd>{legal.publicationDirector}</dd></div>
+      </dl>
+      <h2>Hébergement</h2>
+      <dl>
+        <div><dt>Hébergeur</dt><dd>{legal.hostName}</dd></div>
+        <div><dt>Coordonnées</dt><dd>{legal.hostAddress}</dd></div>
+      </dl>
+      <h2>Propriété intellectuelle</h2>
+      <p>Les textes, images et logos de ce site appartiennent à {legal.companyName} ou à leurs titulaires. Toute reproduction sans autorisation est interdite.</p>
+      <p>La rubrique Actualités présente le titre et un court extrait d’articles publiés par des médias tiers, avec un lien vers leur source. Ces contenus restent la propriété de leurs éditeurs, qui peuvent demander leur retrait à {contact.emails[0]}.</p>
+      <h2>Données personnelles</h2>
+      <p>Le traitement de vos données est décrit dans notre <a href={paths.privacy}>politique de confidentialité</a>.</p>
+    </section>
+  </>;
+}
+
+function PrivacyPage() {
+  const { legal, contact } = useContext(SiteSettingsContext);
+  return <>
+    <PageBanner kicker="Informations légales" title="Politique de confidentialité" />
+    <section className="section page-width legal-page">
+      <h2>Responsable du traitement</h2>
+      <p>{legal.companyName}, {contact.addressLines.join(", ")}. Pour toute question sur vos données : {legal.privacyEmail}.</p>
+      <h2>Données collectées et finalités</h2>
+      <ul>
+        <li><strong>Candidatures :</strong> nom, e-mail, téléphone, ville, expérience, disponibilité, message, CV et lettre de motivation. Ces données servent à étudier votre candidature et à vous recontacter. Le traitement repose sur les démarches que vous engagez avant une éventuelle embauche.</li>
+        <li><strong>Formulaire de contact :</strong> nom, e-mail, sujet et message. Ces données servent à vous répondre. Le traitement repose sur notre intérêt légitime à traiter vos demandes.</li>
+        <li><strong>Espace équipe :</strong> nom, e-mail et rôle des membres de l’équipe, pour sécuriser l’accès à l’administration.</li>
+      </ul>
+      <h2>Destinataires</h2>
+      <p>Vos données sont accessibles uniquement aux membres habilités de l’équipe {legal.companyName}, à notre hébergeur et à notre prestataire d’envoi d’e-mails. Elles ne sont ni vendues ni cédées.</p>
+      <h2>Durée de conservation</h2>
+      <p>Les candidatures et leurs documents sont supprimés 24 mois après la dernière mise à jour du dossier. Les messages de contact sont supprimés 24 mois après leur réception.</p>
+      <h2>Vos droits</h2>
+      <p>Vous pouvez demander l’accès à vos données, leur rectification, leur effacement, leur limitation ou leur portabilité, et vous opposer à leur traitement, en écrivant à {legal.privacyEmail}. Vous pouvez aussi adresser une réclamation à la CNIL (cnil.fr).</p>
+      <h2>Cookies et services tiers</h2>
+      <p>Ce site n’utilise ni cookie publicitaire ni mesure d’audience. Un cookie de session, nécessaire au fonctionnement, est déposé uniquement lorsqu’un membre de l’équipe se connecte.</p>
+      <p>Les polices de caractères sont fournies par Google Fonts : votre navigateur transmet votre adresse IP à Google lors du chargement des pages. Les liens de la rubrique Actualités mènent vers des sites tiers, soumis à leur propre politique.</p>
+    </section>
+  </>;
 }
 
 function NotFoundPage() {
@@ -608,6 +666,8 @@ export default function App() {
     [paths.news]: pathname === paths.news ? <NewsPage /> : <NewsDetailPage slug={decodeURIComponent(pathname.split("/").pop())} />,
     [paths.contact]: <ContactPage />,
     [paths.spontaneous]: <SpontaneousPage />,
+    [paths.legal]: <LegalNoticePage />,
+    [paths.privacy]: <PrivacyPage />,
     [notFoundRoute]: <NotFoundPage />,
   };
   const preview = new URLSearchParams(window.location.search).get("sitePreview") === "1";

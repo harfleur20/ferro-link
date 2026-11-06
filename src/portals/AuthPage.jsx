@@ -2,7 +2,9 @@ import { useState } from "react";
 import "../styles/portals.css";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
-const resetToken = new URLSearchParams(window.location.search).get("resetToken");
+const searchParams = new URLSearchParams(window.location.search);
+const resetToken = searchParams.get("resetToken");
+const isInvitation = searchParams.get("invitation") === "1";
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
@@ -90,7 +92,7 @@ export default function AuthPage() {
       setNewPassword("");
       setConfirmPassword("");
       setMode("login");
-      setMessage("Votre mot de passe a été modifié. Vous pouvez vous connecter.");
+      setMessage(isInvitation ? "Votre mot de passe est créé. Vous pouvez vous connecter." : "Votre mot de passe a été modifié. Vous pouvez vous connecter.");
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -115,7 +117,7 @@ export default function AuthPage() {
           />
         </a>
         {isForgotMode && <h1>Mot de passe oublié</h1>}
-        {isResetMode && <h1>Nouveau mot de passe</h1>}
+        {isResetMode && <h1>{isInvitation ? "Créez votre mot de passe" : "Nouveau mot de passe"}</h1>}
         <form className="auth-form" onSubmit={submit}>
           {(!isResetMode) && (
             <label>
@@ -193,7 +195,7 @@ export default function AuthPage() {
           {error && <p className="auth-error" role="alert">{error}</p>}
           {message && <p className="auth-message" role="status">{message}</p>}
           <button className="button button-lime auth-submit" type="submit" disabled={loading}>
-            {loading ? "Veuillez patienter…" : isForgotMode ? "Envoyer le lien" : isResetMode ? "Modifier le mot de passe" : "Se connecter"}
+            {loading ? "Veuillez patienter…" : isForgotMode ? "Envoyer le lien" : isResetMode ? (isInvitation ? "Créer mon mot de passe" : "Modifier le mot de passe") : "Se connecter"}
           </button>
         </form>
         {mode !== "login" && (

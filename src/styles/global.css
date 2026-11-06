@@ -3096,3 +3096,15 @@ h3 {
 .news-detail-excerpt { margin: 0 0 28px; color: var(--ink); font-size: 18px; line-height: 1.7; }
 .news-detail-note { margin: 22px 0 0; color: var(--muted); font-size: 12px; }
 .news-back-link { display: inline-block; margin-bottom: 24px; color: var(--navy); font-size: 13px; font-weight: 700; }
+
+.footer-legal-links { display: inline-flex; flex-wrap: wrap; gap: 8px 18px; }
+.legal-page { max-width: 820px; }
+.legal-page h2 { margin: 36px 0 12px; font-size: 24px; }
+.legal-page h2:first-child { margin-top: 0; }
+.legal-page p, .legal-page li { line-height: 1.7; }
+.legal-page ul { display: grid; gap: 10px; padding-left: 20px; }
+.legal-page dl { display: grid; gap: 10px; margin: 0; }
+.legal-page dl > div { display: grid; grid-template-columns: minmax(0, 220px) minmax(0, 1fr); gap: 4px 16px; }
+.legal-page dt { font-weight: 700; }
+.legal-page dd { margin: 0; overflow-wrap: anywhere; }
+@media (max-width: 560px) { .legal-page dl > div { grid-template-columns: 1fr; } }

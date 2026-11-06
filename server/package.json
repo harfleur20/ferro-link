@@ -7,6 +7,7 @@
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "seed:test-admin": "node prisma/seed-admin.js",
+    "create-admin": "node prisma/create-admin.js",
     "db:start": "node prisma/local-db.js start",
     "db:stop": "node prisma/local-db.js stop",
     "prisma:generate": "prisma generate",

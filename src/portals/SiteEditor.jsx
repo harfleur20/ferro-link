@@ -11,6 +11,7 @@ const sections = [
   { id: "contact", label: "Page contact" },
   { id: "callout", label: "Bandeau avant le pied de page" },
   { id: "footer", label: "Pied de page" },
+  { id: "legal", label: "Mentions légales" },
   { id: "theme", label: "Couleurs & typo" },
 ];
 
@@ -52,7 +53,7 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
   const previewRef = useRef(null);
   const sectionTabRefs = useRef([]);
   const dirty = JSON.stringify(draft) !== JSON.stringify(settings || defaultSiteSettings);
-  const previewPath = section === "about" ? "/a-propos" : section === "contact" ? "/contact" : "/";
+  const previewPath = section === "about" ? "/a-propos" : section === "contact" ? "/contact" : section === "legal" ? "/mentions-legales" : "/";
 
   const handleSectionTabKeyDown = (event, index) => {
     let nextIndex;
@@ -420,6 +421,18 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
           <TextField label="Libellé du bouton d’envoi" value={draft.contact.submitLabel} onChange={(value) => update("contact", "submitLabel", value)} />
           <TextField label="Message après envoi" value={draft.contact.successText} onChange={(value) => update("contact", "successText", value)} multiline />
           <TextField label="Note de confidentialité" value={draft.contact.privacyText} onChange={(value) => update("contact", "privacyText", value)} multiline />
+        </>}
+
+        {section === "legal" && <>
+          <h4>Informations légales</h4>
+          <p className="portal-muted">Ces informations apparaissent sur les pages Mentions légales et Confidentialité. Remplacez les valeurs provisoires avant la mise en ligne.</p>
+          <TextField label="Dénomination sociale" value={draft.legal.companyName} maxLength={180} onChange={(value) => update("legal", "companyName", value)} />
+          <TextField label="Forme juridique et capital" value={draft.legal.legalForm} maxLength={180} hint="Exemple : SAS au capital de 10 000 €" onChange={(value) => update("legal", "legalForm", value)} />
+          <TextField label="SIRET" value={draft.legal.siret} maxLength={40} onChange={(value) => update("legal", "siret", value)} />
+          <TextField label="Directeur de la publication" value={draft.legal.publicationDirector} maxLength={180} onChange={(value) => update("legal", "publicationDirector", value)} />
+          <TextField label="Hébergeur" value={draft.legal.hostName} maxLength={180} onChange={(value) => update("legal", "hostName", value)} />
+          <TextField label="Adresse et téléphone de l’hébergeur" value={draft.legal.hostAddress} maxLength={300} onChange={(value) => update("legal", "hostAddress", value)} />
+          <TextField label="E-mail pour les données personnelles" value={draft.legal.privacyEmail} maxLength={160} onChange={(value) => update("legal", "privacyEmail", value)} />
         </>}
 
         {section === "theme" && <>

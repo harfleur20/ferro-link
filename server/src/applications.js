@@ -7,7 +7,7 @@ import { z } from "zod";
 import { prisma } from "./db.js";
 import { applicationLimiter } from "./limits.js";
 import { adminUrl, getActiveStaff, notificationRecipients, sendMailSafely } from "./mailer.js";
-import { requireAuth, requireStaff } from "./middleware.js";
+import { requireAuth, requireBusinessManager, requireStaff } from "./middleware.js";
 import { slugify } from "./slug.js";
 
 export const applicationsRouter = Router();
@@ -66,14 +66,29 @@ const applicationInput = z.object({
   jobId: z.string().max(40).optional(),
 });
 
+export const newApplicationTitle = "Nouvelle candidature";
+const applicationNotice = (application) => `${application.applicantName} : ${application.jobTitle}`;
+
+// Removes everything that identifies the candidate: the file, its documents and the team notifications.
+export async function removeApplication(application) {
+  await prisma.$transaction([
+    prisma.application.delete({ where: { id: application.id } }),
+    prisma.notification.deleteMany({ where: { title: newApplicationTitle, message: applicationNotice(application) } }),
+  ]);
+  const documents = [application.resumeUrl, application.letterFile].filter(Boolean);
+  await Promise.all(documents.map((filename) => unlink(path.join(uploadDir, path.basename(filename))).catch((err) => {
+    if (err.code !== "ENOENT") console.error("Suppression d’un document impossible :", err.message);
+  })));
+}
+
 async function notifyNewApplication(application) {
   const staff = await getActiveStaff();
   if (staff.length) {
     await prisma.notification.createMany({
       data: staff.map((user) => ({
         userId: user.id,
-        title: "Nouvelle candidature",
-        message: `${application.applicantName} : ${application.jobTitle}`,
+        title: newApplicationTitle,
+        message: applicationNotice(application),
       })),
     });
   }
@@ -156,6 +171,15 @@ applicationsRouter.get("/applications", requireAuth, requireStaff, async (_req, 
       orderBy: { createdAt: "desc" },
     });
     res.json({ applications });
+  } catch (err) { next(err); }
+});
+
+applicationsRouter.delete("/applications/:id", requireAuth, requireBusinessManager, async (req, res, next) => {
+  try {
+    const application = await prisma.application.findUnique({ where: { id: req.params.id } });
+    if (!application) return res.status(404).json({ error: "Candidature introuvable." });
+    await removeApplication(application);
+    res.status(204).end();
   } catch (err) { next(err); }
 });
 

@@ -161,6 +161,16 @@ export const defaultSiteSettings = {
     successText: "Merci, votre message a bien été envoyé. Nous revenons vers vous rapidement.",
     privacyText: "Vos informations sont utilisées uniquement pour répondre à votre demande.",
   },
+  // Provisional values: to replace with the company's real details before going live.
+  legal: {
+    companyName: "ferroLink",
+    legalForm: "À compléter",
+    siret: "000 000 000 00000",
+    publicationDirector: "À compléter",
+    hostName: "À compléter",
+    hostAddress: "À compléter",
+    privacyEmail: "contact@ferrolink.fr",
+  },
   theme: {
     primaryColor: "#17243b",
     accentColor: "#9acb36",

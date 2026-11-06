@@ -1,7 +1,7 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
-import { createHash, randomBytes } from "node:crypto";
 import { z } from "zod";
+import { accessTokenFilter, accessTokenSessionId, createAccessLink } from "./accessTokens.js";
 import { prisma } from "./db.js";
 import { loginLimiter, passwordResetLimiter } from "./limits.js";
 import { getMailTransport, staffRoles } from "./mailer.js";
@@ -60,38 +60,22 @@ authRouter.post("/forgot-password", passwordResetLimiter, async (req, res, next)
       return res.json({ message: resetRequestMessage });
     }
 
-    const resetSessionFilter = {
-      sid: { startsWith: "password-reset:" },
-      data: { contains: `"userId":"${user.id}"` },
-    };
     const previousToken = await prisma.session.findFirst({
-      where: { ...resetSessionFilter, expiresAt: { gt: new Date() } },
+      where: { ...accessTokenFilter(user.id), expiresAt: { gt: new Date() } },
       select: { expiresAt: true },
     });
     if (previousToken && Date.now() - (previousToken.expiresAt.getTime() - resetTokenDuration) < resetRequestCooldown) {
       return res.json({ message: resetRequestMessage });
     }
 
-    const token = randomBytes(32).toString("base64url");
-    const tokenHash = createHash("sha256").update(token).digest("hex");
-    const sessionId = `password-reset:${tokenHash}`;
-    const expiresAt = new Date(Date.now() + resetTokenDuration);
-    await prisma.$transaction(async tx => {
-      await tx.session.deleteMany({ where: resetSessionFilter });
-      await tx.session.create({
-        data: { sid: sessionId, data: JSON.stringify({ userId: user.id }), expiresAt },
-      });
-    });
-
-    const resetUrl = new URL("/acces-equipe", process.env.FRONTEND_URL || "http://localhost:5173");
-    resetUrl.searchParams.set("resetToken", token);
+    const { url: resetUrl, sessionId } = await createAccessLink(user.id, resetTokenDuration);
     try {
       await mail.transport.sendMail({
         from: mail.from,
         to: user.email,
         subject: "Réinitialisation de votre mot de passe ferroLink",
-        text: `Bonjour ${user.fullName},\n\nUtilisez ce lien pour choisir un nouveau mot de passe (valable 30 minutes) :\n${resetUrl.href}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.`,
-        html: `<p>Bonjour ${user.fullName.replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char])},</p><p>Utilisez ce lien pour choisir un nouveau mot de passe. Il est valable 30 minutes.</p><p><a href="${resetUrl.href}">Réinitialiser mon mot de passe</a></p><p>Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.</p>`,
+        text: `Bonjour ${user.fullName},\n\nUtilisez ce lien pour choisir un nouveau mot de passe (valable 30 minutes) :\n${resetUrl}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.`,
+        html: `<p>Bonjour ${user.fullName.replace(/[&<>"']/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char])},</p><p>Utilisez ce lien pour choisir un nouveau mot de passe. Il est valable 30 minutes.</p><p><a href="${resetUrl}">Réinitialiser mon mot de passe</a></p><p>Si vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.</p>`,
       });
     } catch (err) {
       await prisma.session.deleteMany({ where: { sid: sessionId } });
@@ -107,8 +91,7 @@ authRouter.post("/reset-password", async (req, res, next) => {
     const parsed = passwordResetInput.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: "Le lien ou le nouveau mot de passe est invalide." });
 
-    const tokenHash = createHash("sha256").update(parsed.data.token).digest("hex");
-    const sessionId = `password-reset:${tokenHash}`;
+    const sessionId = accessTokenSessionId(parsed.data.token);
     const resetToken = await prisma.session.findUnique({ where: { sid: sessionId } });
     if (!resetToken || resetToken.expiresAt <= new Date()) {
       if (resetToken) await prisma.session.delete({ where: { sid: sessionId } });

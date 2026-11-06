@@ -2,7 +2,7 @@ import "dotenv/config";
 import express from "express";
 import multer from "multer";
 import path from "node:path";
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { mkdir, access, writeFile } from "node:fs/promises";
 import cors from "cors";
 import helmet from "helmet";
@@ -14,7 +14,18 @@ import { jobsRouter } from "./jobs.js";
 import { applicationsRouter } from "./applications.js";
 import { contactRouter } from "./contact.js";
 import { newsRouter, scheduleNewsRefresh } from "./news.js";
-import { requireAuth, requireBusinessManager, requireStaff, requireSuperAdmin } from "./middleware.js";
+import { scheduleDataPurge } from "./retention.js";
+import { usersRouter } from "./users.js";
+import { requireAuth, requireBusinessManager, requireStaff } from "./middleware.js";
+
+// A missing production secret must neither stop the site nor fall back to a value published in the repository.
+function getSessionSecret() {
+  const secret = process.env.SESSION_SECRET;
+  if (process.env.NODE_ENV !== "production") return secret || "dev-only-change-this-secret";
+  if (secret?.length >= 32 && secret !== "replace-with-a-long-random-secret") return secret;
+  console.warn("SESSION_SECRET absent ou trop faible : clé temporaire utilisée, l’équipe sera déconnectée à chaque redémarrage.");
+  return randomBytes(32).toString("hex");
+}
 
 const app = express();
 const siteAssetDir = path.resolve(process.env.PUBLIC_SITE_ASSET_DIR || "./public/site-assets");
@@ -30,7 +41,7 @@ app.use(cors({ origin: frontendUrl, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 app.use(session({
   name: "ferrolink.sid",
-  secret: process.env.SESSION_SECRET || "dev-only-change-this-secret",
+  secret: getSessionSecret(),
   resave: false,
   saveUninitialized: false,
   rolling: true,
@@ -43,6 +54,7 @@ app.use("/api", jobsRouter);
 app.use("/api", applicationsRouter);
 app.use("/api", contactRouter);
 app.use("/api", newsRouter);
+app.use("/api", usersRouter);
 
 app.post("/api/site-assets", requireAuth, requireBusinessManager, (req, res, next) => {
   logoUpload.single("logo")(req, res, err => {
@@ -147,6 +159,7 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
         tagline: 120, description: 1200, exploreTitle: 120, expertiseTitle: 120, contactTitle: 120,
         contactDescription: 500, contactCta: 80, copyright: 120, signature: 180, backToTop: 80,
       },
+      legal: { companyName: 180, legalForm: 180, siret: 40, publicationDirector: 180, hostName: 180, hostAddress: 300, privacyEmail: 160 },
       callout: { kicker: 80, title: 180, description: 500, button: 80, backgroundImage: 500 },
       contact: {
         kicker: 120, title: 180, description: 800, infoTitle: 120, infoHeading: 180,
@@ -218,7 +231,7 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
       return res.status(400).json({ error: validationError.message });
     }
     if (normalized.contact.phones.length !== normalized.contact.phoneLinks.length
-      || normalized.contact.emails.some((email) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+      || [...normalized.contact.emails, normalized.legal.privacyEmail].some((email) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
       return res.status(400).json({ error: "Les coordonnées e-mail ou téléphone sont invalides." });
     }
 
@@ -286,21 +299,6 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
   } catch (err) { next(err); }
 });
 
-app.get("/api/users", requireAuth, requireSuperAdmin, async (_req, res, next) => {
-  try {
-    const users = await prisma.user.findMany({ select: { id: true, email: true, fullName: true, role: true, isActive: true, createdAt: true }, orderBy: { createdAt: "desc" } });
-    res.json({ users });
-  } catch (err) { next(err); }
-});
-app.patch("/api/users/:id/role", requireAuth, requireSuperAdmin, async (req, res, next) => {
-  try {
-    const { role } = req.body || {};
-    if (!["CANDIDATE","RECRUITER","RECRUITMENT_ADMIN","SUPER_ADMIN"].includes(role)) return res.status(400).json({ error: "Rôle invalide." });
-    if (req.params.id === req.session.user.id && role !== "SUPER_ADMIN") return res.status(400).json({ error: "Vous ne pouvez pas retirer votre propre rôle super administrateur." });
-    const user = await prisma.user.update({ where: { id: req.params.id }, data: { role }, select: { id: true, email: true, fullName: true, role: true } });
-    res.json({ user });
-  } catch (err) { next(err); }
-});
 app.get("/api/notifications", requireAuth, async (req, res, next) => {
   try {
     const notifications = await prisma.notification.findMany({ where: { userId: req.session.user.id }, orderBy: { createdAt: "desc" }, take: 50 });
@@ -321,4 +319,5 @@ app.use((err, _req, res, _next) => {
 app.listen(port, () => {
   console.log(`Ferro-Link API listening on port ${port}`);
   scheduleNewsRefresh();
+  scheduleDataPurge();
 });

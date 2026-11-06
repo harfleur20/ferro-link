@@ -7,12 +7,13 @@ function Fact({ label, children }) {
   return <div><dt>{label}</dt><dd>{children || "—"}</dd></div>;
 }
 
-export default function ApplicationDetail({ application, onSave, onBack }) {
+export default function ApplicationDetail({ application, onSave, onDelete, onBack }) {
   const [status, setStatus] = useState(application.status);
   const [note, setNote] = useState(application.reviewerNote || "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const submit = async (event) => {
     event.preventDefault();
@@ -25,6 +26,17 @@ export default function ApplicationDetail({ application, onSave, onBack }) {
     } catch (saveError) {
       setError(saveError.message);
     } finally {
+      setSaving(false);
+    }
+  };
+
+  const remove = async () => {
+    setError("");
+    setSaving(true);
+    try {
+      await onDelete(application);
+    } catch (deleteError) {
+      setError(deleteError.message);
       setSaving(false);
     }
   };
@@ -63,5 +75,12 @@ export default function ApplicationDetail({ application, onSave, onBack }) {
       {saved && <p className="portal-alert success" role="status">Modifications enregistrées.</p>}
       <div className="job-editor-actions"><button className="portal-primary-button" type="submit" disabled={saving}>{saving ? "Enregistrement…" : "Enregistrer"}</button></div>
     </form>
+    {onDelete && <div className="portal-delete-zone">
+      {confirmingDelete ? <>
+        <span>Supprimer définitivement ce dossier et ses documents ?</span>
+        <button className="portal-danger-button" type="button" disabled={saving} onClick={remove}>Confirmer la suppression</button>
+        <button className="portal-text-button" type="button" onClick={() => setConfirmingDelete(false)}>Annuler</button>
+      </> : <button className="portal-danger-button" type="button" onClick={() => setConfirmingDelete(true)}>Supprimer ce dossier</button>}
+    </div>}
   </section>;
 }
