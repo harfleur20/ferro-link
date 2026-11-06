@@ -6,6 +6,7 @@ import { adminUrl, getActiveStaff, notificationRecipients, sendMailSafely } from
 import { requireAuth, requireBusinessManager, requireStaff } from "./middleware.js";
 
 export const contactRouter = Router();
+export const newContactMessageTitle = "Nouveau message de contact";
 
 const contactInput = z.object({
   name: z.string().trim().min(1).max(120),
@@ -15,8 +16,15 @@ const contactInput = z.object({
   website: z.string().max(200).optional(),
 });
 
+const contactNotice = (message) => `${message.name} : ${message.subject}`;
+
 async function notifyContactMessage(message) {
   const staff = await getActiveStaff();
+  if (staff.length) {
+    await prisma.notification.createMany({
+      data: staff.map((user) => ({ userId: user.id, title: newContactMessageTitle, message: contactNotice(message) })),
+    });
+  }
   await sendMailSafely({
     to: notificationRecipients(staff),
     replyTo: message.email,
@@ -47,8 +55,12 @@ contactRouter.get("/staff/contact-messages", requireAuth, requireStaff, async (_
 
 contactRouter.delete("/staff/contact-messages/:id", requireAuth, requireBusinessManager, async (req, res, next) => {
   try {
-    const result = await prisma.contactMessage.deleteMany({ where: { id: req.params.id } });
-    if (!result.count) return res.status(404).json({ error: "Message introuvable." });
+    const message = await prisma.contactMessage.findUnique({ where: { id: req.params.id } });
+    if (!message) return res.status(404).json({ error: "Message introuvable." });
+    await Promise.all([
+      prisma.contactMessage.deleteMany({ where: { id: message.id } }),
+      prisma.notification.deleteMany({ where: { title: newContactMessageTitle, message: contactNotice(message) } }),
+    ]);
     res.status(204).end();
   } catch (err) { next(err); }
 });

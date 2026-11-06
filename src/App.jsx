@@ -194,7 +194,7 @@ function HomePage() {
     <section className="home-contact-band" style={{ "--home-band-image": `url("${resolveSiteAssetUrl(home.homeBandImage, API)}")` }}>
       <div className="page-width home-contact-inner">
         <div><p className="eyebrow"><span /> {home.contactKicker}</p><h2>{home.contactTitle}</h2></div>
-        <a className="button button-lime" href={paths.contact}>{home.contactCta} <span aria-hidden="true">↗</span></a>
+        <a className="button button-lime" href={paths.contact}>{home.contactCta}</a>
       </div>
     </section>
 
@@ -332,7 +332,7 @@ function ApplicationForm({ job, onCancel }) {
     {error && <p className="application-error" role="alert">{error}</p>}
     {success && <p role="status">{success}</p>}
     <p className="application-privacy">Votre candidature est enregistrée dans la base ferroLink. Les documents restent privés, accessibles à l’équipe de recrutement autorisée et conservés 24 mois au plus. <a href={paths.privacy} target="_blank" rel="noreferrer">Politique de confidentialité</a></p>
-    <div className="application-form-actions"><button className="button button-lime" type="submit" disabled={submitting}>{submitting ? "Envoi en cours…" : "Envoyer ma candidature"} <span aria-hidden="true">↗</span></button>{onCancel && <button className="button button-outline" type="button" onClick={onCancel}>Annuler</button>}</div>
+    <div className="application-form-actions"><button className="button button-lime" type="submit" disabled={submitting}>{submitting ? "Envoi en cours…" : "Envoyer ma candidature"}</button>{onCancel && <button className="button button-outline" type="button" onClick={onCancel}>Annuler</button>}</div>
   </form>;
 }
 
@@ -404,7 +404,7 @@ function JobsPage() {
     <section className="section page-width jobs-marketplace">
       <div className="jobs-marketplace-heading">
         <div><div className="section-kicker"><span>Carrières</span> / Offres d’emploi</div><h2>Les opportunités du moment</h2><p>Parcourez les postes et filtrez les annonces selon votre recherche.</p></div>
-        <a className="button button-outline" href={paths.spontaneous}>Candidature spontanée <span aria-hidden="true">↗</span></a>
+        <a className="button button-outline" href={paths.spontaneous}>Candidature spontanée</a>
       </div>
       {jobOffers.length > 0 && <><div className="jobs-search-panel" role="search" aria-label="Filtrer les offres d’emploi">
         <label className="jobs-search-field"><span aria-hidden="true">⌕</span><span className="visually-hidden">Rechercher une offre</span><input type="search" placeholder="Intitulé, compétence, domaine…" value={search} onChange={(event) => { setSearch(event.target.value); resetPagination(); }} /></label>
@@ -415,7 +415,7 @@ function JobsPage() {
       <div className="jobs-results-line"><p><strong>{filteredJobs.length}</strong> offre{filteredJobs.length > 1 ? "s" : ""} trouvée{filteredJobs.length > 1 ? "s" : ""}</p><span>{filteredJobs.length > 0 && `Affichage de ${(currentPage - 1) * pageSize + 1} à ${Math.min(currentPage * pageSize, filteredJobs.length)}`}</span></div></>}
       {jobsLoading ? <p className="jobs-empty-state" role="status">Chargement des offres…</p> : jobsError ? <div className="jobs-empty-state" role="alert"><h3>Les offres sont momentanément indisponibles.</h3><p>Merci de réessayer dans quelques instants.</p></div> : !jobOffers.length ? <div className="jobs-empty-state"><h3>Aucune offre n’est publiée pour le moment.</h3><p>Vous pouvez tout de même nous envoyer votre candidature.</p><a className="button button-lime" href={paths.spontaneous}>Candidature spontanée</a></div> : filteredJobs.length ? <div className="jobs-offer-grid">{visibleJobs.map((job) => <article className="job-card" key={job.id}>
         <a className="job-card-image-button" href={`${paths.jobs}/${job.slug}`} aria-label={`Voir le détail : ${job.title}`}><img src={jobImage(job)} alt={job.imageAlt || ""} loading="lazy" />{job.category && <span className="job-category">{job.category}</span>}<span className="job-image-arrow" aria-hidden="true">↗</span></a>
-        <div className="job-card-content"><div className="job-card-meta"><span>{job.contractType}</span>{job.experience && <span>{job.experience}</span>}<span className="job-published-date">Publié le {formatPublicationDate(job.publishedAt)}</span></div><h3><a href={`${paths.jobs}/${job.slug}`}>{job.title}</a></h3><p className="job-card-summary">{job.description}</p><div className="job-card-location"><span className="job-location-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" strokeWidth="1.8"/></svg></span>{job.location}{job.salary && <span className="job-card-salary">{job.salary}</span>}</div><div className="job-card-actions"><a className="job-details-link" href={`${paths.jobs}/${job.slug}`}>Voir l’offre <span aria-hidden="true">→</span></a><button type="button" className="job-apply-link" onClick={() => setApplicationJob(job)} aria-label={`Candidater à ${job.title}`}>Postuler ↗</button></div></div>
+        <div className="job-card-content"><div className="job-card-meta"><span>{job.contractType}</span>{job.experience && <span>{job.experience}</span>}<span className="job-published-date">Publié le {formatPublicationDate(job.publishedAt)}</span></div><h3><a href={`${paths.jobs}/${job.slug}`}>{job.title}</a></h3><p className="job-card-summary">{job.description}</p><div className="job-card-location"><span className="job-location-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" strokeWidth="1.8"/></svg></span>{job.location}{job.salary && <span className="job-card-salary">{job.salary}</span>}</div><div className="job-card-actions"><a className="job-details-link" href={`${paths.jobs}/${job.slug}`}>Voir l’offre <span aria-hidden="true">→</span></a><button type="button" className="job-apply-link" onClick={() => setApplicationJob(job)} aria-label={`Candidater à ${job.title}`}>Postuler</button></div></div>
       </article>)}</div> : <div className="jobs-empty-state"><h3>Aucune offre ne correspond à ces filtres.</h3><p>Modifiez votre recherche ou envoyez-nous une candidature spontanée.</p><button type="button" className="button button-lime" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); resetPagination(); }}>Voir toutes les offres</button><a className="text-link" href={paths.spontaneous}>Candidature spontanée</a></div>}
       {pageCount > 1 && <nav className="jobs-pagination" aria-label="Pagination des offres d’emploi">
         <button type="button" className="jobs-page-arrow" onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} disabled={currentPage === 1} aria-label="Page précédente">← <span>Précédent</span></button>
@@ -425,7 +425,7 @@ function JobsPage() {
         <button type="button" className="jobs-page-arrow" onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))} disabled={currentPage === pageCount} aria-label="Page suivante"><span>Suivant</span> →</button>
       </nav>}
     </section>
-    <section className="jobs-spontaneous"><div className="page-width jobs-spontaneous-inner"><div><p className="eyebrow"><span /> Vous ne trouvez pas votre poste ?</p><h2>Votre parcours a aussi sa place chez ferroLink.</h2><p>Présentez-nous vos compétences et le type de mission que vous recherchez. Nous pourrons étudier votre candidature spontanée.</p></div><a className="button button-lime" href={paths.spontaneous}>Envoyer une candidature <span aria-hidden="true">↗</span></a></div></section>
+    <section className="jobs-spontaneous"><div className="page-width jobs-spontaneous-inner"><div><p className="eyebrow"><span /> Vous ne trouvez pas votre poste ?</p><h2>Votre parcours a aussi sa place chez ferroLink.</h2><p>Présentez-nous vos compétences et le type de mission que vous recherchez. Nous pourrons étudier votre candidature spontanée.</p></div><a className="button button-lime" href={paths.spontaneous}>Envoyer une candidature</a></div></section>
     <section className="section page-width jobs-values-section"><div className="section-heading"><div><div className="section-kicker"><span>Pourquoi ferroLink ?</span></div><h2>Des métiers au cœur du ferroviaire</h2></div><a className="text-link" href="/#expertises">{siteSettings.about.visionLink}</a></div><div className="jobs-domain-list">{siteSettings.home.expertiseAreas.map((area) => <div key={area.title}><FaTrainSubway className="train-icon" aria-hidden="true" /><strong>{area.title}</strong></div>)}</div></section>
     {applicationJob && <ApplicationModal job={applicationJob} onClose={() => setApplicationJob(null)} />}
   </>;
@@ -455,9 +455,9 @@ function JobDetailPage({ slug }) {
         {job.missions.length > 0 && <section><h2>Vos missions</h2><ul>{job.missions.map((mission) => <li key={mission}>{mission}</li>)}</ul></section>}
         {job.requirements && <section><h2>Votre profil</h2><p>{job.requirements}</p></section>}
         <section><h2>Informations sur le poste</h2><dl className="job-detail-facts"><div><dt>Contrat</dt><dd>{job.contractType}</dd></div><div><dt>Localisation</dt><dd>{job.location}</dd></div>{job.experience && <div><dt>Expérience</dt><dd>{job.experience}</dd></div>}{job.salary && <div><dt>Rémunération</dt><dd>{job.salary}</dd></div>}<div><dt>Date de publication</dt><dd>{formatPublicationDate(job.publishedAt)}</dd></div></dl></section>
-        <div className="job-detail-apply-mobile"><button className="button button-lime" type="button" onClick={() => setApplicationOpen(true)}>Postuler à cette offre <span aria-hidden="true">↗</span></button></div>
+        <div className="job-detail-apply-mobile"><button className="button button-lime" type="button" onClick={() => setApplicationOpen(true)}>Postuler à cette offre</button></div>
       </article>
-      <aside className="job-detail-sidebar"><p className="section-kicker"><span>Votre prochaine étape</span></p><h2>Ce poste vous intéresse ?</h2><p>Envoyez votre candidature avec vos coordonnées, votre CV et un message de motivation.</p><button className="button button-lime" type="button" onClick={() => setApplicationOpen(true)}>Postuler maintenant <span aria-hidden="true">↗</span></button><a className="job-sidebar-back" href={paths.jobs}>← Consulter les autres offres</a></aside>
+      <aside className="job-detail-sidebar"><p className="section-kicker"><span>Votre prochaine étape</span></p><h2>Ce poste vous intéresse ?</h2><p>Envoyez votre candidature avec vos coordonnées, votre CV et un message de motivation.</p><button className="button button-lime" type="button" onClick={() => setApplicationOpen(true)}>Postuler maintenant</button><a className="job-sidebar-back" href={paths.jobs}>← Consulter les autres offres</a></aside>
     </section>
     {applicationOpen && <ApplicationModal job={job} onClose={() => setApplicationOpen(false)} />}
   </>;
@@ -507,7 +507,7 @@ function ContactPage() {
         <label>{contact.emailFieldLabel}<input name="email" type="email" value={form.email} onChange={update} autoComplete="email" required /></label>
         <label>{contact.subjectLabel}<input name="subject" value={form.subject} onChange={update} maxLength="180" required /></label>
         <label>{contact.messageLabel}<textarea name="message" rows="5" value={form.message} onChange={update} maxLength="5000" required /></label>
-        <button className="button button-lime" type="submit" disabled={sending}>{sending ? "Envoi en cours…" : contact.submitLabel} <span aria-hidden="true">↗</span></button>
+        <button className="button button-lime" type="submit" disabled={sending}>{sending ? "Envoi en cours…" : contact.submitLabel}</button>
         {error && <p className="application-error" role="alert">{error}</p>}
         {submitted && <p className="form-feedback" role="status">{contact.successText}</p>}
         <p className="form-note">{contact.privacyText} <a href={paths.privacy} target="_blank" rel="noreferrer">Politique de confidentialité</a></p>
@@ -560,7 +560,7 @@ function NewsPage() {
           <NewsMeta article={article} />
           <h2 lang={articleLanguage(article)}><a href={`${paths.news}/${article.slug}`}>{article.title}</a></h2>
           {article.excerpt && <p lang={articleLanguage(article)}>{article.excerpt}</p>}
-          <a className="button button-lime news-card-button" href={article.sourceUrl} target="_blank" rel="noopener noreferrer" aria-label={`Consulter l’article complet sur ${article.sourceName} : ${article.title}`}>Consulter <span aria-hidden="true">↗</span></a>
+          <a className="button button-lime news-card-button" href={article.sourceUrl} target="_blank" rel="noopener noreferrer" aria-label={`Consulter l’article complet sur ${article.sourceName} : ${article.title}`}>Consulter</a>
         </div>
       </article>)}</div>}
       {data?.pageCount > 1 && <nav className="jobs-pagination" aria-label="Pagination des actualités">
@@ -584,7 +584,7 @@ function NewsDetailPage({ slug }) {
     <h1 lang={articleLanguage(article)}>{article.title}</h1>
     <NewsCover article={article} className="news-detail-image" />
     {article.excerpt && <p className="news-detail-excerpt" lang={articleLanguage(article)}>{article.excerpt}</p>}
-    <a className="button button-lime" href={article.sourceUrl} target="_blank" rel="noopener noreferrer">Consulter l’article complet <span aria-hidden="true">↗</span></a>
+    <a className="button button-lime" href={article.sourceUrl} target="_blank" rel="noopener noreferrer">Consulter l’article complet</a>
     <p className="news-detail-note">{article.translatedAt ? `Extrait traduit automatiquement de l’anglais. L’article complet, en anglais, et l’image sont publiés par ${article.sourceName}.` : `Extrait et image publiés par ${article.sourceName}.`} ferroLink n’est pas l’auteur de cet article.</p>
   </section>;
 }
@@ -592,7 +592,7 @@ function NewsDetailPage({ slug }) {
 function ContactCallout() {
   const siteSettings = useContext(SiteSettingsContext);
   return <section className="contact section page-width" style={{ "--contact-panel-image": `url("${resolveSiteAssetUrl(siteSettings.callout.backgroundImage, API)}")` }}><div className="contact-panel">
-    <div className="contact-content"><div className="section-kicker section-kicker-light"><span>{siteSettings.callout.kicker}</span></div><h2>{siteSettings.callout.title}</h2><p>{siteSettings.callout.description}</p><a className="button button-lime" href={paths.contact}>{siteSettings.callout.button} <span aria-hidden="true">↗</span></a></div>
+    <div className="contact-content"><div className="section-kicker section-kicker-light"><span>{siteSettings.callout.kicker}</span></div><h2>{siteSettings.callout.title}</h2><p>{siteSettings.callout.description}</p><a className="button button-lime" href={paths.contact}>{siteSettings.callout.button}</a></div>
   </div></section>;
 }
 

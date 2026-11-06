@@ -12,17 +12,19 @@ export default function ApplicationDetail({ application, onSave, onDelete, onBac
   const [note, setNote] = useState(application.reviewerNote || "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [saved, setSaved] = useState(false);
+  const [saved, setSaved] = useState("");
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const submit = async (event) => {
     event.preventDefault();
     setError("");
-    setSaved(false);
+    setSaved("");
     setSaving(true);
     try {
-      await onSave(application, { status, reviewerNote: note });
-      setSaved(true);
+      const result = await onSave(application, { status, reviewerNote: note });
+      if (result.cancelled) return;
+      setSaved(`Modifications enregistrées. ${result.notice}`.trim());
+      if (result.warning) setError(result.warning);
     } catch (saveError) {
       setError(saveError.message);
     } finally {
@@ -72,7 +74,7 @@ export default function ApplicationDetail({ application, onSave, onDelete, onBac
         <small>Visible uniquement par l’équipe de recrutement.</small>
       </label>
       {error && <p className="portal-alert error" role="alert">{error}</p>}
-      {saved && <p className="portal-alert success" role="status">Modifications enregistrées.</p>}
+      {saved && <p className="portal-alert success" role="status">{saved}</p>}
       <div className="job-editor-actions"><button className="portal-primary-button" type="submit" disabled={saving}>{saving ? "Enregistrement…" : "Enregistrer"}</button></div>
     </form>
     {onDelete && <div className="portal-delete-zone">

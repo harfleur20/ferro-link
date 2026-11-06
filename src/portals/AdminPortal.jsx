@@ -26,6 +26,11 @@ import "../styles/portals.css";
 
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
+const candidateEmailLabels = { INTERVIEW: "d’entretien", ACCEPTED: "d’acceptation", REJECTED: "de refus" };
+const notificationRefreshDelay = 60 * 1000;
+// Each request extends the session, so an unattended page must stop refreshing.
+const notificationIdleLimit = 30 * 60 * 1000;
+
 const roleDetails = {
   SUPER_ADMIN: {
     label: "SuperAdmin",
@@ -90,6 +95,7 @@ export default function AdminPortal() {
   const avatarInputRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const [applications, setApplications] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [jobEditor, setJobEditor] = useState(null);
@@ -164,6 +170,37 @@ export default function AdminPortal() {
     return () => { alive = false; };
   }, []);
 
+  const userId = user?.id;
+  useEffect(() => {
+    if (!userId) return undefined;
+    let lastActivity = Date.now();
+    const markActive = () => { lastActivity = Date.now(); };
+    const refresh = async () => {
+      if (document.hidden || Date.now() - lastActivity > notificationIdleLimit) return;
+      try {
+        const data = await api("/api/notifications");
+        setNotifications(data.notifications || []);
+      } catch (refreshError) {
+        if (refreshError.status === 401) location.replace("/acces-equipe");
+      }
+    };
+    const refreshOnReturn = () => {
+      if (document.hidden) return;
+      markActive();
+      refresh();
+    };
+    const timer = setInterval(refresh, notificationRefreshDelay);
+    window.addEventListener("pointerdown", markActive);
+    window.addEventListener("keydown", markActive);
+    document.addEventListener("visibilitychange", refreshOnReturn);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener("pointerdown", markActive);
+      window.removeEventListener("keydown", markActive);
+      document.removeEventListener("visibilitychange", refreshOnReturn);
+    };
+  }, [userId]);
+
   const selectPage = (page) => {
     setActive(page);
     setJobEditor(null);
@@ -213,25 +250,30 @@ export default function AdminPortal() {
     }
   };
 
-  const updateApplicationStatus = async (application, status) => {
-    setError("");
-    try {
-      const { application: updated } = await api(`/api/applications/${application.id}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      });
-      setApplications((previous) => previous.map((item) => item.id === application.id ? { ...item, ...updated } : item));
-    } catch (updateError) {
-      setError(updateError.message);
-    }
-  };
-
   const saveApplication = async (application, changes) => {
-    const { application: updated } = await api(`/api/applications/${application.id}/status`, {
+    const emailLabel = changes.status !== application.status && candidateEmailLabels[changes.status];
+    if (emailLabel && !window.confirm(`Un e-mail ${emailLabel} sera envoyé à ${application.applicantName}. Il ne pourra pas être annulé. Continuer ?`)) return { cancelled: true };
+    const { application: updated, candidateEmail } = await api(`/api/applications/${application.id}/status`, {
       method: "PATCH",
       body: JSON.stringify(changes),
     });
     setApplications((previous) => previous.map((item) => item.id === application.id ? { ...item, ...updated } : item));
+    return {
+      notice: candidateEmail === "sent" ? `E-mail envoyé à ${application.applicantName}.` : "",
+      warning: candidateEmail === "failed" ? `Statut enregistré, mais l’e-mail n’a pas pu être envoyé à ${application.applicantName}. Prévenez cette personne directement.` : "",
+    };
+  };
+
+  const updateApplicationStatus = async (application, status) => {
+    setError("");
+    setNotice("");
+    try {
+      const result = await saveApplication(application, { status });
+      if (result.notice) setNotice(result.notice);
+      if (result.warning) setError(result.warning);
+    } catch (updateError) {
+      setError(updateError.message);
+    }
   };
 
   const deleteApplication = async (application) => {
@@ -353,6 +395,7 @@ export default function AdminPortal() {
 
       <main className="portal-content">
         {error && <div className="portal-alert error" role="alert">{error}</div>}
+        {notice && <div className="portal-alert success" role="status">{notice}</div>}
 
         {active === "dashboard" && <>
           <section className="portal-welcome">

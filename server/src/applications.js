@@ -5,12 +5,16 @@ import { Router } from "express";
 import multer from "multer";
 import { z } from "zod";
 import { prisma } from "./db.js";
+import { candidateEmail, spontaneousTitle } from "./emailTemplates.js";
 import { applicationLimiter } from "./limits.js";
 import { adminUrl, getActiveStaff, notificationRecipients, sendMailSafely } from "./mailer.js";
 import { requireAuth, requireBusinessManager, requireStaff } from "./middleware.js";
 import { slugify } from "./slug.js";
 
 export const applicationsRouter = Router();
+
+// Moving a file to one of these statuses tells the candidate by e-mail.
+const candidateEmailStatuses = new Set(["INTERVIEW", "ACCEPTED", "REJECTED"]);
 
 const uploadDir = path.resolve(process.env.PRIVATE_UPLOAD_DIR || "./private-uploads");
 await mkdir(uploadDir, { recursive: true });
@@ -98,11 +102,7 @@ async function notifyNewApplication(application) {
       subject: `Nouvelle candidature : ${application.jobTitle}`,
       text: `Candidat : ${application.applicantName}\nE-mail : ${application.applicantEmail}\nTéléphone : ${application.applicantPhone}\nVille : ${application.applicantCity}\n\nConsultez le dossier complet dans l’espace administration :\n${adminUrl()}`,
     }),
-    sendMailSafely({
-      to: application.applicantEmail,
-      subject: "Nous avons bien reçu votre candidature",
-      text: `Bonjour ${application.applicantName},\n\nNous avons bien reçu votre candidature (${application.jobTitle}). Notre équipe va l’étudier et reviendra vers vous si votre profil correspond à nos besoins.\n\nMerci de l’intérêt que vous portez à ferroLink.\n\nL’équipe ferroLink`,
-    }),
+    candidateEmail("RECEIVED", application).then(sendMailSafely),
   ]);
 }
 
@@ -129,7 +129,7 @@ applicationsRouter.post("/applications/public", applicationLimiter, receiveFiles
     const application = await prisma.application.create({
       data: {
         jobId: job?.id,
-        jobTitle: job?.title || "Candidature spontanée",
+        jobTitle: job?.title || spontaneousTitle,
         applicantName: name,
         applicantEmail: email,
         applicantPhone: telephone,
@@ -190,9 +190,14 @@ applicationsRouter.patch("/applications/:id/status", requireAuth, requireStaff, 
     if (reviewerNote !== undefined && (typeof reviewerNote !== "string" || reviewerNote.length > 5000)) return res.status(400).json({ error: "La note interne est limitée à 5000 caractères." });
     const data = { status, reviewedById: req.session.user.id };
     if (reviewerNote !== undefined) data.reviewerNote = reviewerNote.trim() || null;
-    const result = await prisma.application.updateMany({ where: { id: req.params.id }, data });
-    if (!result.count) return res.status(404).json({ error: "Candidature introuvable." });
+    const current = await prisma.application.findUnique({ where: { id: req.params.id }, select: { status: true } });
+    if (!current) return res.status(404).json({ error: "Candidature introuvable." });
+    // Of two simultaneous changes only one succeeds, so the candidate receives a single e-mail.
+    const result = await prisma.application.updateMany({ where: { id: req.params.id, status: current.status }, data });
+    if (!result.count) return res.status(409).json({ error: "Cette candidature vient d’être modifiée. Rechargez la page." });
     const application = await prisma.application.findUnique({ where: { id: req.params.id }, include: { job: { select: { id: true, title: true, location: true } } } });
-    res.json({ application });
+    if (status === current.status || !candidateEmailStatuses.has(status)) return res.json({ application });
+    const emailSent = await sendMailSafely(await candidateEmail(status, application));
+    res.json({ application, candidateEmail: emailSent ? "sent" : "failed" });
   } catch (err) { next(err); }
 });

@@ -14,6 +14,9 @@ export function getMailTransport() {
       host: SMTP_HOST,
       port,
       secure: process.env.SMTP_SECURE === "true",
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 20000,
       ...(SMTP_USER && SMTP_PASS ? { auth: { user: SMTP_USER, pass: SMTP_PASS } } : {}),
     }),
   };
@@ -40,4 +43,10 @@ export function notificationRecipients(staff) {
   return process.env.NOTIFICATION_EMAIL || staff.map((user) => user.email);
 }
 
-export const adminUrl = () => new URL("/administration", process.env.FRONTEND_URL || "http://localhost:5173").href;
+export const siteUrl = (path) => new URL(path, process.env.FRONTEND_URL || "http://localhost:5173").href;
+export const adminUrl = () => siteUrl("/administration");
+
+export async function getContactEmail() {
+  const settings = await prisma.siteSettings.findUnique({ where: { id: "main" }, select: { value: true } });
+  return settings?.value?.contact?.emails?.[0] || "contact@ferrolink.fr";
+}

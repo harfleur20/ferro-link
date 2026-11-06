@@ -1,5 +1,6 @@
 import { prisma } from "./db.js";
 import { newApplicationTitle, removeApplication } from "./applications.js";
+import { newContactMessageTitle } from "./contact.js";
 
 // The privacy page (/confidentialite) announces this duration: change both together.
 const retentionMonths = 24;
@@ -11,7 +12,7 @@ export async function purgeExpiredData() {
   const applications = await prisma.application.findMany({ where: { updatedAt: { lt: cutoff } } });
   for (const application of applications) await removeApplication(application);
   const messages = await prisma.contactMessage.deleteMany({ where: { createdAt: { lt: cutoff } } });
-  await prisma.notification.deleteMany({ where: { title: newApplicationTitle, createdAt: { lt: cutoff } } });
+  await prisma.notification.deleteMany({ where: { title: { in: [newApplicationTitle, newContactMessageTitle] }, createdAt: { lt: cutoff } } });
   return { applications: applications.length, messages: messages.count };
 }
 

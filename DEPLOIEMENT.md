@@ -44,7 +44,7 @@ Ouvrez le lien affiché (valable 24 heures) pour choisir le mot de passe, puis i
 - Remplacez les valeurs provisoires dans « Contenu du site » > « Mentions légales ».
 - Faites relire les pages légales.
 - Créez une vraie boîte de réception pour `contact@…` et mettez à jour l'adresse dans « Page contact ».
-- Envoyez une candidature de test et vérifiez la réception des e-mails, y compris « Mot de passe oublié ».
+- Envoyez une candidature de test, passez-la à « Entretien » et vérifiez la réception des e-mails, y compris « Mot de passe oublié ».
 
 ## Sauvegarde des fichiers
 Les sauvegardes Coolify couvrent la base, **pas le volume `/data`**. Sans sauvegarde du volume, une panne du serveur ferait perdre les CV alors que les dossiers resteraient en base. Depuis le serveur, en remplaçant `VOLUME` par le nom affiché par `docker volume ls` :
