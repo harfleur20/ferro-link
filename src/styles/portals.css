@@ -62,8 +62,11 @@
 .portal-avatar { position:relative; display:grid; width:38px; height:38px; overflow:hidden; place-items:center; border-radius:50%; background:#e7f1d7; color:#5f851f; font-size:14px; font-weight:800; }
 .portal-avatar img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
 .portal-avatar-upload { display:none; }
-.portal-account-name { max-width:160px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; font-weight:700; }
-.portal-account-caret { color:#7d8795; }
+.portal-account-identity { display:grid; gap:2px; max-width:150px; min-width:0; text-align:left; }
+.portal-account-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; font-weight:700; }
+.portal-account-label { color:#668f20; font-size:10px; font-weight:700; }
+.portal-account-caret { flex:none; color:#7d8795; font-size:10px; transition:transform .15s ease; }
+.portal-account[aria-expanded="true"] .portal-account-caret { transform:rotate(180deg); }
 .portal-account-menu { position:absolute; top:calc(100% + 14px); right:0; z-index:50; width:180px; padding:6px; background:#fff; box-shadow:0 14px 30px #17243b1a; }
 .portal-account-menu button { width:100%; padding:12px; border:0; background:#fff; color:#17243b; text-align:left; font:inherit; font-size:12px; cursor:pointer; }
 .portal-account-menu button:hover { background:#f4f7ef; }
@@ -95,7 +98,7 @@
 .portal-inline-link { display:inline-block; margin:0 0 10px; color:#638b1e; font-size:12px; font-weight:700; }
 .portal-muted { color:#788394; font-size:12px; }
 .portal-role-badge { display:inline-flex; margin-top:14px; padding:7px 10px; border:1px solid #ffffff3d; background:#ffffff12; color:#d5eead; font-size:11px; font-weight:700; }
-.portal-account-role { display:block; padding:10px 12px; color:#668f20; font-size:11px; font-weight:800; }
+.portal-account-role { display:none; padding:10px 12px; color:#668f20; font-size:11px; font-weight:800; }
 .portal-add-job { width:auto; min-width:170px; padding:0 16px; }
 .portal-permission-note { margin:-8px 0 16px; }
 .portal-search-label { display:grid; max-width:440px; gap:8px; margin:4px 0 20px; color:#586477; font-size:12px; font-weight:700; }
@@ -185,7 +188,8 @@
  .portal-topbar { justify-content:flex-start; }
  .portal-topbar>div:nth-child(2) { margin-right:auto; }
  .portal-account-wrap { margin-left:auto; }
- .portal-account-name { display:none; }
+ .portal-account-identity { display:none; }
+ .portal-account-role { display:block; }
  .portal-content { padding:20px; }
  .portal-notification { flex-direction:column; gap:10px; }
  .site-editor-partners { grid-template-columns:1fr; }

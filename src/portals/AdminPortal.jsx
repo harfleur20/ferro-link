@@ -4,6 +4,7 @@ import {
   FaBars,
   FaBell,
   FaBriefcase,
+  FaChevronDown,
   FaClock,
   FaEnvelope,
   FaFileLines,
@@ -95,6 +96,7 @@ export default function AdminPortal() {
   const [accountOpen, setAccountOpen] = useState(false);
   const [avatarUploading, setAvatarUploading] = useState(false);
   const avatarInputRef = useRef(null);
+  const accountRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [applications, setApplications] = useState([]);
@@ -170,6 +172,22 @@ export default function AdminPortal() {
     loadPortal();
     return () => { alive = false; };
   }, []);
+
+  useEffect(() => {
+    if (!accountOpen) return undefined;
+    const closeOutside = (event) => {
+      if (!accountRef.current?.contains(event.target)) setAccountOpen(false);
+    };
+    const closeOnEscape = (event) => {
+      if (event.key === "Escape") setAccountOpen(false);
+    };
+    document.addEventListener("pointerdown", closeOutside);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closeOutside);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, [accountOpen]);
 
   const userId = user?.id;
   useEffect(() => {
@@ -377,14 +395,17 @@ export default function AdminPortal() {
           <FaBell aria-hidden="true" />
           {notifications.some((notification) => !notification.readAt) && <span className="portal-notification-count">{notifications.filter((notification) => !notification.readAt).length}</span>}
         </button>
-        <div className="portal-account-wrap">
+        <div className="portal-account-wrap" ref={accountRef}>
           <button className="portal-account" type="button" onClick={() => setAccountOpen(!accountOpen)} aria-expanded={accountOpen}>
             <span className="portal-avatar">
               <span>{user.fullName?.slice(0, 1).toUpperCase() || "U"}</span>
               {user.avatarUrl && <img src={user.avatarUrl.startsWith("/") ? `${API}${user.avatarUrl}` : user.avatarUrl} alt="" onError={(event) => { event.currentTarget.hidden = true; }} />}
             </span>
-            <span className="portal-account-name">{user.fullName}</span>
-            <span className="portal-account-caret" aria-hidden="true">⌄</span>
+            <span className="portal-account-identity">
+              <span className="portal-account-name" title={user.fullName}>{user.fullName}</span>
+              <span className="portal-account-label">{permissions.label}</span>
+            </span>
+            <FaChevronDown className="portal-account-caret" aria-hidden="true" />
           </button>
           {accountOpen && <div className="portal-account-menu">
             <span className="portal-account-role">{permissions.label}</span>
