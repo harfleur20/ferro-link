@@ -5,15 +5,20 @@ import {
   FaBell,
   FaBriefcase,
   FaClock,
+  FaEnvelope,
   FaFileLines,
   FaGear,
   FaHouse,
+  FaNewspaper,
   FaPaintbrush,
   FaPen,
   FaTrainSubway,
   FaUsers,
 } from "react-icons/fa6";
+import ApplicationDetail from "./ApplicationDetail.jsx";
+import ContactMessages from "./ContactMessages.jsx";
 import JobEditor from "./JobEditor.jsx";
+import NewsAdmin from "./NewsAdmin.jsx";
 import SiteEditor from "./SiteEditor.jsx";
 import { defaultSiteSettings, mergeSiteSettings } from "../siteSettings.js";
 import "../styles/portals.css";
@@ -87,6 +92,7 @@ export default function AdminPortal() {
   const [applications, setApplications] = useState([]);
   const [jobs, setJobs] = useState([]);
   const [jobEditor, setJobEditor] = useState(null);
+  const [selectedApplicationId, setSelectedApplicationId] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [users, setUsers] = useState([]);
   const [userSearch, setUserSearch] = useState("");
@@ -100,8 +106,10 @@ export default function AdminPortal() {
       { id: "dashboard", label: "Tableau de bord", icon: FaHouse },
       { id: "applications", label: "Candidatures", icon: FaFileLines },
       { id: "offers", label: "Offres d’emploi", icon: FaBriefcase },
+      { id: "messages", label: "Messages", icon: FaEnvelope },
     ];
     if (permissions?.canManageUsers) items.push({ id: "users", label: "Utilisateurs & rôles", icon: FaUsers });
+    if (permissions?.canManageSite) items.push({ id: "news", label: "Actualités", icon: FaNewspaper });
     if (permissions?.canManageSite) items.push({ id: "site", label: "Contenu du site", icon: FaPaintbrush });
     items.push({ id: "notifications", label: "Notifications", icon: FaBell });
     items.push({ id: "settings", label: "Mon compte", icon: FaGear });
@@ -159,6 +167,7 @@ export default function AdminPortal() {
   const selectPage = (page) => {
     setActive(page);
     setJobEditor(null);
+    setSelectedApplicationId(null);
     setMenuOpen(false);
     setAccountOpen(false);
   };
@@ -215,6 +224,14 @@ export default function AdminPortal() {
     } catch (updateError) {
       setError(updateError.message);
     }
+  };
+
+  const saveApplication = async (application, changes) => {
+    const { application: updated } = await api(`/api/applications/${application.id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify(changes),
+    });
+    setApplications((previous) => previous.map((item) => item.id === application.id ? { ...item, ...updated } : item));
   };
 
   const updateJobStatus = async (job, status) => {
@@ -276,6 +293,7 @@ export default function AdminPortal() {
 
   const title = navItems.find((item) => item.id === active)?.label || "Tableau de bord";
   const pendingApplications = applications.filter((application) => ["RECEIVED", "UNDER_REVIEW"].includes(application.status)).length;
+  const selectedApplication = applications.find((application) => application.id === selectedApplicationId);
   const publishedJobs = jobs.filter((job) => job.status === "PUBLISHED").length;
   const filteredUsers = users.filter((account) => `${account.fullName} ${account.email}`.toLowerCase().includes(userSearch.toLowerCase()));
   const stats = [
@@ -378,14 +396,16 @@ export default function AdminPortal() {
           </section>
         </>}
 
-        {active === "applications" && <section className="portal-panel">
+        {active === "applications" && selectedApplication && <ApplicationDetail key={selectedApplication.id} application={selectedApplication} onSave={saveApplication} onBack={() => setSelectedApplicationId(null)} />}
+
+        {active === "applications" && !selectedApplication && <section className="portal-panel">
           <div className="portal-panel-heading">
             <div><span className="portal-eyebrow">SUIVI DES CANDIDATS</span><h3>Candidatures reçues</h3></div>
             <span className="portal-muted">{applications.length} candidature{applications.length > 1 ? "s" : ""}</span>
           </div>
           {applications.length === 0 ? <p className="portal-empty">Aucune candidature disponible.</p> : <div className="portal-table-wrap">
             <table className="portal-table">
-              <thead><tr><th>Offre</th><th>Candidat</th><th>Statut</th><th>Date</th><th>CV</th><th>Action</th></tr></thead>
+              <thead><tr><th>Offre</th><th>Candidat</th><th>Statut</th><th>Date</th><th>Changer le statut</th><th>Dossier</th></tr></thead>
               <tbody>{applications.map((application) => <tr key={application.id}>
                 <td>{application.jobTitle || application.job?.title || "Candidature spontanée"}</td>
                 <td>{application.applicantName || application.candidate?.fullName || "—"}<br />
@@ -394,10 +414,10 @@ export default function AdminPortal() {
                 </td>
                 <td><Status value={application.status} /></td>
                 <td>{formatDate(application.createdAt)}</td>
-                <td><a href={`${API}/api/applications/${application.id}/cv`} target="_blank" rel="noreferrer">Télécharger</a></td>
                 <td><select aria-label={`Statut de la candidature de ${application.applicantName || "ce candidat"}`} value={application.status} onChange={(event) => updateApplicationStatus(application, event.target.value)}>
                   <option value="RECEIVED">Reçue</option><option value="UNDER_REVIEW">En étude</option><option value="INTERVIEW">Entretien</option><option value="ACCEPTED">Acceptée</option><option value="REJECTED">Refusée</option>
                 </select></td>
+                <td><button className="portal-text-button" type="button" onClick={() => setSelectedApplicationId(application.id)}>Voir le dossier</button></td>
               </tr>)}</tbody>
             </table>
           </div>}
@@ -425,6 +445,10 @@ export default function AdminPortal() {
             </table>
           </div>}
         </section>}
+
+        {active === "messages" && <ContactMessages api={api} />}
+
+        {active === "news" && permissions.canManageSite && <NewsAdmin api={api} />}
 
         {active === "site" && permissions.canManageSite && <SiteEditor
           settings={siteSettings}

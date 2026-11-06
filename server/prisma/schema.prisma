@@ -79,6 +79,7 @@ model Application {
   status ApplicationStatus @default(RECEIVED)
   coverLetter String? @db.Text
   resumeUrl String?
+  letterFile String?
   reviewerNote String? @db.Text
   reviewedById String?
   createdAt DateTime @default(now())
@@ -98,6 +99,29 @@ model Notification {
   createdAt DateTime @default(now())
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@index([userId, createdAt])
+}
+model ContactMessage {
+  id String @id @default(cuid())
+  name String
+  email String
+  subject String
+  message String @db.Text
+  readAt DateTime?
+  createdAt DateTime @default(now())
+  @@index([createdAt])
+}
+model NewsArticle {
+  id String @id @default(cuid())
+  slug String @unique
+  title String
+  excerpt String? @db.Text
+  sourceName String
+  sourceUrl String @unique
+  language String
+  publishedAt DateTime
+  fetchedAt DateTime @default(now())
+  hidden Boolean @default(false)
+  @@index([hidden, publishedAt])
 }
 model Session {
   id String @id @default(cuid())

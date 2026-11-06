@@ -1,9 +1,10 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import { createHash, randomBytes } from "node:crypto";
-import nodemailer from "nodemailer";
 import { z } from "zod";
 import { prisma } from "./db.js";
+import { loginLimiter, passwordResetLimiter } from "./limits.js";
+import { getMailTransport, staffRoles } from "./mailer.js";
 
 export const authRouter = Router();
 const credentials = z.object({
@@ -21,29 +22,12 @@ const passwordResetInput = z.object({
 const rememberSessionDuration = 30 * 24 * 60 * 60 * 1000;
 const resetTokenDuration = 30 * 60 * 1000;
 const resetRequestCooldown = 60 * 1000;
-const staffRoles = ["RECRUITER", "RECRUITMENT_ADMIN", "SUPER_ADMIN"];
 const resetRequestMessage = "Si cette adresse correspond à un compte éligible, un lien de réinitialisation va être envoyé.";
 
 function issueSession(req, res, user, rememberMe) {
   req.session.cookie.maxAge = rememberMe ? rememberSessionDuration : null;
   req.session.user = { id: user.id, role: user.role };
   return res.json({ user: { id: user.id, email: user.email, fullName: user.fullName, avatarUrl: user.avatarUrl, role: user.role } });
-}
-
-function getMailTransport() {
-  const { SMTP_HOST, SMTP_USER, SMTP_PASS, SMTP_FROM } = process.env;
-  const port = Number(process.env.SMTP_PORT || 587);
-  if (!SMTP_HOST || !SMTP_FROM || (!!SMTP_USER !== !!SMTP_PASS) || !Number.isInteger(port) || port < 1 || port > 65535) return null;
-
-  return {
-    from: SMTP_FROM,
-    transport: nodemailer.createTransport({
-      host: SMTP_HOST,
-      port,
-      secure: process.env.SMTP_SECURE === "true",
-      ...(SMTP_USER && SMTP_PASS ? { auth: { user: SMTP_USER, pass: SMTP_PASS } } : {}),
-    }),
-  };
 }
 
 authRouter.get("/me", async (req, res) => {
@@ -53,7 +37,7 @@ authRouter.get("/me", async (req, res) => {
   res.json({ user });
 });
 
-authRouter.post("/login", async (req, res, next) => {
+authRouter.post("/login", loginLimiter, async (req, res, next) => {
   try {
     const parsed = credentials.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: "Adresse e-mail ou mot de passe invalide." });
@@ -63,7 +47,7 @@ authRouter.post("/login", async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-authRouter.post("/forgot-password", async (req, res, next) => {
+authRouter.post("/forgot-password", passwordResetLimiter, async (req, res, next) => {
   try {
     const parsed = emailInput.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ error: "Adresse e-mail invalide." });

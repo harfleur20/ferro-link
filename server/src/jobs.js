@@ -3,6 +3,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "./db.js";
 import { requireAuth, requireBusinessManager, requireStaff } from "./middleware.js";
+import { slugify } from "./slug.js";
 
 export const jobsRouter = Router();
 
@@ -37,12 +38,6 @@ const firstIssue = (result) => result.error.issues[0]?.message || "Les informati
 const publicationError = (job) => job.status === "PUBLISHED" && (!job.location || !job.contractType)
   ? "Renseignez le lieu et le type de contrat avant de publier l’offre."
   : null;
-
-function slugify(title) {
-  const slug = title.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/œ/g, "oe")
-    .replace(/[^a-z0-9]+/g, "-").replace(/^-+/, "").slice(0, 80).replace(/-+$/, "");
-  return slug || "offre";
-}
 
 async function uniqueSlug(title) {
   const slug = slugify(title);

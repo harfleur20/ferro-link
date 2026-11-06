@@ -4,7 +4,6 @@ import multer from "multer";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { mkdir, access, writeFile } from "node:fs/promises";
-import { createReadStream } from "node:fs";
 import cors from "cors";
 import helmet from "helmet";
 import session from "express-session";
@@ -12,15 +11,14 @@ import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import { prisma } from "./db.js";
 import { authRouter } from "./auth.js";
 import { jobsRouter } from "./jobs.js";
+import { applicationsRouter } from "./applications.js";
+import { contactRouter } from "./contact.js";
+import { newsRouter, scheduleNewsRefresh } from "./news.js";
 import { requireAuth, requireBusinessManager, requireStaff, requireSuperAdmin } from "./middleware.js";
 
 const app = express();
-const uploadDir = path.resolve(process.env.PRIVATE_UPLOAD_DIR || "./private-uploads");
 const siteAssetDir = path.resolve(process.env.PUBLIC_SITE_ASSET_DIR || "./public/site-assets");
-await mkdir(uploadDir, { recursive: true });
 await mkdir(siteAssetDir, { recursive: true });
-const allowedExtensions = new Set([".pdf", ".doc", ".docx"]);
-const upload = multer({ storage: multer.diskStorage({ destination: (_req, _file, cb) => cb(null, uploadDir), filename: (_req, file, cb) => cb(null, `${randomUUID()}${path.extname(file.originalname).toLowerCase()}`) }), limits: { fileSize: 10 * 1024 * 1024, files: 2 }, fileFilter: (_req, file, cb) => cb(null, allowedExtensions.has(path.extname(file.originalname).toLowerCase())) });
 const logoMimeTypes = new Map([["image/png", { extension: "png", signature: bytes => bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) }], ["image/jpeg", { extension: "jpg", signature: bytes => bytes[0] === 255 && bytes[1] === 216 && bytes[2] === 255 }], ["image/webp", { extension: "webp", signature: bytes => bytes.length >= 12 && bytes.toString("ascii", 0, 4) === "RIFF" && bytes.toString("ascii", 8, 12) === "WEBP" }]]);
 const logoUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024, files: 1 }, fileFilter: (_req, file, cb) => logoMimeTypes.has(file.mimetype) ? cb(null, true) : cb(new Error("Unsupported file type")) });
 const avatarUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 2 * 1024 * 1024, files: 1 }, fileFilter: (_req, file, cb) => logoMimeTypes.has(file.mimetype) ? cb(null, true) : cb(new Error("Unsupported file type")) });
@@ -42,6 +40,9 @@ app.use(session({
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 app.use("/api/auth", authRouter);
 app.use("/api", jobsRouter);
+app.use("/api", applicationsRouter);
+app.use("/api", contactRouter);
+app.use("/api", newsRouter);
 
 app.post("/api/site-assets", requireAuth, requireBusinessManager, (req, res, next) => {
   logoUpload.single("logo")(req, res, err => {
@@ -126,7 +127,7 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
 
     const fields = {
       brand: { headerLogo: 500, footerLogo: 500 },
-      navigation: { home: 80, about: 80, jobs: 80, contact: 80, jobsOffers: 80, spontaneous: 80, cta: 80 },
+      navigation: { home: 80, about: 80, jobs: 80, news: 80, contact: 80, jobsOffers: 80, spontaneous: 80, cta: 80 },
       home: {
         heroTitle: 180, heroKicker: 120, heroCta: 80, heroCaption: 180, heroImage: 500,
         introKicker: 120, introTitle: 180, introLead: 500, introText: 1200, introImage: 500,
@@ -151,7 +152,7 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
         kicker: 120, title: 180, description: 800, infoTitle: 120, infoHeading: 180,
         phoneLabel: 80, emailLabel: 80, addressLabel: 80, socialsLabel: 80, socialName: 80,
         socialUrl: 500, formKicker: 120, formTitle: 180, nameLabel: 80, emailFieldLabel: 80,
-        subjectLabel: 80, messageLabel: 80, submitLabel: 80, mailto: 160, successText: 500, privacyText: 500,
+        subjectLabel: 80, messageLabel: 80, submitLabel: 80, successText: 500, privacyText: 500,
       },
     };
     const normalized = {};
@@ -217,8 +218,7 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
       return res.status(400).json({ error: validationError.message });
     }
     if (normalized.contact.phones.length !== normalized.contact.phoneLinks.length
-      || normalized.contact.emails.some((email) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-      || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized.contact.mailto)) {
+      || normalized.contact.emails.some((email) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
       return res.status(400).json({ error: "Les coordonnées e-mail ou téléphone sont invalides." });
     }
 
@@ -286,48 +286,6 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
   } catch (err) { next(err); }
 });
 
-app.post("/api/applications/public", upload.fields([{ name: "cv", maxCount: 1 }, { name: "letter", maxCount: 1 }]), async (req, res, next) => {
- try {
-  const body=req.body||{};
-  if(body._honey)return res.status(400).json({error:"Formulaire invalide."});
-  if(!body.name?.trim()||!body.email?.trim()||!body.telephone?.trim()||!body.ville?.trim()||!body.motivation?.trim()||body.consentement!=="Oui"||!req.files?.cv?.[0])return res.status(400).json({error:"Merci de renseigner les champs obligatoires, d'accepter le traitement des données et de joindre votre CV."});
-  const email=String(body.email).trim().toLowerCase();
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return res.status(400).json({error:"Adresse e-mail invalide."});
-  const cv=req.files.cv[0],letter=req.files.letter?.[0];
-  const job=body.jobId?await prisma.job.findFirst({where:{id:String(body.jobId),status:"PUBLISHED"},select:{id:true,title:true}}):null;
-  if(body.jobId&&!job)return res.status(400).json({error:"Cette offre n’est plus disponible."});
-  const jobTitle=job?.title||"Candidature spontanée";
-  const application=await prisma.application.create({data:{jobId:job?.id,jobTitle,applicantName:String(body.name).trim().slice(0,120),applicantEmail:email,applicantPhone:String(body.telephone).trim().slice(0,30),applicantCity:String(body.ville).trim().slice(0,100),experience:String(body.experience||"").slice(0,100)||null,availability:String(body.disponibilite||"").slice(0,100)||null,coverLetter:String(body.motivation).trim().slice(0,3000),resumeUrl:cv.filename+(letter?"|"+letter.filename:""),consentAt:new Date()},include:{job:{select:{id:true,title:true,location:true}}}});
-  res.status(201).json({message:"Votre candidature a bien été envoyée.",application:{id:application.id}});
- }catch(err){next(err)}
-});
-app.get("/api/applications/:id/cv", requireAuth, requireStaff, async (req, res, next) => {
- try { const application = await prisma.application.findUnique({ where: { id: req.params.id }, select: { resumeUrl: true } }); const filename = application?.resumeUrl?.split("|")[0]; if (!filename || path.basename(filename) !== filename) return res.status(404).json({ error: "CV introuvable." }); const filePath = path.join(uploadDir, filename); try { await access(filePath); } catch { return res.status(404).json({ error: "CV introuvable." }); } res.setHeader("Content-Disposition", `attachment; filename="CV-${req.params.id}${path.extname(filename)}"`); res.setHeader("X-Content-Type-Options", "nosniff"); createReadStream(filePath).pipe(res); } catch (err) { next(err); }
-});
-app.get("/api/applications", requireAuth, async (req, res, next) => {
-  try {
-    const isStaff = ["RECRUITER","RECRUITMENT_ADMIN","SUPER_ADMIN"].includes(req.session.user.role);
-    const applications = await prisma.application.findMany({
-      where: isStaff ? {} : { candidateId: req.session.user.id },
-      include: { job: { select: { id: true, title: true, location: true } }, candidate: { select: { id: true, fullName: true, email: true } } },
-      orderBy: { createdAt: "desc" }
-    });
-    res.json({ applications });
-  } catch (err) { next(err); }
-});
-app.patch("/api/applications/:id/status", requireAuth, requireStaff, async (req, res, next) => {
-  try {
-    const { status, reviewerNote } = req.body || {};
-    if (!["RECEIVED","UNDER_REVIEW","INTERVIEW","ACCEPTED","REJECTED"].includes(status)) return res.status(400).json({ error: "Statut invalide." });
-    const application = await prisma.application.update({
-      where: { id: req.params.id },
-      data: { status, reviewerNote, reviewedById: req.session.user.id },
-      include: { job: { select: { title: true } } }
-    });
-    if (application.candidateId) await prisma.notification.create({ data: { userId: application.candidateId, title: "Mise à jour de candidature", message: "Le statut de votre candidature à « " + application.jobTitle + " » a été actualisé." } });
-    res.json({ application });
-  } catch (err) { next(err); }
-});
 app.get("/api/users", requireAuth, requireSuperAdmin, async (_req, res, next) => {
   try {
     const users = await prisma.user.findMany({ select: { id: true, email: true, fullName: true, role: true, isActive: true, createdAt: true }, orderBy: { createdAt: "desc" } });
@@ -360,4 +318,7 @@ app.use((err, _req, res, _next) => {
   console.error(err);
   res.status(500).json({ error: "Une erreur interne est survenue." });
 });
-app.listen(port, () => console.log(`Ferro-Link API listening on port ${port}`));
+app.listen(port, () => {
+  console.log(`Ferro-Link API listening on port ${port}`);
+  scheduleNewsRefresh();
+});

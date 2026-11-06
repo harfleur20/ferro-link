@@ -227,6 +227,7 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
           <TextField label="Accueil" value={draft.navigation.home} maxLength={80} onChange={(value) => update("navigation", "home", value)} />
           <TextField label="À propos" value={draft.navigation.about} maxLength={80} onChange={(value) => update("navigation", "about", value)} />
           <TextField label="Offres d’emploi" value={draft.navigation.jobs} maxLength={80} onChange={(value) => update("navigation", "jobs", value)} />
+          <TextField label="Actualités" value={draft.navigation.news} maxLength={80} onChange={(value) => update("navigation", "news", value)} />
           <TextField label="Contact" value={draft.navigation.contact} maxLength={80} onChange={(value) => update("navigation", "contact", value)} />
           <TextField label="Sous-menu des offres" value={draft.navigation.jobsOffers} maxLength={80} onChange={(value) => update("navigation", "jobsOffers", value)} />
           <TextField label="Lien candidature spontanée" value={draft.navigation.spontaneous} maxLength={80} onChange={(value) => update("navigation", "spontaneous", value)} />
@@ -417,8 +418,7 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
           <TextField label="Libellé du champ sujet" value={draft.contact.subjectLabel} onChange={(value) => update("contact", "subjectLabel", value)} />
           <TextField label="Libellé du champ message" value={draft.contact.messageLabel} onChange={(value) => update("contact", "messageLabel", value)} />
           <TextField label="Libellé du bouton d’envoi" value={draft.contact.submitLabel} onChange={(value) => update("contact", "submitLabel", value)} />
-          <TextField label="E-mail destinataire du formulaire" value={draft.contact.mailto} maxLength={160} onChange={(value) => update("contact", "mailto", value)} />
-          <TextField label="Message après ouverture de l’e-mail" value={draft.contact.successText} onChange={(value) => update("contact", "successText", value)} multiline />
+          <TextField label="Message après envoi" value={draft.contact.successText} onChange={(value) => update("contact", "successText", value)} multiline />
           <TextField label="Note de confidentialité" value={draft.contact.privacyText} onChange={(value) => update("contact", "privacyText", value)} multiline />
         </>}
 

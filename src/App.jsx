@@ -13,6 +13,7 @@ const paths = {
   accueil: "/",
   about: "/a-propos",
   jobs: "/offres-emploi",
+  news: "/actualites",
   contact: "/contact",
   spontaneous: "/candidature-spontanee",
 };
@@ -51,6 +52,7 @@ function Header({ current }) {
     [siteSettings.navigation.home, paths.accueil],
     [siteSettings.navigation.about, paths.about],
     [siteSettings.navigation.jobs, paths.jobs],
+    [siteSettings.navigation.news, paths.news],
     [siteSettings.navigation.contact, paths.contact],
   ];
   const closeMenu = () => { setMenuOpen(false); setJobsMenuOpen(false); };
@@ -91,6 +93,7 @@ function Footer() {
         <h2>{siteSettings.footer.exploreTitle}</h2>
         <a href={paths.about}>{siteSettings.navigation.about}</a>
         <a href={paths.jobs}>{siteSettings.navigation.jobs}</a>
+        <a href={paths.news}>{siteSettings.navigation.news}</a>
         <a href={paths.contact}>{siteSettings.navigation.contact}</a>
         <div className="footer-socials" aria-label="Réseaux sociaux ferroLink">
           {siteSettings.footer.socials.map((social, index) => {
@@ -442,14 +445,28 @@ function JobDetailPage({ slug }) {
 function ContactPage() {
   const siteSettings = useContext(SiteSettingsContext);
   const { contact } = siteSettings;
+  const emptyForm = { name: "", email: "", subject: "", message: "", website: "" };
   const [submitted, setSubmitted] = useState(false);
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
+  const [form, setForm] = useState(emptyForm);
   const update = (event) => setForm({ ...form, [event.target.name]: event.target.value });
-  const submit = (event) => {
+  const submit = async (event) => {
     event.preventDefault();
-    const body = `Nom : ${form.name}\nE-mail : ${form.email}\nSujet : ${form.subject}\n\n${form.message}`;
-    window.location.href = `mailto:${contact.mailto}?subject=${encodeURIComponent(form.subject || "Prise de contact depuis ferroLink")}&body=${encodeURIComponent(body)}`;
-    setSubmitted(true);
+    setError("");
+    setSubmitted(false);
+    setSending(true);
+    try {
+      const response = await fetch(`${API}/api/contact`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "Impossible d’envoyer votre message.");
+      setSubmitted(true);
+      setForm(emptyForm);
+    } catch (e) {
+      setError(e.message || "Une erreur est survenue. Réessayez.");
+    } finally {
+      setSending(false);
+    }
   };
   return <>
     <PageBanner kicker={contact.kicker} title={contact.title} description={contact.description} />
@@ -463,17 +480,64 @@ function ContactPage() {
         <div className="contact-info-item"><span className="contact-info-label">{contact.socialsLabel}</span><a href={contact.socialUrl} target="_blank" rel="noreferrer">{contact.socialName} ↗</a></div>
       </div>
       <form className="contact-form" onSubmit={submit}>
+        <input type="text" name="website" value={form.website} onChange={update} tabIndex="-1" autoComplete="off" aria-hidden="true" className="application-honeypot" />
         <div className="section-kicker">{contact.formKicker}</div><h2>{contact.formTitle}</h2>
         <label>{contact.nameLabel}<input name="name" value={form.name} onChange={update} autoComplete="name" required /></label>
         <label>{contact.emailFieldLabel}<input name="email" type="email" value={form.email} onChange={update} autoComplete="email" required /></label>
-        <label>{contact.subjectLabel}<input name="subject" value={form.subject} onChange={update} required /></label>
-        <label>{contact.messageLabel}<textarea name="message" rows="5" value={form.message} onChange={update} required /></label>
-        <button className="button button-lime" type="submit">{contact.submitLabel} <span aria-hidden="true">↗</span></button>
+        <label>{contact.subjectLabel}<input name="subject" value={form.subject} onChange={update} maxLength="180" required /></label>
+        <label>{contact.messageLabel}<textarea name="message" rows="5" value={form.message} onChange={update} maxLength="5000" required /></label>
+        <button className="button button-lime" type="submit" disabled={sending}>{sending ? "Envoi en cours…" : contact.submitLabel} <span aria-hidden="true">↗</span></button>
+        {error && <p className="application-error" role="alert">{error}</p>}
         {submitted && <p className="form-feedback" role="status">{contact.successText}</p>}
         <p className="form-note">{contact.privacyText}</p>
       </form>
     </section>
   </>;
+}
+
+function formatArticleDate(date) {
+  return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" }).format(new Date(date));
+}
+
+function NewsPage() {
+  const [page, setPage] = useState(1);
+  const [language, setLanguage] = useState("");
+  const { data, error, loading } = useApiData(`/api/news?page=${page}${language ? `&language=${language}` : ""}`);
+  const articles = data?.articles || [];
+  return <>
+    <PageBanner kicker="Veille ferroviaire" title="L’actualité du rail." description="Une sélection d’articles de la presse ferroviaire. Chaque article reste la propriété de sa source." />
+    <section className="section page-width news-section">
+      <div className="news-toolbar">
+        <p><strong>{data?.total ?? "…"}</strong> article{data?.total > 1 ? "s" : ""}</p>
+        <label className="jobs-filter"><span className="visually-hidden">Langue des articles</span><select value={language} onChange={(event) => { setLanguage(event.target.value); setPage(1); }}><option value="">Toutes les langues</option><option value="fr">Français</option><option value="en">Anglais</option></select></label>
+      </div>
+      {loading ? <p className="jobs-empty-state" role="status">Chargement des actualités…</p> : error ? <div className="jobs-empty-state" role="alert"><h3>Les actualités sont momentanément indisponibles.</h3><p>Merci de réessayer dans quelques instants.</p></div> : !articles.length ? <div className="jobs-empty-state"><h3>Aucun article pour le moment.</h3></div> : <div className="news-grid">{articles.map((article) => <article className="news-card" key={article.id}>
+        <div className="news-card-meta"><span>{article.sourceName}</span>{article.language === "en" && <span className="news-language">EN</span>}<time dateTime={article.publishedAt}>{formatArticleDate(article.publishedAt)}</time></div>
+        <h2 lang={article.language}><a href={`${paths.news}/${article.slug}`}>{article.title}</a></h2>
+        {article.excerpt && <p lang={article.language}>{article.excerpt}</p>}
+      </article>)}</div>}
+      {data?.pageCount > 1 && <nav className="jobs-pagination" aria-label="Pagination des actualités">
+        <button type="button" className="jobs-page-arrow" onClick={() => setPage(page - 1)} disabled={page === 1}>← <span>Précédent</span></button>
+        <span className="news-page-count">Page {page} sur {data.pageCount}</span>
+        <button type="button" className="jobs-page-arrow" onClick={() => setPage(page + 1)} disabled={page === data.pageCount}><span>Suivant</span> →</button>
+      </nav>}
+    </section>
+  </>;
+}
+
+function NewsDetailPage({ slug }) {
+  const { data, loading } = useApiData(`/api/news/${encodeURIComponent(slug)}`);
+  const article = data?.article;
+  if (loading) return <section className="section page-width job-not-found"><p role="status">Chargement de l’article…</p></section>;
+  if (!article) return <section className="section page-width job-not-found"><h1>Cet article n’est pas disponible.</h1><p>Il n’existe pas ou n’est plus accessible.</p><a className="button button-lime" href={paths.news}>Retour aux actualités</a></section>;
+  return <section className="section page-width news-detail">
+    <a className="news-back-link" href={paths.news}>← Toutes les actualités</a>
+    <div className="news-card-meta"><span>{article.sourceName}</span>{article.language === "en" && <span className="news-language">EN</span>}<time dateTime={article.publishedAt}>{formatArticleDate(article.publishedAt)}</time></div>
+    <h1 lang={article.language}>{article.title}</h1>
+    {article.excerpt && <p className="news-detail-excerpt" lang={article.language}>{article.excerpt}</p>}
+    <a className="button button-lime" href={article.sourceUrl} target="_blank" rel="noopener noreferrer">Lire l’article sur {article.sourceName} <span aria-hidden="true">↗</span></a>
+    <p className="news-detail-note">Extrait publié par {article.sourceName}. ferroLink n’est pas l’auteur de cet article.</p>
+  </section>;
 }
 
 function ContactCallout() {
@@ -492,6 +556,7 @@ const notFoundRoute = "not-found";
 function getRoute() {
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
   if (path.startsWith(paths.jobs + "/")) return paths.jobs;
+  if (path.startsWith(paths.news + "/")) return paths.news;
   return Object.values(paths).includes(path) ? path : notFoundRoute;
 }
 
@@ -540,6 +605,7 @@ export default function App() {
     [paths.accueil]: <HomePage />,
     [paths.about]: <AboutPage />,
     [paths.jobs]: window.location.pathname.replace(/\/+$/, "") === paths.jobs ? <JobsPage /> : <JobDetailPage slug={decodeURIComponent(window.location.pathname.replace(/\/+$/, "").split("/").pop())} />,
+    [paths.news]: pathname === paths.news ? <NewsPage /> : <NewsDetailPage slug={decodeURIComponent(pathname.split("/").pop())} />,
     [paths.contact]: <ContactPage />,
     [paths.spontaneous]: <SpontaneousPage />,
     [notFoundRoute]: <NotFoundPage />,
