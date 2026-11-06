@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "../styles/portals.css";
+import { serverFetch } from "../serverFetch.js";
 
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 const searchParams = new URLSearchParams(window.location.search);
@@ -35,7 +36,7 @@ export default function AuthPage() {
     clearFeedback();
     setLoading(true);
     try {
-      const response = await fetch(`${API}/api/auth/login`, {
+      const response = await serverFetch(`${API}/api/auth/login`, {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -56,7 +57,7 @@ export default function AuthPage() {
     clearFeedback();
     setLoading(true);
     try {
-      const response = await fetch(`${API}/api/auth/forgot-password`, {
+      const response = await serverFetch(`${API}/api/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -80,7 +81,7 @@ export default function AuthPage() {
     }
     setLoading(true);
     try {
-      const response = await fetch(`${API}/api/auth/reset-password`, {
+      const response = await serverFetch(`${API}/api/auth/reset-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: resetToken, password: newPassword }),

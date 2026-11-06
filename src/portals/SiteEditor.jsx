@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { defaultSiteSettings, mergeSiteSettings, resolveSiteAssetUrl } from "../siteSettings.js";
+import { serverFetch } from "../serverFetch.js";
 
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
@@ -134,7 +135,7 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
       const formData = new FormData();
       formData.append("assetType", assetType);
       formData.append("logo", file);
-      const response = await fetch(`${API}/api/site-assets`, {
+      const response = await serverFetch(`${API}/api/site-assets`, {
         method: "POST",
         credentials: "include",
         body: formData,
@@ -166,7 +167,7 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
     setFeedback("");
     setSaveError("");
     try {
-      const response = await fetch(`${API}/api/site-settings`, {
+      const response = await serverFetch(`${API}/api/site-settings`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

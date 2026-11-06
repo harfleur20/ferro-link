@@ -23,6 +23,7 @@ import SiteEditor from "./SiteEditor.jsx";
 import UsersAdmin from "./UsersAdmin.jsx";
 import { defaultSiteSettings, mergeSiteSettings } from "../siteSettings.js";
 import "../styles/portals.css";
+import { serverFetch } from "../serverFetch.js";
 
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
@@ -56,7 +57,7 @@ const roleDetails = {
 };
 
 async function api(path, options = {}) {
-  const response = await fetch(`${API}${path}`, {
+  const response = await serverFetch(`${API}${path}`, {
     credentials: "include",
     ...options,
     headers: { "Content-Type": "application/json", ...(options.headers || {}) },
@@ -233,7 +234,7 @@ export default function AdminPortal() {
     try {
       const formData = new FormData();
       formData.append("avatar", file);
-      const response = await fetch(`${API}/api/profile/avatar`, {
+      const response = await serverFetch(`${API}/api/profile/avatar`, {
         method: "POST",
         credentials: "include",
         body: formData,

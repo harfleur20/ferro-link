@@ -2,6 +2,7 @@ import { createContext, lazy, Suspense, useContext, useEffect, useState } from "
 import { FaTrainSubway, FaLinkedinIn, FaFacebookF, FaInstagram, FaTiktok, FaHandshake, FaPeopleGroup, FaLightbulb, FaShieldHalved, FaAward } from "react-icons/fa6";
 import "./styles/global.css";
 import { defaultSiteSettings, getSiteThemeStyle, mergeSiteSettings, resolveSiteAssetUrl } from "./siteSettings.js";
+import { serverFetch } from "./serverFetch.js";
 
 const AuthPage = lazy(() => import("./portals/AuthPage.jsx"));
 const AdminPortal = lazy(() => import("./portals/AdminPortal.jsx"));
@@ -307,7 +308,7 @@ function ApplicationForm({ job, onCancel }) {
     if (job) data.set("jobId", job.id);
     setSubmitting(true);
     try {
-      const response = await fetch(`${API}/api/applications/public`, { method: "POST", body: data });
+      const response = await serverFetch(`${API}/api/applications/public`, { method: "POST", body: data });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || "Impossible d'envoyer la candidature.");
       setSuccess("Votre candidature a bien été envoyée. Merci !");
@@ -357,7 +358,7 @@ function useApiData(path) {
   const [state, setState] = useState({ data: null, error: false, loading: true });
   useEffect(() => {
     let active = true;
-    fetch(`${API}${path}`)
+    serverFetch(`${API}${path}`)
       .then(async (response) => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const data = await response.json();
@@ -478,7 +479,7 @@ function ContactPage() {
     setSubmitted(false);
     setSending(true);
     try {
-      const response = await fetch(`${API}/api/contact`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      const response = await serverFetch(`${API}/api/contact`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || "Impossible d’envoyer votre message.");
       setSubmitted(true);
@@ -680,7 +681,7 @@ function PublicSite({ current, pages, preview = false }) {
     }
 
     let active = true;
-    fetch(`${API}/api/site-settings`)
+    serverFetch(`${API}/api/site-settings`)
       .then(async (response) => {
         const data = await response.json().catch(() => ({}));
         if (!response.ok) throw new Error(data.error || "Impossible de charger les réglages du site.");

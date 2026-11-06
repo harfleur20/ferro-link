@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { resolveSiteAssetUrl } from "../siteSettings.js";
+import { serverFetch } from "../serverFetch.js";
 
 const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 const contractTypes = ["CDI", "CDD", "Mission", "Stage", "Alternance"];
@@ -30,7 +31,7 @@ export default function JobEditor({ job, onSave, onCancel }) {
       const data = new FormData();
       data.append("assetType", "image");
       data.append("logo", file);
-      const response = await fetch(`${API}/api/site-assets`, { method: "POST", credentials: "include", body: data });
+      const response = await serverFetch(`${API}/api/site-assets`, { method: "POST", credentials: "include", body: data });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || "Impossible d’importer cette image.");
       setForm((current) => ({ ...current, imageUrl: result.url }));
