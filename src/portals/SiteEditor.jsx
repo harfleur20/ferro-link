@@ -251,10 +251,13 @@ export default function SiteEditor({ settings, updatedAt, loadError, onSaved }) 
           <TextField label="Description de l’image des expertises" value={draft.home.expertiseImageAlt} onChange={(value) => update("home", "expertiseImageAlt", value)} />
           <TextField label="Repère visuel des expertises" value={draft.home.expertiseKicker} onChange={(value) => update("home", "expertiseKicker", value)} />
           <TextField label="Lien de la section expertises" value={draft.home.expertiseLink} onChange={(value) => update("home", "expertiseLink", value)} />
-          <div className="site-editor-list-heading"><h5>Domaines d’expertise</h5><button type="button" onClick={() => addListItem("home", "expertiseAreas", { title: "", detail: "" })} disabled={draft.home.expertiseAreas.length >= 10}>Ajouter une expertise</button></div>
+          <TextField label="Petit titre de l’accordéon (page Offres d’emploi)" value={draft.home.careersKicker} onChange={(value) => update("home", "careersKicker", value)} />
+          <TextField label="Titre de l’accordéon (page Offres d’emploi)" value={draft.home.careersTitle} onChange={(value) => update("home", "careersTitle", value)} />
+          <div className="site-editor-list-heading"><h5>Domaines d’expertise</h5><button type="button" onClick={() => addListItem("home", "expertiseAreas", { title: "", detail: "", careerText: "" })} disabled={draft.home.expertiseAreas.length >= 10}>Ajouter une expertise</button></div>
           {draft.home.expertiseAreas.map((area, index) => <article className="site-editor-list-card" key={`expertise-${index}`}>
             <TextField label={`Expertise ${index + 1}`} value={area.title} onChange={(value) => updateListItem("home", "expertiseAreas", index, "title", value)} />
-            <TextField label="Description" value={area.detail} onChange={(value) => updateListItem("home", "expertiseAreas", index, "detail", value)} multiline />
+            <TextField label="Description courte (accueil)" value={area.detail} onChange={(value) => updateListItem("home", "expertiseAreas", index, "detail", value)} multiline />
+            <TextField label="Texte de l’accordéon (page Offres d’emploi)" value={area.careerText} onChange={(value) => updateListItem("home", "expertiseAreas", index, "careerText", value)} multiline hint="Sans texte, la description courte est affichée." />
             <button type="button" className="site-editor-remove" onClick={() => removeListItem("home", "expertiseAreas", index)} disabled={draft.home.expertiseAreas.length <= 1}>Supprimer cette expertise</button>
           </article>)}
           <TextField label="Titre de la section métiers" value={draft.home.metiersTitle} onChange={(value) => update("home", "metiersTitle", value)} />

@@ -37,12 +37,14 @@ export const defaultSiteSettings = {
     expertiseLink: "Parlons de vos besoins",
     expertiseImage: "/images/access-team-technicians.jpg",
     expertiseImageAlt: "Techniciens de maintenance ferroviaire",
+    careersKicker: "Pourquoi ferroLink ?",
+    careersTitle: "Des métiers au cœur du ferroviaire",
     expertiseAreas: [
-      { title: "Signalisation & CBTC (Communication Based Train Control)", detail: "Les systèmes de signalisation et de contrôle des trains au service de la sécurité et de la performance du réseau." },
-      { title: "Matériel Roulant", detail: "L’accompagnement des projets liés aux trains, tramways et autres matériels ferroviaires." },
-      { title: "Courants forts & Energie", detail: "Les systèmes d’alimentation et les infrastructures énergétiques nécessaires à l’exploitation ferroviaire." },
-      { title: "Génie Civil & voie ferrée", detail: "Les études et travaux associés aux infrastructures et aux voies ferrées." },
-      { title: "Courants faibles & Télécoms", detail: "Les systèmes de communication et équipements courants faibles des infrastructures ferroviaires." },
+      { title: "Signalisation & CBTC (Communication Based Train Control)", detail: "Les systèmes de signalisation et de contrôle des trains au service de la sécurité et de la performance du réseau.", careerText: "Ces métiers conçoivent, installent et mettent en service les systèmes qui assurent l’espacement et la sécurité des trains. Ingénieurs d’études, testeurs et chargés de mise en service y travaillent sur la modernisation des lignes, avec une attention constante à la sûreté de fonctionnement." },
+      { title: "Matériel Roulant", detail: "L’accompagnement des projets liés aux trains, tramways et autres matériels ferroviaires.", careerText: "De la conception à la maintenance, ces métiers accompagnent la vie des trains, métros et tramways. Ils couvrent les études techniques, l’intégration des équipements, les essais et le suivi de la fiabilité en exploitation." },
+      { title: "Courants forts & Energie", detail: "Les systèmes d’alimentation et les infrastructures énergétiques nécessaires à l’exploitation ferroviaire.", careerText: "Ces métiers garantissent l’alimentation électrique du réseau : sous-stations, caténaires et distribution d’énergie. Ils mêlent études, suivi de travaux et mise en service, au plus près des enjeux de disponibilité et de performance énergétique." },
+      { title: "Génie Civil & voie ferrée", detail: "Les études et travaux associés aux infrastructures et aux voies ferrées.", careerText: "Ces métiers interviennent sur les infrastructures qui portent le réseau : voies, ouvrages d’art, gares et plateformes. Ils vont des études de conception au pilotage de chantiers, souvent menés sur des lignes en exploitation." },
+      { title: "Courants faibles & Télécoms", detail: "Les systèmes de communication et équipements courants faibles des infrastructures ferroviaires.", careerText: "Ces métiers déploient les réseaux qui relient le train, la voie et les centres de contrôle : radio, fibre, vidéoprotection et information voyageurs. Ils combinent ingénierie, intégration et tests de systèmes." },
     ],
     metiersKicker: "02 / MÉTIERS",
     metiersTitle: "De l’étude au terrain, nous accompagnons les étapes clés de vos projets.",
@@ -181,6 +183,12 @@ export const defaultSiteSettings = {
   },
 };
 
+// Settings saved before the careers accordion existed have no careerText yet.
+const withCareerText = (area) => ({
+  ...area,
+  careerText: area?.careerText ?? defaultSiteSettings.home.expertiseAreas.find((item) => item.title === area?.title)?.careerText ?? "",
+});
+
 export function mergeSiteSettings(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return defaultSiteSettings;
   return {
@@ -195,7 +203,7 @@ export function mergeSiteSettings(value) {
     home: {
       ...defaultSiteSettings.home,
       ...(value.home && typeof value.home === "object" && !Array.isArray(value.home) ? value.home : {}),
-      expertiseAreas: Array.isArray(value.home?.expertiseAreas) ? value.home.expertiseAreas : defaultSiteSettings.home.expertiseAreas,
+      expertiseAreas: Array.isArray(value.home?.expertiseAreas) ? value.home.expertiseAreas.map(withCareerText) : defaultSiteSettings.home.expertiseAreas,
       metiers: Array.isArray(value.home?.metiers) ? value.home.metiers : defaultSiteSettings.home.metiers,
       partners: Array.isArray(value.home?.partners) ? value.home.partners : defaultSiteSettings.home.partners,
     },

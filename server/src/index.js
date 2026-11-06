@@ -156,7 +156,7 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
         introImageAlt: 300, introImageCaption: 120, introLink: 80, introPhoneLabel: 80, introPhone: 40,
         homeBandImage: 500, contactKicker: 120, contactTitle: 180, contactCta: 80, partnersKicker: 120,
         expertiseKicker: 80, expertiseTitle: 180, expertiseText: 500, expertiseImage: 500,
-        expertiseImageAlt: 300, expertiseLink: 80, metiersKicker: 80, metiersTitle: 180,
+        expertiseImageAlt: 300, expertiseLink: 80, careersKicker: 120, careersTitle: 180, metiersKicker: 80, metiersTitle: 180,
         metiersText: 500, metiersImage: 500, metiersImageAlt: 300, metiersLink: 80, partnersTitle: 180,
       },
       about: {
@@ -205,7 +205,7 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
       }
       normalized[section][field] = list.map((item) => item.trim());
     };
-    const normalizeObjectList = (section, field, keys, { min = 1, max, imageKey } = {}) => {
+    const normalizeObjectList = (section, field, keys, { min = 1, max, imageKey, optionalKeys = {} } = {}) => {
       const list = settings[section][field];
       if (!Array.isArray(list) || list.length < min || list.length > max) throw new Error(`La liste « ${field} » est invalide.`);
       normalized[section][field] = list.map((item, index) => {
@@ -217,6 +217,11 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
           }
           result[key] = item[key].trim();
         }
+        for (const [key, maxLength] of Object.entries(optionalKeys)) {
+          const text = item[key] ?? "";
+          if (typeof text !== "string" || text.length > maxLength) throw new Error(`Le champ « ${key} » de l’élément ${index + 1} est invalide.`);
+          result[key] = text.trim();
+        }
         if (imageKey && !/^\/images\/[\w-]+\.(png|jpe?g|webp|svg)$/i.test(result[imageKey])
           && !/^\/api\/site-assets\/[\da-f-]{36}\.(png|jpg|webp)$/.test(result[imageKey])) {
           throw new Error(`L’image de l’élément ${index + 1} de « ${field} » est invalide.`);
@@ -227,7 +232,7 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
 
     try {
       normalizeObjectList("home", "partners", { src: 500, alt: 120 }, { max: 12, imageKey: "src" });
-      normalizeObjectList("home", "expertiseAreas", { title: 180, detail: 500 }, { max: 10 });
+      normalizeObjectList("home", "expertiseAreas", { title: 180, detail: 500 }, { max: 10, optionalKeys: { careerText: 1200 } });
       normalizeTextList("home", "metiers", { max: 20, length: 160 });
       normalizeObjectList("about", "gallery", { image: 500, alt: 300, label: 120, title: 180 }, { max: 8, imageKey: "image" });
       normalizeObjectList("about", "values", { title: 120, detail: 500, label: 120 }, { max: 8 });

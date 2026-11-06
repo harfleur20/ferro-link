@@ -3114,3 +3114,22 @@ h3 {
 .legal-page dt { font-weight: 700; }
 .legal-page dd { margin: 0; overflow-wrap: anywhere; }
 @media (max-width: 560px) { .legal-page dl > div { grid-template-columns: 1fr; } }
+
+.jobs-domain-list .jobs-domain { display: block; padding: 0; }
+.jobs-domain h3 { margin: 0; font: inherit; }
+.jobs-domain button { display: flex; width: 100%; align-items: center; gap: 28px; padding: 24px 0; border: 0; background: transparent; color: var(--navy); font: inherit; text-align: left; cursor: pointer; }
+.jobs-domain button:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+.jobs-domain button strong { flex: 1; min-width: 0; }
+.jobs-domain-chevron { flex: none; color: var(--muted); font-size: 13px; transition: transform .2s ease; }
+.jobs-domain.is-open .jobs-domain-chevron { transform: rotate(180deg); }
+.jobs-domain-panel { display: grid; grid-template-rows: 0fr; visibility: hidden; transition: grid-template-rows .2s ease, visibility .2s; }
+.jobs-domain.is-open .jobs-domain-panel { grid-template-rows: 1fr; visibility: visible; }
+.jobs-domain-panel > div { min-height: 0; overflow: hidden; }
+.jobs-domain-panel p { max-width: 760px; margin: 0; padding: 0 0 24px 50px; color: var(--muted); font-size: 15px; line-height: 1.7; }
+@media (max-width: 640px) {
+  .jobs-domain button { gap: 14px; padding: 18px 0; }
+  .jobs-domain-panel p { padding-left: 0; font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jobs-domain-chevron, .jobs-domain-panel { transition: none; }
+}

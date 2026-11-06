@@ -1,5 +1,5 @@
 import { createContext, lazy, Suspense, useContext, useEffect, useState } from "react";
-import { FaTrainSubway, FaLinkedinIn, FaFacebookF, FaInstagram, FaTiktok, FaHandshake, FaPeopleGroup, FaLightbulb, FaShieldHalved, FaAward } from "react-icons/fa6";
+import { FaChevronDown, FaTrainSubway, FaLinkedinIn, FaFacebookF, FaInstagram, FaTiktok, FaHandshake, FaPeopleGroup, FaLightbulb, FaShieldHalved, FaAward } from "react-icons/fa6";
 import "./styles/global.css";
 import { defaultSiteSettings, getSiteThemeStyle, mergeSiteSettings, resolveSiteAssetUrl } from "./siteSettings.js";
 import { serverFetch } from "./serverFetch.js";
@@ -376,6 +376,23 @@ function formatPublicationDate(date) {
   return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(date));
 }
 
+function DomainAccordion({ areas }) {
+  const [openIndex, setOpenIndex] = useState(0);
+  return <div className="jobs-domain-list">
+    {areas.map((area, index) => {
+      const open = index === openIndex;
+      return <div className={`jobs-domain${open ? " is-open" : ""}`} key={`${area.title}-${index}`}>
+        <h3><button type="button" id={`domain-${index}`} aria-expanded={open} aria-controls={`domain-panel-${index}`} onClick={() => setOpenIndex(open ? -1 : index)}>
+          <FaTrainSubway className="train-icon" aria-hidden="true" />
+          <strong>{area.title}</strong>
+          <FaChevronDown className="jobs-domain-chevron" aria-hidden="true" />
+        </button></h3>
+        <div className="jobs-domain-panel" id={`domain-panel-${index}`} role="region" aria-labelledby={`domain-${index}`}><div><p>{area.careerText || area.detail}</p></div></div>
+      </div>;
+    })}
+  </div>;
+}
+
 function JobsPage() {
   const siteSettings = useContext(SiteSettingsContext);
   const { data, error: jobsError, loading: jobsLoading } = useApiData("/api/jobs");
@@ -427,7 +444,7 @@ function JobsPage() {
       </nav>}
     </section>
     <section className="jobs-spontaneous"><div className="page-width jobs-spontaneous-inner"><div><p className="eyebrow"><span /> Vous ne trouvez pas votre poste ?</p><h2>Votre parcours a aussi sa place chez ferroLink.</h2><p>Présentez-nous vos compétences et le type de mission que vous recherchez. Nous pourrons étudier votre candidature spontanée.</p></div><a className="button button-lime" href={paths.spontaneous}>Envoyer une candidature</a></div></section>
-    <section className="section page-width jobs-values-section"><div className="section-heading"><div><div className="section-kicker"><span>Pourquoi ferroLink ?</span></div><h2>Des métiers au cœur du ferroviaire</h2></div><a className="text-link" href="/#expertises">{siteSettings.about.visionLink}</a></div><div className="jobs-domain-list">{siteSettings.home.expertiseAreas.map((area) => <div key={area.title}><FaTrainSubway className="train-icon" aria-hidden="true" /><strong>{area.title}</strong></div>)}</div></section>
+    <section className="section page-width jobs-values-section"><div className="section-heading"><div><div className="section-kicker"><span>{siteSettings.home.careersKicker}</span></div><h2>{siteSettings.home.careersTitle}</h2></div><a className="text-link" href="/#expertises">{siteSettings.about.visionLink}</a></div><DomainAccordion areas={siteSettings.home.expertiseAreas} /></section>
     {applicationJob && <ApplicationModal job={applicationJob} onClose={() => setApplicationJob(null)} />}
   </>;
 }
