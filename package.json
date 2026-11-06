@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "seed:test-admin": "npm --prefix server run seed:test-admin",
+    "db:start": "npm --prefix server run db:start",
+    "db:stop": "npm --prefix server run db:stop"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",

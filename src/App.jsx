@@ -1,38 +1,20 @@
-import { useState } from "react";
-import AuthPage from "./portals/AuthPage.jsx";
-import PortalApp from "./portals/PortalApp.jsx";
-import { FaTrainSubway, FaLinkedinIn, FaFacebookF, FaInstagram, FaTiktok } from "react-icons/fa6";
+import { createContext, lazy, Suspense, useContext, useEffect, useState } from "react";
+import { FaTrainSubway, FaLinkedinIn, FaFacebookF, FaInstagram, FaTiktok, FaHandshake, FaPeopleGroup, FaLightbulb, FaShieldHalved, FaAward } from "react-icons/fa6";
 import "./styles/global.css";
+import { defaultSiteSettings, getSiteThemeStyle, mergeSiteSettings, resolveSiteAssetUrl } from "./siteSettings.js";
+
+const AuthPage = lazy(() => import("./portals/AuthPage.jsx"));
+const AdminPortal = lazy(() => import("./portals/AdminPortal.jsx"));
+const routeFallback = <div className="route-loading" role="status">Chargement…</div>;
+const SiteSettingsContext = createContext(defaultSiteSettings);
+const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 const paths = {
   accueil: "/",
   about: "/a-propos",
-  competences: "/competences",
   jobs: "/offres-emploi",
   contact: "/contact",
 };
-
-const expertiseAreas = [
-  { number: "01", title: "Signalisation & CBTC (Communication Based Train Control)", detail: "Les systèmes de signalisation et de contrôle des trains au service de la sécurité et de la performance du réseau." },
-  { number: "02", title: "Matériel Roulant", detail: "L’accompagnement des projets liés aux trains, tramways et autres matériels ferroviaires." },
-  { number: "03", title: "Courants forts & Energie", detail: "Les systèmes d’alimentation et les infrastructures énergétiques nécessaires à l’exploitation ferroviaire." },
-  { number: "04", title: "Génie Civil & voie ferrée", detail: "Les études et travaux associés aux infrastructures et aux voies ferrées." },
-  { number: "05", title: "Courants faibles & Télécoms", detail: "Les systèmes de communication et équipements courants faibles des infrastructures ferroviaires." },
-];
-
-const metiers = [
-  "Assistance à Maîtrise d'œuvre",
-  "Assistance à Maîtrise d'ouvrage",
-  "Gestion de projet et coordination",
-  "Spécification et études",
-  "Conception et développement",
-  "Architecture système et sous-système",
-  "Sûreté de fonctionnement",
-  "Suivi de travaux",
-  "Exploitation et maintenance",
-  "Vérification et validation",
-  "Essais et mise en service",
-];
 
 function ExpertiseIcon({ number }) {
   const common = {
@@ -60,31 +42,21 @@ function ExpertiseIcon({ number }) {
   return <svg {...common}>{icons[Number(number) - 1] || icons[0]}</svg>;
 }
 
-const partners = [
-  { src: "/images/partner-1.png", alt: "Egis" },
-  { src: "/images/partner-2.png", alt: "Colas Rail" },
-  { src: "/images/partner-3.jpeg", alt: "INEO, une marque d'Equans" },
-  { src: "/images/partner-4.jpeg", alt: "Setec" },
-  { src: "/images/partner-5.png", alt: "RATP" },
-  { src: "/images/partner-6.png", alt: "Alstom" },
-];
-
-const navItems = [
-  ["Accueil", paths.accueil],
-  ["À propos de nous", paths.about],
-  ["Nos compétences", paths.competences],
-  ["Offres d'emploi", paths.jobs],
-  ["Contactez-nous", paths.contact],
-];
-
 function Header({ current }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [jobsMenuOpen, setJobsMenuOpen] = useState(false);
+  const siteSettings = useContext(SiteSettingsContext);
+  const navItems = [
+    [siteSettings.navigation.home, paths.accueil],
+    [siteSettings.navigation.about, paths.about],
+    [siteSettings.navigation.jobs, paths.jobs],
+    [siteSettings.navigation.contact, paths.contact],
+  ];
   const closeMenu = () => { setMenuOpen(false); setJobsMenuOpen(false); };
   return <header className="site-header">
     <div className="header-inner">
       <a className="brand" href={paths.accueil} aria-label="ferroLink, accueil">
-        <img src="/images/ferrolink-logo.png" alt="ferroLink" width="995" height="157" />
+        <img src={resolveSiteAssetUrl(siteSettings.brand.headerLogo, API)} alt="ferroLink" width="3473" height="490" />
       </a>
       <button className="menu-toggle" type="button" aria-expanded={menuOpen} aria-controls="main-navigation" aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"} onClick={() => setMenuOpen(!menuOpen)}>
         <span /><span />
@@ -93,56 +65,57 @@ function Header({ current }) {
         {navItems.map(([label, href]) => href === paths.jobs ? <div className={`nav-dropdown ${current === paths.jobs ? "is-active" : ""} ${jobsMenuOpen ? "is-open" : ""}`} key={href}>
           <div className="nav-dropdown-heading"><a className="nav-dropdown-link" href={href} onClick={closeMenu}>{label}</a><button className="nav-dropdown-trigger" type="button" aria-label={jobsMenuOpen ? "Fermer le sous-menu des offres d'emploi" : "Ouvrir le sous-menu des offres d'emploi"} aria-expanded={jobsMenuOpen} aria-haspopup="true" onClick={() => setJobsMenuOpen(!jobsMenuOpen)}><svg className="nav-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></button></div>
           <div className="nav-dropdown-menu">
-            <a href={paths.jobs} className={current === paths.jobs ? "is-active" : ""} aria-current={current === paths.jobs ? "page" : undefined} onClick={closeMenu}>Offres d'emploi</a>
-            <a href={paths.contact} onClick={closeMenu}>Candidature spontanée</a>
+            <a href={paths.jobs} className={current === paths.jobs ? "is-active" : ""} aria-current={current === paths.jobs ? "page" : undefined} onClick={closeMenu}>{siteSettings.navigation.jobsOffers}</a>
+            <a href={paths.contact} onClick={closeMenu}>{siteSettings.navigation.spontaneous}</a>
           </div>
         </div> : <a key={href} className={current === href ? "is-active" : ""} aria-current={current === href ? "page" : undefined} href={href} onClick={closeMenu}>{label}</a>)}
-        <a className="button button-small" href="/acces-equipe" onClick={closeMenu}>Accès équipe</a>
+        <a className="button button-small" href={paths.contact} onClick={closeMenu}>{siteSettings.navigation.cta}</a>
       </nav>
     </div>
   </header>;
 }
 
 function Footer() {
+  const siteSettings = useContext(SiteSettingsContext);
   return <footer className="site-footer">
     <div className="page-width footer-main">
       <div className="footer-brand-column">
         <a className="footer-brand" href={paths.accueil} aria-label="ferroLink, retour à l'accueil">
-          <img src="/images/ferrolink-logo.png" alt="ferroLink" width="995" height="157" loading="lazy" />
+          <img src={resolveSiteAssetUrl(siteSettings.brand.footerLogo, API)} alt="ferroLink" width="3472" height="490" loading="lazy" />
         </a>
-        <p className="footer-tagline">Une affaire de chemin de fer.</p>
-        <p className="footer-description">Conseil et ingénierie ferroviaire : nous accompagnons les acteurs du secteur dans leurs projets, des études à la mise en service, en passant par la conception, les travaux, l’exploitation et la maintenance.</p>
+        <p className="footer-tagline">{siteSettings.footer.tagline}</p>
+        <p className="footer-description">{siteSettings.footer.description}</p>
       </div>
       <div className="footer-column">
-        <h2>Découvrir ferroLink</h2>
-        <a href={paths.about}>À propos de nous</a>
-        <a href={paths.competences}>Nos compétences</a>
-        <a href={paths.jobs}>Offres d’emploi</a>
-        <a href={paths.contact}>Candidature spontanée</a>
+        <h2>{siteSettings.footer.exploreTitle}</h2>
+        <a href={paths.about}>{siteSettings.navigation.about}</a>
+        <a href={paths.jobs}>{siteSettings.navigation.jobs}</a>
+        <a href={paths.contact}>{siteSettings.navigation.contact}</a>
         <div className="footer-socials" aria-label="Réseaux sociaux ferroLink">
-          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" aria-label="LinkedIn ferroLink"><FaLinkedinIn aria-hidden="true" /></a>
-          <a href="https://www.facebook.com/" target="_blank" rel="noreferrer" aria-label="Facebook ferroLink"><FaFacebookF aria-hidden="true" /></a>
-          <a href="https://www.instagram.com/" target="_blank" rel="noreferrer" aria-label="Instagram ferroLink"><FaInstagram aria-hidden="true" /></a>
-          <a href="https://www.tiktok.com/" target="_blank" rel="noreferrer" aria-label="TikTok ferroLink"><FaTiktok aria-hidden="true" /></a>
+          {siteSettings.footer.socials.map((social, index) => {
+            const Icon = { LinkedIn: FaLinkedinIn, Facebook: FaFacebookF, Instagram: FaInstagram, TikTok: FaTiktok }[social.name];
+            return <a key={`${social.name}-${index}`} href={social.url} target="_blank" rel="noreferrer" aria-label={`${social.name} ferroLink`}>{Icon ? <Icon aria-hidden="true" /> : social.name}</a>;
+          })}
         </div>
       </div>
       <div className="footer-column">
-        <h2>Nos expertises</h2>
-        {expertiseAreas.map((area) => <a href={paths.competences} key={area.title}>{area.title}</a>)}
+        <h2>{siteSettings.footer.expertiseTitle}</h2>
+        {siteSettings.home.expertiseAreas.map((area) => <a href="/#expertises" key={area.title}>{area.title}</a>)}
       </div>
       <div className="footer-column footer-contact">
-        <h2>Parlons de votre projet</h2>
-        <p>Vous avez un besoin en ingénierie ferroviaire ou souhaitez rejoindre nos équipes ? Échangeons sur votre projet.</p>
-        <a href="tel:+33633821507">+33 6 33 82 15 07</a>
-        <a href="tel:+33650142309">+33 6 50 14 23 09</a>
-        <a href="mailto:gregory.aline@avenirferro.com">Nous écrire ↗</a>
-        <a className="footer-contact-cta" href={paths.contact}>Contacter l’équipe <span aria-hidden="true">→</span></a>
+        <h2>{siteSettings.footer.contactTitle}</h2>
+        <p>{siteSettings.footer.contactDescription}</p>
+        <div className="footer-phone-links">
+          {siteSettings.footer.phones.map((phone) => <a key={phone} href={`tel:${phone.replace(/[^\d+]/g, "")}`}>{phone}</a>)}
+        </div>
+        <a className="footer-contact-cta" href={paths.contact}>{siteSettings.footer.contactCta} <span aria-hidden="true">→</span></a>
+        <a className="footer-admin-link" href="/acces-equipe">Accès espace admin</a>
       </div>
     </div>
     <div className="page-width footer-bottom">
-      <span>© {new Date().getFullYear()} ferroLink. Tous droits réservés.</span>
-      <span>Conseil · Ingénierie · Projets ferroviaires</span>
-      <a href={paths.accueil}>Retour en haut ↑</a>
+      <span>© {new Date().getFullYear()} ferroLink. {siteSettings.footer.copyright}</span>
+      <span>{siteSettings.footer.signature}</span>
+      <a href={paths.accueil}>{siteSettings.footer.backToTop} ↑</a>
     </div>
   </footer>;
 }
@@ -157,72 +130,78 @@ function PageBanner({ kicker, title, description }) {
 }
 
 function HomePage() {
+  const siteSettings = useContext(SiteSettingsContext);
+  const { home } = siteSettings;
   return <>
     <section className="hero" aria-labelledby="hero-title">
-      <video className="hero-video" autoPlay muted loop playsInline preload="metadata" tabIndex="-1" aria-hidden="true"><source src="https://videos.pexels.com/video-files/19497508/19497508-hd_1920_1080_25fps.mp4" type="video/mp4" /></video>
+      {home.heroMediaType === "video"
+        ? <video className="hero-video" autoPlay muted loop playsInline preload="auto" poster={resolveSiteAssetUrl(home.heroImage, API)} tabIndex="-1" aria-hidden="true">
+          <source src="https://videos.pexels.com/video-files/19497508/19497508-sd_960_540_25fps.mp4" type="video/mp4" />
+        </video>
+        : <img className="hero-background-image" src={resolveSiteAssetUrl(home.heroImage, API)} alt="" />}
       <div className="hero-overlay" />
       <div className="hero-content page-width">
-        <p className="eyebrow eyebrow-light"><span /> Conseil & ingénierie ferroviaire</p>
-        <h1 id="hero-title">Une affaire de<br />chemin de fer</h1>
-        <a className="button button-lime" href={paths.jobs}>Rejoignez-nous</a>
+        <p className="eyebrow eyebrow-light"><span />{home.heroKicker}</p>
+        <h1 id="hero-title">{home.heroTitle}</h1>
+        <a className="button button-lime" href={paths.jobs}>{home.heroCta}</a>
       </div>
-      <div className="hero-caption">ferroLink — Le ferroviaire en mouvement</div>
+      <div className="hero-caption">{home.heroCaption}</div>
     </section>
 
     <section className="intro section page-width">
       <div className="presentation-layout">
         <div className="presentation-visual">
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Railway_work_crew_-_Seattle_04A.jpg" alt="Équipe américaine de maintenance ferroviaire travaillant sur les voies à Seattle" loading="lazy" />
-          <div className="presentation-image-caption"><span>ferroLink</span><span>Conseil & ingénierie</span></div>
+          <img src={resolveSiteAssetUrl(home.introImage, API)} alt={home.introImageAlt} loading="lazy" />
+          <div className="presentation-image-caption"><span>ferroLink</span><span>{home.introImageCaption}</span></div>
         </div>
         <div className="presentation-copy">
-          <p className="presentation-overline">Une expertise dédiée au rail</p>
-          <h2>Accompagner les projets ferroviaires, de l’idée à la mise en service.</h2>
-          <p className="lead"><strong>ferroLink</strong> est une société de conseil spécialisée dans l’industrie ferroviaire.</p>
-          <p>Nous accompagnons les clients grands comptes et les industriels dans leurs projets, des études à l’industrialisation, la production, l’exploitation et la maintenance. Nos compétences s’inscrivent dans l’ensemble du cycle de vie des projets.</p>
+          <p className="presentation-overline">{home.introKicker}</p>
+          <h2>{home.introTitle}</h2>
+          <p className="lead">{home.introLead}</p>
+          <p>{home.introText}</p>
           <div className="presentation-actions">
-            <a className="text-link" href={paths.about}>Découvrir ferroLink</a>
-            <div className="home-phone"><span>Un projet à discuter ?</span><a href="tel:+33633821507">+33 6 33 82 15 07</a></div>
+            <a className="text-link" href={paths.about}>{home.introLink}</a>
+            <div className="home-phone"><span>{home.introPhoneLabel}</span><a href={`tel:${home.introPhone.replace(/[^\d+]/g, "")}`}>{home.introPhone}</a></div>
           </div>
         </div>
       </div>
     </section>
 
-    <section className="home-contact-band">
+    <section className="home-contact-band" style={{ "--home-band-image": `url("${resolveSiteAssetUrl(home.homeBandImage, API)}")` }}>
       <div className="page-width home-contact-inner">
-        <div><p className="eyebrow"><span /> Parlons de votre projet</p><h2>Vos enjeux ferroviaires méritent une réponse adaptée.</h2></div>
-        <a className="button button-lime" href={paths.contact}>Échanger avec notre équipe <span aria-hidden="true">↗</span></a>
+        <div><p className="eyebrow"><span /> {home.contactKicker}</p><h2>{home.contactTitle}</h2></div>
+        <a className="button button-lime" href={paths.contact}>{home.contactCta} <span aria-hidden="true">↗</span></a>
       </div>
     </section>
 
-    <section className="home-expertise section">
+    <section className="home-expertise section" id="expertises">
       <div className="page-width home-split-layout">
-        <div className="home-section-visual"><img src="https://cdn.mbta.com/sites/default/files/styles/max_2600x2600/public/media/2024-11/MBTA_OL_Diversion_MaldenCen_OakGrove%20103124-6445.jpg?itok=AhOC2zmw" alt="Techniciens de maintenance du réseau ferroviaire américain" loading="lazy" /><span className="visual-index">01 / EXPERTISES</span></div>
+        <div className="home-section-visual"><img src={resolveSiteAssetUrl(home.expertiseImage, API)} alt={home.expertiseImageAlt} loading="lazy" decoding="async" /><span className="visual-index">{home.expertiseKicker}</span></div>
         <div className="home-section-content">
-          <h2>Des compétences au service de toute la chaîne ferroviaire.</h2>
-          <p className="home-section-lead">Des expertises complémentaires pour répondre aux exigences techniques et opérationnelles des projets.</p>
-          <div className="home-expertise-list">{expertiseAreas.map((area) => <div className="home-expertise-item" key={area.number}><span className="home-expertise-icon"><ExpertiseIcon number={area.number} /></span><span><strong>{area.title}</strong><small>{area.detail}</small></span></div>)}</div>
-          <a className="text-link" href={paths.competences}>Toutes nos compétences</a>
+          <h2>{home.expertiseTitle}</h2>
+          <p className="home-section-lead">{home.expertiseText}</p>
+          <div className="home-expertise-list">{home.expertiseAreas.map((area, index) => <div className="home-expertise-item" key={`${area.title}-${index}`}><span className="home-expertise-icon"><ExpertiseIcon number={String((index % 5) + 1)} /></span><span><strong>{area.title}</strong><small>{area.detail}</small></span></div>)}</div>
+          <a className="text-link" href={paths.contact}>{home.expertiseLink}</a>
         </div>
       </div>
     </section>
 
-    <section className="home-metiers section">
+    <section className="home-metiers section" id="metiers">
       <div className="page-width home-split-layout home-metiers-layout">
         <div className="home-section-content">
-          <h2>De l’étude au terrain, nous accompagnons les étapes clés de vos projets.</h2>
-          <p className="home-section-lead">Nos équipes peuvent intervenir en appui de vos métiers et de vos opérations, selon les besoins de chaque mission.</p>
-          <div className="home-metiers-grid">{metiers.map((metier,index)=><div className="home-metier-chip" key={metier}><FaTrainSubway className="train-icon" aria-hidden="true" />{metier}</div>)}</div>
-          <a className="text-link" href={paths.competences}>Explorer nos domaines d’intervention</a>
+          <h2>{home.metiersTitle}</h2>
+          <p className="home-section-lead">{home.metiersText}</p>
+          <div className="home-metiers-grid">{home.metiers.map((metier,index)=><div className="home-metier-chip" key={`${metier}-${index}`}><FaTrainSubway className="train-icon" aria-hidden="true" />{metier}</div>)}</div>
+          <a className="text-link" href={paths.contact}>{home.metiersLink}</a>
         </div>
-        <div className="home-section-visual home-metiers-visual"><img src="https://www.bnsf.com/news-media/images/rt-mow-4.jpg" alt="Technicien américain inspectant une voie ferrée" loading="lazy" /><span className="visual-index">02 / MÉTIERS</span></div>
+        <div className="home-section-visual home-metiers-visual"><img src={resolveSiteAssetUrl(home.metiersImage, API)} alt={home.metiersImageAlt} loading="lazy" decoding="async" /><span className="visual-index">{home.metiersKicker}</span></div>
       </div>
     </section>
 
     <section className="references section">
-      <div className="page-width"><div className="references-heading"><div><div className="section-kicker">Ils nous font confiance</div><h2>Des partenaires engagés à nos côtés.</h2></div></div>
+      <div className="page-width"><div className="references-heading"><div><div className="section-kicker">{siteSettings.home.partnersKicker}</div><h2>{siteSettings.home.partnersTitle}</h2></div></div>
         <div className="partner-marquee" aria-label="Logos de nos partenaires"><div className="partner-track">
-          {[...partners, ...partners].map((partner, index) => <div className="partner" key={`${partner.alt}-${index}`} aria-hidden={index >= partners.length ? "true" : undefined}><img src={partner.src} alt={index >= partners.length ? "" : partner.alt} loading="lazy" /></div>)}
+          {[...siteSettings.home.partners, ...siteSettings.home.partners].map((partner, index) => <div className="partner" key={`${partner.alt}-${index}`} aria-hidden={index >= siteSettings.home.partners.length ? "true" : undefined}><img src={resolveSiteAssetUrl(partner.src, API)} alt={index >= siteSettings.home.partners.length ? "" : partner.alt} loading="lazy" /></div>)}
         </div></div>
       </div>
     </section>
@@ -231,49 +210,56 @@ function HomePage() {
 }
 
 function AboutPage() {
-  const values = [
-    ["Le respect", "Écouter les personnes, respecter les engagements et construire des relations de confiance."],
-    ["Le partage", "Favoriser la coopération, la transmission des connaissances et le travail en équipe."],
-    ["L’innovation", "Rechercher des solutions adaptées aux évolutions et aux enjeux du secteur ferroviaire."],
-    ["La responsabilité", "Agir avec sérieux, transparence et attention à la qualité du travail réalisé."],
-    ["L’excellence", "Viser un haut niveau d’exigence dans les études, les projets et l’accompagnement des clients."],
-  ];
+  const siteSettings = useContext(SiteSettingsContext);
+  const valueIcons = [FaHandshake, FaPeopleGroup, FaLightbulb, FaShieldHalved, FaAward];
   return <>
-    <PageBanner kicker="À propos de nous" title="Une affaire de chemin de fer" description="Découvrez notre vision, nos valeurs et les personnes qui portent notre engagement dans le secteur ferroviaire." />
+    <PageBanner kicker={siteSettings.about.kicker} title={siteSettings.about.title} description={siteSettings.about.description} />
     <section className="section page-width about-intro">
-      <div className="section-kicker"><span>01</span> Notre vision</div>
-      <div className="intro-grid"><h2>NOTRE VISION</h2><div className="intro-copy">
-        <p className="lead">Accompagner les acteurs du ferroviaire dans la réussite de leurs projets.</p>
-        <p>ferroLink est une société de conseil spécialisée dans l’industrie ferroviaire. Elle accompagne les clients grands comptes et les industriels dans leurs projets, depuis les études jusqu’à l’industrialisation, la production, l’exploitation et la maintenance.</p>
-        <p>Présente sur l’ensemble du cycle du projet, de la définition jusqu’à la livraison, l’entreprise mobilise ses compétences pour répondre aux besoins de ses clients.</p>
-      </div></div>
+      <div className="section-kicker">{siteSettings.about.visionKicker}</div>
+      <div className="about-vision-layout">
+        <div className="about-vision-copy">
+          <p className="about-overline">{siteSettings.about.visionOverline}</p>
+          <h2>{siteSettings.about.visionTitle}</h2>
+          <p className="lead">{siteSettings.about.visionLead}</p>
+          <p>{siteSettings.about.visionText}</p>
+          <a className="text-link" href="/#expertises">{siteSettings.about.visionLink} <span aria-hidden="true">→</span></a>
+        </div>
+        <figure className="about-vision-visual">
+          <img
+            src={resolveSiteAssetUrl(siteSettings.about.visionImage, API)}
+            alt={siteSettings.about.visionImageAlt}
+            loading="lazy"
+          />
+          <figcaption><span>ferroLink</span><span>{siteSettings.about.visionCaption}</span></figcaption>
+        </figure>
+      </div>
+    </section>
+    <section className="about-gallery section" aria-labelledby="about-gallery-title">
+      <div className="page-width">
+        <div className="section-heading about-gallery-heading">
+          <div>
+            <div className="section-kicker">{siteSettings.about.galleryKicker}</div>
+            <h2 id="about-gallery-title">{siteSettings.about.galleryTitle}</h2>
+          </div>
+          <p>{siteSettings.about.galleryDescription}</p>
+        </div>
+        <div className="about-gallery-grid">
+          {siteSettings.about.gallery.map((image, index) => (
+            <figure className={`about-photo about-photo-${index + 1}`} key={`${image.label}-${index}`}>
+              <img src={resolveSiteAssetUrl(image.image, API)} alt={image.alt} loading="lazy" decoding="async" />
+              <figcaption>
+                <span>{image.label}</span>
+                <strong>{image.title}</strong>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </div>
     </section>
     <section className="section values-section"><div className="page-width">
-      <div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos valeurs</div><h2>NOS VALEURS</h2></div><p>Des principes qui guident notre manière de collaborer et d’accompagner les projets.</p></div>
-      <div className="values-grid">{values.map(([title, detail], index) => <article className="value-card" key={title}><span className="card-number">{String(index + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{detail}</p></article>)}</div>
+      <div className="section-heading"><div><div className="section-kicker">{siteSettings.about.valuesKicker}</div><h2>{siteSettings.about.valuesTitle}</h2></div><p>{siteSettings.about.valuesDescription}</p></div>
+      <div className="values-grid">{siteSettings.about.values.map(({ title, detail, label }, index) => { const Icon = valueIcons[index % valueIcons.length]; return <article className="value-card" key={`${title}-${index}`}><div className="value-card-heading"><span className="value-card-icon"><Icon aria-hidden="true" /></span><span className="value-card-label">{label}</span></div><h3>{title}</h3><p>{detail}</p></article>; })}</div>
     </div></section>
-    <section className="section page-width founders-section">
-      <div className="section-heading"><div><div className="section-kicker"><span>03</span> Présentation des fondateurs</div><h2>PRÉSENTATION DES FONDATEURS</h2></div></div>
-      <div className="founders-grid">
-        <article className="founder-card"><div className="founder-monogram">GA</div><div><p className="founder-role">Fondateur</p><h3>Grégory ALINE</h3><p>Contribue au développement d’ferroLink et à l’accompagnement des projets de ses clients dans le secteur ferroviaire.</p></div></article>
-        <article className="founder-card"><div className="founder-monogram">FN</div><div><p className="founder-role">Fondateur</p><h3>François NOUEDOUI</h3><p>Participe au développement de l’entreprise et à la mobilisation des compétences nécessaires aux projets ferroviaires.</p></div></article>
-      </div>
-      <p className="content-note">Les biographies détaillées des fondateurs peuvent être complétées avec le texte exact et les portraits du site de référence.</p>
-    </section>
-    <ContactCallout />
-  </>;
-}
-
-function CompetencesPage() {
-  return <>
-    <PageBanner kicker="Expertises ferroviaires" title="Nos principaux domaines de compétences" description="Des compétences mobilisables tout au long du cycle de vie des projets ferroviaires, des études à l’exploitation." />
-    <section className="section expertise-page-section"><div className="page-width">
-      <div className="section-kicker"><span>01</span> Nos domaines d’expertise</div>
-      <div className="expertise-detail-grid">{expertiseAreas.map((area) => <div className="expertise-detail-card" key={area.number}><div className="card-mark" aria-hidden="true"><ExpertiseIcon number={area.number} /></div><h2>{area.title}</h2><p>{area.detail}</p></div>)}</div>
-    </div></section>
-    <section className="section page-width"><div className="section-heading"><div><div className="section-kicker"><span>02</span> Nos métiers</div><h2>Les métiers sur lesquels nous pouvons accompagner nos clients</h2></div></div>
-      <div className="metiers-grid">{metiers.map((metier, index) => <article className="metier-tile" key={metier}><FaTrainSubway className="train-icon" aria-hidden="true" /><h3>{metier}</h3></article>)}</div>
-    </section>
     <ContactCallout />
   </>;
 }
@@ -288,7 +274,7 @@ const jobOffers = [
     experience: "3 à 5 ans",
     salary: "42–52 k€ brut/an",
     date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1200&q=85",
+    image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?fm=webp&fit=crop&w=800&q=65",
     imageAlt: "Voies ferrées traversant un paysage",
     summary: "Participez aux études et à la validation de systèmes de signalisation qui contribuent à la sécurité et à la performance des réseaux.",
     missions: ["Contribuer aux études de signalisation et à la rédaction des livrables techniques.", "Coordonner les interfaces avec les équipes systèmes, travaux et essais.", "Participer aux revues techniques, à la vérification et à la validation."],
@@ -303,7 +289,7 @@ const jobOffers = [
     experience: "5 ans et +",
     salary: "45–58 k€ brut/an",
     date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1200&q=85",
+    image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?fm=webp&fit=crop&w=800&q=65",
     imageAlt: "Infrastructure ferroviaire et lignes de rails",
     summary: "Pilotez la préparation et le suivi d’opérations ferroviaires en lien avec les équipes terrain, les partenaires et le client.",
     missions: ["Planifier les phases de travaux et suivre les jalons du projet.", "Coordonner les entreprises et les parties prenantes.", "Suivre la qualité, les risques, la sécurité et le reporting d’avancement."],
@@ -318,7 +304,7 @@ const jobOffers = [
     experience: "1 à 3 ans",
     salary: "Selon profil",
     date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=85",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?fm=webp&fit=crop&w=800&q=65",
     imageAlt: "Infrastructure de transport et équipements techniques",
     summary: "Contribuez aux essais sur site et à la mise en service d’équipements ferroviaires, dans le respect des procédures et exigences de sécurité.",
     missions: ["Préparer les séquences d’essais et les moyens de contrôle.", "Réaliser les vérifications et consigner les résultats.", "Remonter les écarts et participer à leur résolution avec les équipes projet."],
@@ -333,7 +319,7 @@ const jobOffers = [
     experience: "3 à 5 ans",
     salary: "40–50 k€ brut/an",
     date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1532105956626-9569c03602f6?auto=format&fit=crop&w=1200&q=85",
+    image: "https://images.unsplash.com/photo-1532105956626-9569c03602f6?fm=webp&fit=crop&w=800&q=60",
     imageAlt: "Train de voyageurs sur une ligne ferroviaire",
     summary: "Accompagnez les équipes dans l’analyse technique, la fiabilité et le suivi des évolutions du matériel roulant.",
     missions: ["Analyser les exigences et les dossiers techniques.", "Assurer le suivi des anomalies et des modifications.", "Participer aux échanges entre fournisseurs, exploitants et équipes d’ingénierie."],
@@ -348,7 +334,7 @@ const jobOffers = [
     experience: "3 à 5 ans",
     salary: "40–52 k€ brut/an",
     date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?auto=format&fit=crop&w=1200&q=85",
+    image: "https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?fm=webp&fit=crop&w=800&q=65",
     imageAlt: "Réseau de transport et infrastructure électrique",
     summary: "Intervenez sur les études d’alimentation électrique et les interfaces énergie des projets ferroviaires.",
     missions: ["Réaliser ou vérifier les études techniques et notes de calcul.", "Analyser les interfaces entre alimentation, équipements et exploitation.", "Participer aux réunions de coordination et au suivi des livrables."],
@@ -363,7 +349,7 @@ const jobOffers = [
     experience: "3 à 5 ans",
     salary: "40–50 k€ brut/an",
     date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1200&q=85",
+    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?fm=webp&fit=crop&w=800&q=65",
     imageAlt: "Équipements et technologies de communication",
     summary: "Contribuez à la conception et à l’intégration des systèmes de communication et de sûreté des infrastructures ferroviaires.",
     missions: ["Analyser les besoins et exigences systèmes.", "Suivre les interfaces entre réseaux, équipements et lots techniques.", "Préparer les essais d’intégration et la documentation associée."],
@@ -387,15 +373,26 @@ function formatPublicationDate(date) {
 }
 
 function JobsPage() {
+  const siteSettings = useContext(SiteSettingsContext);
   const [search, setSearch] = useState("");
   const [contract, setContract] = useState("Tous les contrats");
   const [location, setLocation] = useState("Toutes les localisations");
+  const [currentPage, setCurrentPage] = useState(1);
   const [applicationJob, setApplicationJob] = useState(null);
+  const pageSize = 6;
   const filteredJobs = jobOffers.filter((job) => {
     const query = search.trim().toLocaleLowerCase("fr");
     const matchesSearch = !query || [job.title, job.category, job.location, job.summary].some((value) => value.toLocaleLowerCase("fr").includes(query));
     return matchesSearch && (contract === "Tous les contrats" || job.contract === contract) && (location === "Toutes les localisations" || job.location === location);
   });
+  const pageCount = Math.ceil(filteredJobs.length / pageSize);
+  const visibleJobs = filteredJobs.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+  const pageButtons = [...new Set([1, pageCount, currentPage - 1, currentPage, currentPage + 1].filter((page) => page >= 1 && page <= pageCount))];
+  const paginationItems = pageButtons.flatMap((page, index) => {
+    const previousPage = pageButtons[index - 1];
+    return previousPage && page - previousPage > 1 ? [`ellipsis-${page}`, page] : [page];
+  });
+  const resetPagination = () => setCurrentPage(1);
 
   return <>
     <PageBanner kicker="Carrières & opportunités" title="Trouvez votre prochaine mission." description="Rejoignez des équipes qui font avancer les projets ferroviaires. Explorez les opportunités et trouvez le poste qui correspond à votre expertise." />
@@ -405,19 +402,26 @@ function JobsPage() {
         <a className="button button-outline" href={paths.contact}>Candidature spontanée <span aria-hidden="true">↗</span></a>
       </div>
       <div className="jobs-search-panel" role="search" aria-label="Filtrer les offres d’emploi">
-        <label className="jobs-search-field"><span aria-hidden="true">⌕</span><span className="visually-hidden">Rechercher une offre</span><input type="search" placeholder="Intitulé, compétence, domaine…" value={search} onChange={(event) => setSearch(event.target.value)} /></label>
-        <label className="jobs-filter"><span className="visually-hidden">Type de contrat</span><select value={contract} onChange={(event) => setContract(event.target.value)}><option>Tous les contrats</option><option>CDI</option><option>Mission</option><option>CDD</option><option>Stage</option><option>Alternance</option></select></label>
-        <label className="jobs-filter"><span className="visually-hidden">Localisation</span><select value={location} onChange={(event) => setLocation(event.target.value)}><option>Toutes les localisations</option>{[...new Set(jobOffers.map((job) => job.location))].map((place) => <option key={place}>{place}</option>)}</select></label>
-        <button className="jobs-reset" type="button" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); }}>Réinitialiser</button>
+        <label className="jobs-search-field"><span aria-hidden="true">⌕</span><span className="visually-hidden">Rechercher une offre</span><input type="search" placeholder="Intitulé, compétence, domaine…" value={search} onChange={(event) => { setSearch(event.target.value); resetPagination(); }} /></label>
+        <label className="jobs-filter"><span className="visually-hidden">Type de contrat</span><select value={contract} onChange={(event) => { setContract(event.target.value); resetPagination(); }}><option>Tous les contrats</option><option>CDI</option><option>Mission</option><option>CDD</option><option>Stage</option><option>Alternance</option></select></label>
+        <label className="jobs-filter"><span className="visually-hidden">Localisation</span><select value={location} onChange={(event) => { setLocation(event.target.value); resetPagination(); }}><option>Toutes les localisations</option>{[...new Set(jobOffers.map((job) => job.location))].map((place) => <option key={place}>{place}</option>)}</select></label>
+        <button className="jobs-reset" type="button" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); resetPagination(); }}>Réinitialiser</button>
       </div>
-      <div className="jobs-results-line"><p><strong>{filteredJobs.length}</strong> offre{filteredJobs.length > 1 ? "s" : ""} trouvée{filteredJobs.length > 1 ? "s" : ""}</p><span>Tri : les plus récentes</span></div>
-      {filteredJobs.length ? <div className="jobs-offer-grid">{filteredJobs.map((job) => <article className="job-card" key={job.id}>
+      <div className="jobs-results-line"><p><strong>{filteredJobs.length}</strong> offre{filteredJobs.length > 1 ? "s" : ""} trouvée{filteredJobs.length > 1 ? "s" : ""}</p><span>{filteredJobs.length > 0 && `Affichage de ${(currentPage - 1) * pageSize + 1} à ${Math.min(currentPage * pageSize, filteredJobs.length)}`}</span></div>
+      {filteredJobs.length ? <div className="jobs-offer-grid">{visibleJobs.map((job) => <article className="job-card" key={job.id}>
         <a className="job-card-image-button" href={`${paths.jobs}/${job.id}`} aria-label={`Voir le détail : ${job.title}`}><img src={job.image} alt={job.imageAlt} loading="lazy" /><span className="job-category">{job.category}</span><span className="job-image-arrow" aria-hidden="true">↗</span></a>
         <div className="job-card-content"><div className="job-card-meta"><span>{job.contract}</span><span>{job.experience}</span><span className="job-published-date">Publié le {formatPublicationDate(job.date)}</span></div><h3><a href={`${paths.jobs}/${job.id}`}>{job.title}</a></h3><p className="job-card-summary">{job.summary}</p><div className="job-card-location"><span className="job-location-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" strokeWidth="1.8"/></svg></span>{job.location}<span className="job-card-salary">{job.salary}</span></div><div className="job-card-actions"><a className="job-details-link" href={`${paths.jobs}/${job.id}`}>Voir l’offre <span aria-hidden="true">→</span></a><button type="button" className="job-apply-link" onClick={() => setApplicationJob(job)} aria-label={`Candidater à ${job.title}`}>Postuler ↗</button></div></div>
-      </article>)}</div> : <div className="jobs-empty-state"><h3>Aucune offre ne correspond à ces filtres.</h3><p>Modifiez votre recherche ou envoyez-nous une candidature spontanée.</p><button type="button" className="button button-lime" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); }}>Voir toutes les offres</button><a className="text-link" href={paths.contact}>Candidature spontanée</a></div>}
+      </article>)}</div> : <div className="jobs-empty-state"><h3>Aucune offre ne correspond à ces filtres.</h3><p>Modifiez votre recherche ou envoyez-nous une candidature spontanée.</p><button type="button" className="button button-lime" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); resetPagination(); }}>Voir toutes les offres</button><a className="text-link" href={paths.contact}>Candidature spontanée</a></div>}
+      {pageCount > 1 && <nav className="jobs-pagination" aria-label="Pagination des offres d’emploi">
+        <button type="button" className="jobs-page-arrow" onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} disabled={currentPage === 1} aria-label="Page précédente">← <span>Précédent</span></button>
+        <div className="jobs-page-numbers">{paginationItems.map((item) => typeof item === "number"
+          ? <button type="button" key={item} className={`jobs-page-number ${item === currentPage ? "is-current" : ""}`} onClick={() => setCurrentPage(item)} aria-label={`Page ${item}`} aria-current={item === currentPage ? "page" : undefined}>{item}</button>
+          : <span className="jobs-page-ellipsis" key={item} aria-hidden="true">…</span>)}</div>
+        <button type="button" className="jobs-page-arrow" onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))} disabled={currentPage === pageCount} aria-label="Page suivante"><span>Suivant</span> →</button>
+      </nav>}
     </section>
     <section className="jobs-spontaneous"><div className="page-width jobs-spontaneous-inner"><div><p className="eyebrow"><span /> Vous ne trouvez pas votre poste ?</p><h2>Votre parcours a aussi sa place chez ferroLink.</h2><p>Présentez-nous vos compétences et le type de mission que vous recherchez. Nous pourrons étudier votre candidature spontanée.</p></div><a className="button button-lime" href={paths.contact}>Envoyer une candidature <span aria-hidden="true">↗</span></a></div></section>
-    <section className="section page-width jobs-values-section"><div className="section-heading"><div><div className="section-kicker"><span>Pourquoi ferroLink ?</span></div><h2>Des métiers au cœur du ferroviaire</h2></div><a className="text-link" href={paths.competences}>Découvrir nos compétences</a></div><div className="jobs-domain-list">{expertiseAreas.map((area) => <div key={area.title}><FaTrainSubway className="train-icon" aria-hidden="true" /><strong>{area.title}</strong></div>)}</div></section>
+    <section className="section page-width jobs-values-section"><div className="section-heading"><div><div className="section-kicker"><span>Pourquoi ferroLink ?</span></div><h2>Des métiers au cœur du ferroviaire</h2></div><a className="text-link" href="/#expertises">{siteSettings.about.visionLink}</a></div><div className="jobs-domain-list">{siteSettings.home.expertiseAreas.map((area) => <div key={area.title}><FaTrainSubway className="train-icon" aria-hidden="true" /><strong>{area.title}</strong></div>)}</div></section>
     {applicationJob && <ApplicationModal job={applicationJob} onClose={() => setApplicationJob(null)} />}
   </>;
 }
@@ -451,68 +455,109 @@ function JobDetailPage({ job }) {
 }
 
 function ContactPage() {
+  const siteSettings = useContext(SiteSettingsContext);
+  const { contact } = siteSettings;
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const update = (event) => setForm({ ...form, [event.target.name]: event.target.value });
   const submit = (event) => {
     event.preventDefault();
     const body = `Nom : ${form.name}\nE-mail : ${form.email}\nSujet : ${form.subject}\n\n${form.message}`;
-    window.location.href = `mailto:gregory.aline@avenirferro.com?subject=${encodeURIComponent(form.subject || "Prise de contact depuis ferroLink")}&body=${encodeURIComponent(body)}`;
+    window.location.href = `mailto:${contact.mailto}?subject=${encodeURIComponent(form.subject || "Prise de contact depuis ferroLink")}&body=${encodeURIComponent(body)}`;
     setSubmitted(true);
   };
   return <>
-    <PageBanner kicker="Nous contacter" title="Contactez-nous" description="Vous avez un besoin, une question ou souhaitez échanger sur un projet ferroviaire ? Écrivez-nous ou contactez directement notre équipe." />
+    <PageBanner kicker={contact.kicker} title={contact.title} description={contact.description} />
     <section className="section page-width contact-page-layout">
       <div className="contact-info-column">
-        <div className="section-kicker"><span>01</span> Informations de contact</div>
-        <h2>Parlons de votre projet.</h2>
-        <div className="contact-info-item"><span className="contact-info-label">Appelez-nous</span><a href="tel:+33633821507">00336-33-82-15-07</a><a href="tel:+33650142309">00336-50-14-23-09</a></div>
-        <div className="contact-info-item"><span className="contact-info-label">E-mail</span><a href="mailto:gregory.aline@avenirferro.com">gregory.aline@avenirferro.com</a><a href="mailto:francois.nouedoui@avenirferro.com">francois.nouedoui@avenirferro.com</a></div>
-        <div className="contact-info-item"><span className="contact-info-label">Siège social</span><p>1 Rue Marcel Duchamp<br />94260 Fresnes, France</p></div>
-        <div className="contact-info-item"><span className="contact-info-label">Suivez-nous</span><a href="https://www.linkedin.com/" target="_blank" rel="noreferrer">LinkedIn ↗</a></div>
+        <div className="section-kicker">{contact.infoTitle}</div>
+        <h2>{contact.infoHeading}</h2>
+        <div className="contact-info-item"><span className="contact-info-label">{contact.phoneLabel}</span>{contact.phones.map((phone, index) => <a key={`${phone}-${index}`} href={`tel:${contact.phoneLinks[index]}`}>{phone}</a>)}</div>
+        <div className="contact-info-item"><span className="contact-info-label">{contact.emailLabel}</span>{contact.emails.map((email) => <a key={email} href={`mailto:${email}`}>{email}</a>)}</div>
+        <div className="contact-info-item"><span className="contact-info-label">{contact.addressLabel}</span><p>{contact.addressLines.map((line) => <span key={line}>{line}<br /></span>)}</p></div>
+        <div className="contact-info-item"><span className="contact-info-label">{contact.socialsLabel}</span><a href={contact.socialUrl} target="_blank" rel="noreferrer">{contact.socialName} ↗</a></div>
       </div>
       <form className="contact-form" onSubmit={submit}>
-        <div className="section-kicker"><span>02</span> Envoyez-nous un message</div><h2>Envoyez-nous un message</h2>
-        <label>Nom complet<input name="name" value={form.name} onChange={update} autoComplete="name" required /></label>
-        <label>Adresse e-mail<input name="email" type="email" value={form.email} onChange={update} autoComplete="email" required /></label>
-        <label>Sujet<input name="subject" value={form.subject} onChange={update} required /></label>
-        <label>Votre message<textarea name="message" rows="5" value={form.message} onChange={update} required /></label>
-        <button className="button button-lime" type="submit">Préparer le message <span aria-hidden="true">↗</span></button>
-        {submitted && <p className="form-feedback" role="status">Votre application e-mail devrait s’ouvrir avec le message préparé. Aucun message n’est envoyé depuis le site.</p>}
-        <p className="form-note">Le formulaire prépare un e-mail dans votre application de messagerie ; il ne transmet pas les données à un serveur.</p>
+        <div className="section-kicker">{contact.formKicker}</div><h2>{contact.formTitle}</h2>
+        <label>{contact.nameLabel}<input name="name" value={form.name} onChange={update} autoComplete="name" required /></label>
+        <label>{contact.emailFieldLabel}<input name="email" type="email" value={form.email} onChange={update} autoComplete="email" required /></label>
+        <label>{contact.subjectLabel}<input name="subject" value={form.subject} onChange={update} required /></label>
+        <label>{contact.messageLabel}<textarea name="message" rows="5" value={form.message} onChange={update} required /></label>
+        <button className="button button-lime" type="submit">{contact.submitLabel} <span aria-hidden="true">↗</span></button>
+        {submitted && <p className="form-feedback" role="status">{contact.successText}</p>}
+        <p className="form-note">{contact.privacyText}</p>
       </form>
     </section>
   </>;
 }
 
 function ContactCallout() {
-  return <section className="contact section page-width"><div className="contact-panel">
-    <div className="contact-content"><div className="section-kicker section-kicker-light"><span>Parlons de votre projet</span></div><h2>Confiez-nous vos besoins</h2><p>Contactez notre équipe pour échanger sur vos projets et vos besoins en ingénierie ferroviaire.</p><a className="button button-lime" href={paths.contact}>Contactez-nous <span aria-hidden="true">↗</span></a></div>
+  const siteSettings = useContext(SiteSettingsContext);
+  return <section className="contact section page-width" style={{ "--contact-panel-image": `url("${resolveSiteAssetUrl(siteSettings.callout.backgroundImage, API)}")` }}><div className="contact-panel">
+    <div className="contact-content"><div className="section-kicker section-kicker-light"><span>{siteSettings.callout.kicker}</span></div><h2>{siteSettings.callout.title}</h2><p>{siteSettings.callout.description}</p><a className="button button-lime" href={paths.contact}>{siteSettings.callout.button} <span aria-hidden="true">↗</span></a></div>
   </div></section>;
 }
+
+function NotFoundPage() {
+  return <section className="section page-width job-not-found"><h1>Cette page n’existe pas.</h1><p>Le lien est peut-être incorrect ou la page a été déplacée.</p><a className="button button-lime" href={paths.accueil}>Retour à l’accueil</a></section>;
+}
+
+const notFoundRoute = "not-found";
 
 function getRoute() {
   const path = window.location.pathname.replace(/\/+$/, "") || "/";
   if (path.startsWith(paths.jobs + "/")) return paths.jobs;
-  return Object.values(paths).includes(path) ? path : paths.accueil;
+  return Object.values(paths).includes(path) ? path : notFoundRoute;
+}
+
+function PublicSite({ current, pages, preview = false }) {
+  const [siteSettings, setSiteSettings] = useState(defaultSiteSettings);
+  useEffect(() => {
+    if (preview) {
+      const receivePreview = (event) => {
+        if (event.origin !== window.location.origin
+          || event.source !== window.parent
+          || event.data?.type !== "ferrolink:site-preview") return;
+        setSiteSettings(mergeSiteSettings(event.data.settings));
+      };
+      window.addEventListener("message", receivePreview);
+      return () => window.removeEventListener("message", receivePreview);
+    }
+
+    let active = true;
+    fetch(`${API}/api/site-settings`)
+      .then(async (response) => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Impossible de charger les réglages du site.");
+        if (active && data.settings) setSiteSettings(mergeSiteSettings(data.settings));
+      })
+      .catch((error) => console.error("Chargement des réglages publics du site impossible :", error))
+      .finally(() => { active = false; });
+    return () => { active = false; };
+  }, [preview]);
+
+  return <SiteSettingsContext.Provider value={siteSettings}>
+    <div className="public-site" style={getSiteThemeStyle(siteSettings.theme, siteSettings.home)}>
+      <a className="skip-link" href="#contenu">Aller au contenu</a>
+      <Header current={current} />
+      <main id="contenu">{pages[current]}</main>
+      <Footer />
+    </div>
+  </SiteSettingsContext.Provider>;
 }
 
 export default function App() {
   const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
-  if (pathname === "/acces-equipe") return <AuthPage />;
-  if (pathname === "/administration") return <PortalApp admin />;
+  if (pathname === "/acces-equipe") return <Suspense fallback={routeFallback}><AuthPage /></Suspense>;
+  if (pathname === "/administration") return <Suspense fallback={routeFallback}><AdminPortal /></Suspense>;
   const current = getRoute();
   const pages = {
     [paths.accueil]: <HomePage />,
     [paths.about]: <AboutPage />,
-    [paths.competences]: <CompetencesPage />,
-    [paths.jobs]: window.location.pathname.replace(/\\/+$/, "") === paths.jobs ? <JobsPage /> : <JobDetailPage job={jobOffers.find((job) => job.id === window.location.pathname.replace(/\\/+$/, "").split("/").pop())} />,
+    [paths.jobs]: window.location.pathname.replace(/\/+$/, "") === paths.jobs ? <JobsPage /> : <JobDetailPage job={jobOffers.find((job) => job.id === window.location.pathname.replace(/\/+$/, "").split("/").pop())} />,
     [paths.contact]: <ContactPage />,
+    [notFoundRoute]: <NotFoundPage />,
   };
-  return <>
-    <a className="skip-link" href="#contenu">Aller au contenu</a>
-    <Header current={current} />
-    <main id="contenu">{pages[current]}</main>
-    <Footer />
-  </>;
+  const preview = new URLSearchParams(window.location.search).get("sitePreview") === "1";
+  return <PublicSite current={current} pages={pages} preview={preview} />;
 }

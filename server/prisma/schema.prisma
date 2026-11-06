@@ -5,9 +5,24 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-enum UserRole { CANDIDATE RECRUITER RECRUITMENT_ADMIN SUPER_ADMIN }
-enum JobStatus { DRAFT PUBLISHED CLOSED }
-enum ApplicationStatus { RECEIVED UNDER_REVIEW INTERVIEW ACCEPTED REJECTED }
+enum UserRole {
+  CANDIDATE
+  RECRUITER
+  RECRUITMENT_ADMIN
+  SUPER_ADMIN
+}
+enum JobStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+}
+enum ApplicationStatus {
+  RECEIVED
+  UNDER_REVIEW
+  INTERVIEW
+  ACCEPTED
+  REJECTED
+}
 model User {
   id String @id @default(cuid())
   email String @unique
@@ -78,8 +93,15 @@ model Notification {
   @@index([userId, createdAt])
 }
 model Session {
-  sid String @id
+  id String @id @default(cuid())
+  sid String @unique
   data String @db.Text
   expiresAt DateTime
   @@index([expiresAt])
+}
+model SiteSettings {
+  id String @id @default("main")
+  value Json
+  updatedById String?
+  updatedAt DateTime @updatedAt
 }

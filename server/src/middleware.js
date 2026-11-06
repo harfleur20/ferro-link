@@ -6,6 +6,10 @@ export function requireStaff(req, res, next) {
   if (!["RECRUITER", "RECRUITMENT_ADMIN", "SUPER_ADMIN"].includes(req.session?.user?.role)) return res.status(403).json({ error: "Accès réservé à l'équipe de recrutement." });
   next();
 }
+export function requireBusinessManager(req, res, next) {
+  if (!["RECRUITMENT_ADMIN", "SUPER_ADMIN"].includes(req.session?.user?.role)) return res.status(403).json({ error: "La gestion des offres est réservée au Business Manager et au SuperAdmin." });
+  next();
+}
 export function requireSuperAdmin(req, res, next) {
   if (req.session?.user?.role !== "SUPER_ADMIN") return res.status(403).json({ error: "Accès réservé au super administrateur." });
   next();
