@@ -6,6 +6,11 @@ import { prisma } from "./db.js";
 import { loginLimiter, passwordResetLimiter } from "./limits.js";
 import { getMailTransport, staffRoles } from "./mailer.js";
 
+// A site served over plain HTTP, such as a temporary Coolify address, could never send a Secure cookie back.
+export const secureCookies = process.env.COOKIE_SECURE
+  ? process.env.COOKIE_SECURE === "true"
+  : process.env.NODE_ENV === "production" && !process.env.FRONTEND_URL?.startsWith("http://");
+
 export const authRouter = Router();
 const credentials = z.object({
   email: z.string().email().max(254).transform(v => v.toLowerCase().trim()),
@@ -126,7 +131,7 @@ authRouter.post("/reset-password", async (req, res, next) => {
 
 authRouter.post("/logout", (req, res) => {
   req.session.destroy(err => {
-    res.clearCookie("ferrolink.sid", { httpOnly: true, sameSite: "lax", secure: process.env.NODE_ENV === "production", path: "/" });
+    res.clearCookie("ferrolink.sid", { httpOnly: true, sameSite: "lax", secure: secureCookies, path: "/" });
     if (err) return res.status(500).json({ error: "Impossible de fermer la session." });
     res.status(204).end();
   });

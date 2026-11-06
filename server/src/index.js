@@ -9,7 +9,7 @@ import helmet from "helmet";
 import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import { prisma } from "./db.js";
-import { authRouter } from "./auth.js";
+import { authRouter, secureCookies } from "./auth.js";
 import { jobsRouter } from "./jobs.js";
 import { applicationsRouter } from "./applications.js";
 import { contactRouter } from "./contact.js";
@@ -54,7 +54,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   rolling: true,
-  cookie: { httpOnly: true, secure: process.env.COOKIE_SECURE ? process.env.COOKIE_SECURE === "true" : process.env.NODE_ENV === "production", sameSite: "lax" },
+  cookie: { httpOnly: true, secure: secureCookies, sameSite: "lax" },
   store: new PrismaSessionStore(prisma, { checkPeriod: 2 * 60 * 1000, dbRecordIdIsSessionId: true, dbRecordIdFunction: undefined })
 }));
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));

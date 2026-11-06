@@ -1,0 +1,66 @@
+# Déploiement Coolify : build pack Docker Compose (voir DEPLOIEMENT.md).
+# Coolify génère et conserve les variables SERVICE_*. Pour le local : docker-compose.yml.
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ferrolink
+      POSTGRES_PASSWORD: ${SERVICE_PASSWORD_POSTGRES}
+      POSTGRES_DB: ferrolink
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ferrolink -d ferrolink"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - SERVICE_URL_APP_4000
+      - DATABASE_URL=postgresql://ferrolink:${SERVICE_PASSWORD_POSTGRES}@db:5432/ferrolink?schema=public
+      - FRONTEND_URL=${SERVICE_URL_APP}
+      - SESSION_SECRET=${SERVICE_HEX_64_SESSION}
+      - SMTP_HOST=${SMTP_HOST:-smtp-relay.brevo.com}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_SECURE=${SMTP_SECURE:-false}
+      - SMTP_USER=${SMTP_USER:-}
+      - SMTP_PASS=${SMTP_PASS:-}
+      - SMTP_FROM=${SMTP_FROM:-}
+      - NOTIFICATION_EMAIL=${NOTIFICATION_EMAIL:-}
+    volumes:
+      - app-data:/data
+
+  # Chaque jour : la base et les fichiers (CV, images), conservés 14 jours.
+  backup:
+    image: postgres:17
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGPASSWORD: ${SERVICE_PASSWORD_POSTGRES}
+    volumes:
+      - backups:/backups
+      - app-data:/data:ro
+    command:
+      - sh
+      - -c
+      - |
+        while true; do
+          pg_dump -h db -U ferrolink -Fc -f /backups/base-"`date +%F`".dump ferrolink && echo "Sauvegarde de la base terminée" || echo "ERREUR : sauvegarde de la base impossible"
+          tar czf /backups/fichiers-"`date +%F`".tar.gz -C /data . && echo "Sauvegarde des fichiers terminée" || echo "ERREUR : sauvegarde des fichiers impossible"
+          find /backups -type f -mtime +14 -delete
+          sleep 86400
+        done
+
+volumes:
+  db-data:
+  app-data:
+  backups:

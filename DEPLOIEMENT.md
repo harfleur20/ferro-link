@@ -1,30 +1,24 @@
 # Déploiement sur Coolify
 
-Le site et l'API tournent dans un seul conteneur, construit par le `Dockerfile` à la racine. La base de données est une ressource PostgreSQL séparée dans Coolify.
+`docker-compose.coolify.yml` lance tout : le site et l'API, la base PostgreSQL et une sauvegarde quotidienne. Coolify génère et conserve le mot de passe de la base, le secret de session et l'adresse du site. `docker-compose.yml` reste réservé au local.
 
-## 1. Base de données
-1. Dans le projet Coolify, ajoutez une ressource **PostgreSQL** (version 17).
-2. Notez son **URL interne** : elle servira pour `DATABASE_URL`.
-3. Dans l'onglet **Backups** de la ressource, activez une sauvegarde quotidienne, de préférence vers un stockage S3 externe au serveur.
+## 1. Application
+1. Ajoutez une ressource **Application** à partir du dépôt GitHub, branche `main`.
+2. Choisissez le build pack **Docker Compose**, Base Directory `/`, fichier `/docker-compose.coolify.yml`.
+3. Dans **Domains**, vérifiez que le service `app` reçoit le domaine sur le port `4000`. Coolify en génère un par défaut ; il peut être remplacé plus tard par le vôtre, en `https://votre-domaine:4000`.
+4. Déployez. Les migrations s'appliquent automatiquement au démarrage.
 
-## 2. Application
-1. Ajoutez une ressource **Application** à partir du dépôt GitHub et choisissez le build pack **Dockerfile**.
-2. Port exposé : `4000`. Domaine : `https://votre-domaine`.
-3. Dans **Persistent Storage**, ajoutez un volume (**Volume Mount**, pas un montage de dossier) sur `/data`. Il contient les CV et les images importées : sans lui, ils sont perdus à chaque déploiement.
-4. Renseignez les variables ci-dessous, puis déployez. Les migrations s'appliquent automatiquement au démarrage.
+Aucune variable n'est obligatoire pour démarrer. Sans les réglages SMTP, le site fonctionne mais n'envoie pas d'e-mails.
 
+## 2. Variables à ajouter pour les e-mails
 | Variable | Valeur |
 |---|---|
-| `DATABASE_URL` | URL interne de la base |
-| `FRONTEND_URL` | `https://votre-domaine`, sans `/` final. Sert aux liens envoyés par e-mail et au sitemap |
-| `SESSION_SECRET` | Résultat de `openssl rand -hex 32` |
-| `SMTP_HOST` | `smtp-relay.brevo.com` |
-| `SMTP_PORT` | `587` |
-| `SMTP_SECURE` | `false` |
 | `SMTP_USER` | Identifiant SMTP Brevo |
 | `SMTP_PASS` | Clé SMTP Brevo (pas la clé API) |
 | `SMTP_FROM` | `ferroLink <noreply@votre-domaine>` |
 | `NOTIFICATION_EMAIL` | Facultatif : une boîte unique pour les alertes |
+
+Ne modifiez pas les variables `SERVICE_*` : changer `SERVICE_PASSWORD_POSTGRES` après le premier démarrage couperait l'accès à la base.
 
 Si Cloudflare (ou un autre proxy) est placé devant Coolify, le serveur ne voit plus la vraie adresse des visiteurs et les limites de requêtes s'appliquent à tout le monde en même temps : le signaler avant de l'activer.
 
@@ -34,7 +28,7 @@ Si Cloudflare (ou un autre proxy) est placé devant Coolify, le serveur ne voit 
 3. L'adresse de `SMTP_FROM` doit appartenir au domaine authentifié.
 
 ## 4. Premier compte
-Dans le terminal du conteneur (onglet **Terminal** de Coolify) :
+Dans le terminal du conteneur `app` (onglet **Terminal** de Coolify) :
 ```bash
 ADMIN_EMAIL="prenom.nom@exemple.fr" ADMIN_NAME="Prénom Nom" npm run create-admin
 ```
@@ -46,16 +40,15 @@ Ouvrez le lien affiché (valable 24 heures) pour choisir le mot de passe, puis i
 - Créez une vraie boîte de réception pour `contact@…` et mettez à jour l'adresse dans « Page contact ».
 - Envoyez une candidature de test, passez-la à « Entretien » et vérifiez la réception des e-mails, y compris « Mot de passe oublié ».
 
-## Sauvegarde des fichiers
-Les sauvegardes Coolify couvrent la base, **pas le volume `/data`**. Sans sauvegarde du volume, une panne du serveur ferait perdre les CV alors que les dossiers resteraient en base. Depuis le serveur, en remplaçant `VOLUME` par le nom affiché par `docker volume ls` :
-```bash
-docker run --rm -v VOLUME:/data:ro -v /root/backups:/backup alpine \
-  tar czf /backup/ferrolink-data-$(date +%F).tar.gz -C /data .
-```
-Planifiez cette commande chaque jour (cron) et copiez les archives hors du serveur. Elles contiennent des CV : leur accès doit rester restreint, et elles doivent être effacées au bout de quelques semaines pour respecter la durée de conservation annoncée.
+## Sauvegardes
+Le service `backup` enregistre chaque jour la base et les fichiers (CV, images) dans le volume `backups`, et efface ce qui a plus de 14 jours. Ses logs signalent toute erreur par `ERREUR`.
 
-Pour restaurer :
+Ce volume reste **sur le même serveur** : il protège d'une erreur ou d'une suppression, pas d'une panne du disque. Copiez régulièrement son contenu hors du serveur. Il contient des CV : son accès doit rester restreint.
+
+Pour restaurer, depuis le serveur, en remplaçant `BACKUPS`, `DATA`, `DB` et `DATE` par les noms affichés par `docker volume ls` et `docker ps` :
 ```bash
-docker run --rm -v VOLUME:/data -v /root/backups:/backup alpine \
-  sh -c "tar xzf /backup/ARCHIVE.tar.gz -C /data && chown -R 1000:1000 /data"
+docker run --rm -v BACKUPS:/backups -v DATA:/data alpine \
+  sh -c "tar xzf /backups/fichiers-DATE.tar.gz -C /data && chown -R 1000:1000 /data"
+docker run --rm -v BACKUPS:/backups alpine cat /backups/base-DATE.dump | \
+  docker exec -i DB pg_restore -U ferrolink -d ferrolink --clean --if-exists
 ```
