@@ -7,7 +7,7 @@ const AuthPage = lazy(() => import("./portals/AuthPage.jsx"));
 const AdminPortal = lazy(() => import("./portals/AdminPortal.jsx"));
 const routeFallback = <div className="route-loading" role="status">Chargement…</div>;
 const SiteSettingsContext = createContext(defaultSiteSettings);
-const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
 const paths = {
   accueil: "/",
@@ -19,6 +19,23 @@ const paths = {
   legal: "/mentions-legales",
   privacy: "/confidentialite",
 };
+
+const siteName = "ferroLink";
+const pageTitles = {
+  [paths.about]: "À propos",
+  [paths.jobs]: "Offres d’emploi",
+  [paths.news]: "Actualités",
+  [paths.contact]: "Contact",
+  [paths.spontaneous]: "Candidature spontanée",
+  [paths.legal]: "Mentions légales",
+  [paths.privacy]: "Politique de confidentialité",
+};
+
+function usePageTitle(title) {
+  useEffect(() => {
+    if (title) document.title = `${title} | ${siteName}`;
+  }, [title]);
+}
 
 function ExpertiseIcon({ number }) {
   const common = {
@@ -418,6 +435,7 @@ function JobDetailPage({ slug }) {
   const [applicationOpen, setApplicationOpen] = useState(false);
   const { data, loading } = useApiData(`/api/jobs/${encodeURIComponent(slug)}`);
   const job = data?.job;
+  usePageTitle(job?.title);
   if (loading) return <section className="section page-width job-not-found"><p role="status">Chargement de l’offre…</p></section>;
   if (!job) return <section className="section page-width job-not-found"><p className="section-kicker"><span>Carrières</span> / Offres d’emploi</p><h1>Cette offre n’est pas disponible.</h1><p>L’offre recherchée n’existe pas ou n’est plus accessible.</p><a className="button button-lime" href={paths.jobs}>Retour aux offres d’emploi</a></section>;
   return <>
@@ -502,6 +520,20 @@ function formatArticleDate(date) {
   return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric" }).format(new Date(date));
 }
 
+const newsFallbackImage = "/images/train-hero-poster.jpg";
+
+// Images stay on the publisher's server; a broken one gives way to a ferroLink visual.
+function NewsCover({ article, className }) {
+  return <img
+    className={className}
+    src={article.imageUrl || newsFallbackImage}
+    alt=""
+    loading="lazy"
+    referrerPolicy="no-referrer"
+    onError={(event) => { if (!event.currentTarget.src.endsWith(newsFallbackImage)) event.currentTarget.src = newsFallbackImage; }}
+  />;
+}
+
 function NewsPage() {
   const [page, setPage] = useState(1);
   const [language, setLanguage] = useState("");
@@ -515,9 +547,13 @@ function NewsPage() {
         <label className="jobs-filter"><span className="visually-hidden">Langue des articles</span><select value={language} onChange={(event) => { setLanguage(event.target.value); setPage(1); }}><option value="">Toutes les langues</option><option value="fr">Français</option><option value="en">Anglais</option></select></label>
       </div>
       {loading ? <p className="jobs-empty-state" role="status">Chargement des actualités…</p> : error ? <div className="jobs-empty-state" role="alert"><h3>Les actualités sont momentanément indisponibles.</h3><p>Merci de réessayer dans quelques instants.</p></div> : !articles.length ? <div className="jobs-empty-state"><h3>Aucun article pour le moment.</h3></div> : <div className="news-grid">{articles.map((article) => <article className="news-card" key={article.id}>
-        <div className="news-card-meta"><span>{article.sourceName}</span>{article.language === "en" && <span className="news-language">EN</span>}<time dateTime={article.publishedAt}>{formatArticleDate(article.publishedAt)}</time></div>
-        <h2 lang={article.language}><a href={`${paths.news}/${article.slug}`}>{article.title}</a></h2>
-        {article.excerpt && <p lang={article.language}>{article.excerpt}</p>}
+        <a className="news-card-image" href={`${paths.news}/${article.slug}`} tabIndex="-1" aria-hidden="true"><NewsCover article={article} /></a>
+        <div className="news-card-body">
+          <div className="news-card-meta"><span>{article.sourceName}</span>{article.language === "en" && <span className="news-language">EN</span>}<time dateTime={article.publishedAt}>{formatArticleDate(article.publishedAt)}</time></div>
+          <h2 lang={article.language}><a href={`${paths.news}/${article.slug}`}>{article.title}</a></h2>
+          {article.excerpt && <p lang={article.language}>{article.excerpt}</p>}
+          <a className="button button-lime news-card-button" href={article.sourceUrl} target="_blank" rel="noopener noreferrer" aria-label={`Consulter l’article complet sur ${article.sourceName} : ${article.title}`}>Consulter <span aria-hidden="true">↗</span></a>
+        </div>
       </article>)}</div>}
       {data?.pageCount > 1 && <nav className="jobs-pagination" aria-label="Pagination des actualités">
         <button type="button" className="jobs-page-arrow" onClick={() => setPage(page - 1)} disabled={page === 1}>← <span>Précédent</span></button>
@@ -531,15 +567,17 @@ function NewsPage() {
 function NewsDetailPage({ slug }) {
   const { data, loading } = useApiData(`/api/news/${encodeURIComponent(slug)}`);
   const article = data?.article;
+  usePageTitle(article?.title);
   if (loading) return <section className="section page-width job-not-found"><p role="status">Chargement de l’article…</p></section>;
   if (!article) return <section className="section page-width job-not-found"><h1>Cet article n’est pas disponible.</h1><p>Il n’existe pas ou n’est plus accessible.</p><a className="button button-lime" href={paths.news}>Retour aux actualités</a></section>;
   return <section className="section page-width news-detail">
     <a className="news-back-link" href={paths.news}>← Toutes les actualités</a>
     <div className="news-card-meta"><span>{article.sourceName}</span>{article.language === "en" && <span className="news-language">EN</span>}<time dateTime={article.publishedAt}>{formatArticleDate(article.publishedAt)}</time></div>
     <h1 lang={article.language}>{article.title}</h1>
+    <NewsCover article={article} className="news-detail-image" />
     {article.excerpt && <p className="news-detail-excerpt" lang={article.language}>{article.excerpt}</p>}
-    <a className="button button-lime" href={article.sourceUrl} target="_blank" rel="noopener noreferrer">Lire l’article sur {article.sourceName} <span aria-hidden="true">↗</span></a>
-    <p className="news-detail-note">Extrait publié par {article.sourceName}. ferroLink n’est pas l’auteur de cet article.</p>
+    <a className="button button-lime" href={article.sourceUrl} target="_blank" rel="noopener noreferrer">Consulter l’article complet <span aria-hidden="true">↗</span></a>
+    <p className="news-detail-note">Extrait et image publiés par {article.sourceName}. ferroLink n’est pas l’auteur de cet article.</p>
   </section>;
 }
 
@@ -572,7 +610,7 @@ function LegalNoticePage() {
       </dl>
       <h2>Propriété intellectuelle</h2>
       <p>Les textes, images et logos de ce site appartiennent à {legal.companyName} ou à leurs titulaires. Toute reproduction sans autorisation est interdite.</p>
-      <p>La rubrique Actualités présente le titre et un court extrait d’articles publiés par des médias tiers, avec un lien vers leur source. Ces contenus restent la propriété de leurs éditeurs, qui peuvent demander leur retrait à {contact.emails[0]}.</p>
+      <p>La rubrique Actualités présente le titre, l’image de couverture et un court extrait d’articles publiés par des médias tiers, avec un lien vers leur source. Ces contenus restent la propriété de leurs éditeurs, qui peuvent demander leur retrait à {contact.emails[0]}.</p>
       <h2>Données personnelles</h2>
       <p>Le traitement de vos données est décrit dans notre <a href={paths.privacy}>politique de confidentialité</a>.</p>
     </section>
@@ -593,14 +631,14 @@ function PrivacyPage() {
         <li><strong>Espace équipe :</strong> nom, e-mail et rôle des membres de l’équipe, pour sécuriser l’accès à l’administration.</li>
       </ul>
       <h2>Destinataires</h2>
-      <p>Vos données sont accessibles uniquement aux membres habilités de l’équipe {legal.companyName}, à notre hébergeur et à notre prestataire d’envoi d’e-mails. Elles ne sont ni vendues ni cédées.</p>
+      <p>Vos données sont accessibles uniquement aux membres habilités de l’équipe {legal.companyName}, à notre hébergeur et à notre prestataire d’envoi d’e-mails (Brevo). Elles ne sont ni vendues ni cédées.</p>
       <h2>Durée de conservation</h2>
       <p>Les candidatures et leurs documents sont supprimés 24 mois après la dernière mise à jour du dossier. Les messages de contact sont supprimés 24 mois après leur réception.</p>
       <h2>Vos droits</h2>
       <p>Vous pouvez demander l’accès à vos données, leur rectification, leur effacement, leur limitation ou leur portabilité, et vous opposer à leur traitement, en écrivant à {legal.privacyEmail}. Vous pouvez aussi adresser une réclamation à la CNIL (cnil.fr).</p>
       <h2>Cookies et services tiers</h2>
       <p>Ce site n’utilise ni cookie publicitaire ni mesure d’audience. Un cookie de session, nécessaire au fonctionnement, est déposé uniquement lorsqu’un membre de l’équipe se connecte.</p>
-      <p>Les polices de caractères sont fournies par Google Fonts : votre navigateur transmet votre adresse IP à Google lors du chargement des pages. Les liens de la rubrique Actualités mènent vers des sites tiers, soumis à leur propre politique.</p>
+      <p>Les polices de caractères sont fournies par Google Fonts, la vidéo de la page d’accueil par Pexels et les images de la rubrique Actualités par les médias qui les publient : votre navigateur transmet votre adresse IP à ces services lors du chargement des pages. Les liens de la rubrique Actualités mènent vers des sites tiers, soumis à leur propre politique.</p>
     </section>
   </>;
 }
@@ -620,6 +658,7 @@ function getRoute() {
 
 function PublicSite({ current, pages, preview = false }) {
   const [siteSettings, setSiteSettings] = useState(defaultSiteSettings);
+  usePageTitle(pageTitles[current]);
   useEffect(() => {
     if (preview) {
       const receivePreview = (event) => {

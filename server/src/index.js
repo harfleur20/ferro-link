@@ -15,6 +15,7 @@ import { applicationsRouter } from "./applications.js";
 import { contactRouter } from "./contact.js";
 import { newsRouter, scheduleNewsRefresh } from "./news.js";
 import { scheduleDataPurge } from "./retention.js";
+import { seoRouter } from "./seo.js";
 import { usersRouter } from "./users.js";
 import { requireAuth, requireBusinessManager, requireStaff } from "./middleware.js";
 
@@ -36,7 +37,15 @@ const avatarUpload = multer({ storage: multer.memoryStorage(), limits: { fileSiz
 const port = Number(process.env.PORT || 4000);
 const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 app.set("trust proxy", 1);
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      "img-src": ["'self'", "data:", "https:"],
+      "media-src": ["'self'", "https://videos.pexels.com"],
+      "upgrade-insecure-requests": null,
+    },
+  },
+}));
 app.use(cors({ origin: frontendUrl, credentials: true }));
 app.use(express.json({ limit: "1mb" }));
 app.use(session({
@@ -45,7 +54,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   rolling: true,
-  cookie: { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax" },
+  cookie: { httpOnly: true, secure: process.env.COOKIE_SECURE ? process.env.COOKIE_SECURE === "true" : process.env.NODE_ENV === "production", sameSite: "lax" },
   store: new PrismaSessionStore(prisma, { checkPeriod: 2 * 60 * 1000, dbRecordIdIsSessionId: true, dbRecordIdFunction: undefined })
 }));
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
@@ -55,6 +64,7 @@ app.use("/api", applicationsRouter);
 app.use("/api", contactRouter);
 app.use("/api", newsRouter);
 app.use("/api", usersRouter);
+app.use(seoRouter);
 
 app.post("/api/site-assets", requireAuth, requireBusinessManager, (req, res, next) => {
   logoUpload.single("logo")(req, res, err => {
@@ -312,12 +322,27 @@ app.patch("/api/notifications/:id/read", requireAuth, async (req, res, next) => 
     res.json({ ok: true });
   } catch (err) { next(err); }
 });
+app.use("/api", (_req, res) => res.status(404).json({ error: "Ressource introuvable." }));
+
+// In production the same server delivers the built site; any page address falls back to the app.
+const clientDir = process.env.CLIENT_DIST_DIR && path.resolve(process.env.CLIENT_DIST_DIR);
+if (clientDir) {
+  app.use("/assets", express.static(path.join(clientDir, "assets"), { immutable: true, maxAge: "1y" }));
+  app.use(express.static(clientDir, { index: false, maxAge: "1h" }));
+  app.get(/.*/, (req, res, next) => {
+    if (path.extname(req.path)) return next();
+    res.setHeader("Cache-Control", "no-cache");
+    res.sendFile(path.join(clientDir, "index.html"));
+  });
+}
+
 app.use((err, _req, res, _next) => {
   console.error(err);
   res.status(500).json({ error: "Une erreur interne est survenue." });
 });
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Ferro-Link API listening on port ${port}`);
   scheduleNewsRefresh();
   scheduleDataPurge();
 });
+process.on("SIGTERM", () => server.close(() => process.exit(0)));

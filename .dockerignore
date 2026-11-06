@@ -1,0 +1,14 @@
+.git
+.astro
+.qodo
+.env
+.env.*
+Assets
+Maquette
+dist
+node_modules
+server/.env
+server/node_modules
+server/private-uploads
+server/public
+*.md

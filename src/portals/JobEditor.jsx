@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { resolveSiteAssetUrl } from "../siteSettings.js";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 const contractTypes = ["CDI", "CDD", "Mission", "Stage", "Alternance"];
 const textFields = ["title", "category", "location", "contractType", "experience", "salary", "imageUrl", "imageAlt", "description", "requirements"];
 

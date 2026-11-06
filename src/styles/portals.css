@@ -21,9 +21,7 @@
 .portal-auth-tabs button.active { background:#fff; color:#17243b; box-shadow:0 2px 8px #17243b12; }
 .portal-auth-card h2 { margin:28px 0 8px; font-size:27px; letter-spacing:-.04em; }
 .portal-auth-subtitle { margin:0 0 24px; color:#758094; font-size:13px; line-height:1.6; }
-.portal-google-button,.portal-primary-button,.portal-secondary-button { display:flex; width:100%; min-height:48px; align-items:center; justify-content:center; gap:12px; border:1px solid #dce2d9; background:#fff; color:#17243b; font:inherit; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s,border-color .15s; }
-.portal-google-button:hover { background:#f8faf6; border-color:#aab6a3; }
-.portal-google-button svg { font-size:16px; }
+.portal-primary-button,.portal-secondary-button { display:flex; width:100%; min-height:48px; align-items:center; justify-content:center; gap:12px; border:1px solid #dce2d9; background:#fff; color:#17243b; font:inherit; font-size:13px; font-weight:700; cursor:pointer; transition:background .15s,border-color .15s; }
 .portal-divider { display:flex; align-items:center; gap:12px; margin:22px 0; color:#8b94a2; font-size:11px; }
 .portal-divider:before,.portal-divider:after { content:""; height:1px; flex:1; background:#e8ebe5; }
 .portal-auth-form { display:grid; gap:17px; }
@@ -33,7 +31,7 @@
 .portal-forgot { justify-self:end; border:0; padding:0; background:none; color:#648d1e; font:inherit; font-size:12px; cursor:pointer; }
 .portal-primary-button { margin-top:3px; border-color:#9acb36; background:#9acb36; }
 .portal-primary-button:hover { background:#a7d83e; }
-.portal-primary-button:disabled,.portal-google-button:disabled { opacity:.65; cursor:wait; }
+.portal-primary-button:disabled { opacity:.65; cursor:wait; }
 .portal-alert { padding:12px 14px; font-size:12px; line-height:1.6; overflow-wrap:anywhere; }
 .portal-alert.error { color:#963c35; background:#fff0ee; border:1px solid #f3d3cf; }
 .portal-alert.success { color:#3d6b21; background:#f0f8e9; border:1px solid #d7eac6; }

@@ -115,6 +115,7 @@ model NewsArticle {
   slug String @unique
   title String
   excerpt String? @db.Text
+  imageUrl String?
   sourceName String
   sourceUrl String @unique
   language String

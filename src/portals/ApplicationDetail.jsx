@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 const statuses = [["RECEIVED", "Reçue"], ["UNDER_REVIEW", "En étude"], ["INTERVIEW", "Entretien"], ["ACCEPTED", "Acceptée"], ["REJECTED", "Refusée"]];
 
 function Fact({ label, children }) {

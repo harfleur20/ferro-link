@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "../styles/portals.css";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 const searchParams = new URLSearchParams(window.location.search);
 const resetToken = searchParams.get("resetToken");
 const isInvitation = searchParams.get("invitation") === "1";

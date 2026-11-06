@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { defaultSiteSettings, mergeSiteSettings, resolveSiteAssetUrl } from "../siteSettings.js";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
 const sections = [
   { id: "brand", label: "Identité & navigation" },

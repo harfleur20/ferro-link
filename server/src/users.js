@@ -58,7 +58,7 @@ usersRouter.post("/users/:id/invitation", async (req, res, next) => {
 usersRouter.patch("/users/:id/role", async (req, res, next) => {
   try {
     const { role } = req.body || {};
-    if (!["CANDIDATE", ...staffRoles].includes(role)) return res.status(400).json({ error: "Rôle invalide." });
+    if (!staffRoles.includes(role)) return res.status(400).json({ error: "Rôle invalide." });
     if (req.params.id === req.session.user.id && role !== "SUPER_ADMIN") return res.status(400).json({ error: "Vous ne pouvez pas retirer votre propre rôle super administrateur." });
     const result = await prisma.user.updateMany({ where: { id: req.params.id }, data: { role } });
     if (!result.count) return res.status(404).json({ error: "Utilisateur introuvable." });

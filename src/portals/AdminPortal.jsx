@@ -24,7 +24,7 @@ import UsersAdmin from "./UsersAdmin.jsx";
 import { defaultSiteSettings, mergeSiteSettings } from "../siteSettings.js";
 import "../styles/portals.css";
 
-const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
+const API = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
 const roleDetails = {
   SUPER_ADMIN: {

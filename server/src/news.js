@@ -7,19 +7,22 @@ import { slugify } from "./slug.js";
 
 export const newsRouter = Router();
 
-// Only the title, a short extract and a link are kept: full articles stay on the publisher's site.
+// Only the title, a short extract, the cover image address and a link are kept: full articles stay on the publisher's site.
 const sources = [
   { name: "Rail Passion", url: "https://www.railpassion.fr/feed/", language: "fr" },
   { name: "Railway Gazette", url: "https://www.railwaygazette.com/rss", language: "en" },
 ];
 const excerptLength = 280;
 const pageSize = 12;
-const refreshInterval = 6 * 60 * 60 * 1000;
-const minimumRefreshGap = 60 * 60 * 1000;
+const refreshInterval = 60 * 60 * 1000;
+const minimumRefreshGap = 30 * 60 * 1000;
+const imageBatchSize = 5;
+const imagesPerRefresh = 30;
 const retention = 180 * 24 * 60 * 60 * 1000;
-const parser = new Parser({ timeout: 10000, headers: { "User-Agent": "ferroLink-news/1.0" } });
+const userAgent = "ferroLink-news/1.0";
+const parser = new Parser({ timeout: 10000, headers: { "User-Agent": userAgent } });
 
-const publicFields = { id: true, slug: true, title: true, excerpt: true, sourceName: true, sourceUrl: true, language: true, publishedAt: true };
+const publicFields = { id: true, slug: true, title: true, excerpt: true, imageUrl: true, sourceName: true, sourceUrl: true, language: true, publishedAt: true };
 
 function cleanText(value = "") {
   return value
@@ -59,6 +62,34 @@ function toArticle(item, source) {
   };
 }
 
+function findCoverImage(html, pageUrl) {
+  const tag = html.match(/<meta[^>]+property=["']og:image["'][^>]*>/i)?.[0];
+  const content = tag?.match(/content=["']([^"']+)["']/i)?.[1];
+  if (!content) return null;
+  try {
+    const url = new URL(content.replaceAll("&amp;", "&"), pageUrl);
+    return url.protocol === "https:" ? url.href : null;
+  } catch { return null; }
+}
+
+async function fetchCoverImage(pageUrl) {
+  try {
+    const response = await fetch(pageUrl, { headers: { "User-Agent": userAgent }, signal: AbortSignal.timeout(8000) });
+    return response.ok ? findCoverImage(await response.text(), pageUrl) : null;
+  } catch { return null; }
+}
+
+// Feeds rarely carry an image, so it is read once from each article page.
+async function fillMissingImages() {
+  const articles = await prisma.newsArticle.findMany({ where: { imageUrl: null }, orderBy: { publishedAt: "desc" }, take: imagesPerRefresh, select: { id: true, sourceUrl: true } });
+  for (let index = 0; index < articles.length; index += imageBatchSize) {
+    await Promise.all(articles.slice(index, index + imageBatchSize).map(async (article) => {
+      const imageUrl = await fetchCoverImage(article.sourceUrl);
+      if (imageUrl) await prisma.newsArticle.update({ where: { id: article.id }, data: { imageUrl } });
+    }));
+  }
+}
+
 export async function refreshNews() {
   const failed = [];
   const oldestAllowed = new Date(Date.now() - retention);
@@ -78,6 +109,7 @@ export async function refreshNews() {
     }
   }
   await prisma.newsArticle.deleteMany({ where: { publishedAt: { lt: oldestAllowed } } });
+  await fillMissingImages();
   return { added, failed };
 }
 

@@ -45,7 +45,7 @@ export default function NewsAdmin({ api }) {
       <div><span className="portal-eyebrow">VEILLE FERROVIAIRE</span><h3>Actualités</h3></div>
       <button className="portal-primary-button portal-add-job" type="button" onClick={refresh} disabled={refreshing}>{refreshing ? "Actualisation…" : "Actualiser les flux"}</button>
     </div>
-    <p className="portal-muted portal-permission-note">Les flux sont relus automatiquement toutes les 6 heures. Un article masqué n’apparaît plus sur le site.</p>
+    <p className="portal-muted portal-permission-note">Les flux sont relus automatiquement toutes les heures. Un article masqué n’apparaît plus sur le site.</p>
     {error && <p className="portal-alert error" role="alert">{error}</p>}
     {feedback && <p className="portal-alert success" role="status">{feedback}</p>}
     {articles === null && !error && <p className="portal-empty" role="status">Chargement…</p>}

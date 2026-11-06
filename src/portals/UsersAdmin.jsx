@@ -100,7 +100,6 @@ export default function UsersAdmin({ api, currentUser, users, setUsers }) {
           return <tr key={account.id}>
             <td>{account.fullName}</td><td>{account.email}</td>
             <td><select aria-label={`Rôle de ${account.fullName}`} value={account.role} disabled={isSelf} onChange={(event) => changeRole(account, event.target.value)}>
-              <option value="CANDIDATE">Candidat</option>
               {staffRoles.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
             </select></td>
             <td><span className={`portal-status ${statusClass}`}>{statusLabel}</span></td>
