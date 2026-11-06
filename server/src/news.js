@@ -18,11 +18,13 @@ const refreshInterval = 60 * 60 * 1000;
 const minimumRefreshGap = 30 * 60 * 1000;
 const imageBatchSize = 5;
 const imagesPerRefresh = 30;
+// The free translation service allows about 5000 characters a day; what remains waits for the next refresh.
+const translationsPerRefresh = 10;
 const retention = 180 * 24 * 60 * 60 * 1000;
 const userAgent = "ferroLink-news/1.0";
 const parser = new Parser({ timeout: 10000, headers: { "User-Agent": userAgent } });
 
-const publicFields = { id: true, slug: true, title: true, excerpt: true, imageUrl: true, sourceName: true, sourceUrl: true, language: true, publishedAt: true };
+const publicFields = { id: true, slug: true, title: true, excerpt: true, imageUrl: true, sourceName: true, sourceUrl: true, language: true, translatedAt: true, publishedAt: true };
 
 function cleanText(value = "") {
   return value
@@ -90,6 +92,38 @@ async function fillMissingImages() {
   }
 }
 
+async function translateToFrench(text) {
+  const url = new URL("https://api.mymemory.translated.net/get");
+  url.searchParams.set("q", text);
+  url.searchParams.set("langpair", "en|fr");
+  const response = await fetch(url, { headers: { "User-Agent": userAgent }, signal: AbortSignal.timeout(10000) });
+  const data = await response.json();
+  const translated = data.responseData?.translatedText?.trim();
+  if (!response.ok || data.quotaFinished || Number(data.responseStatus) !== 200 || !translated || /MYMEMORY WARNING|QUERY LENGTH LIMIT/i.test(translated)) {
+    throw new Error("service de traduction indisponible ou quota atteint");
+  }
+  return translated;
+}
+
+// An article that cannot be translated stays online in English and is retried at the next refresh.
+async function translateArticles() {
+  const articles = await prisma.newsArticle.findMany({
+    where: { language: "en", translatedAt: null, hidden: false },
+    orderBy: { publishedAt: "desc" },
+    take: translationsPerRefresh,
+    select: { id: true, title: true, excerpt: true },
+  });
+  try {
+    for (const article of articles) {
+      const title = await translateToFrench(article.title);
+      const excerpt = article.excerpt ? shorten(await translateToFrench(article.excerpt)) : null;
+      await prisma.newsArticle.update({ where: { id: article.id }, data: { title, excerpt, translatedAt: new Date() } });
+    }
+  } catch (err) {
+    console.error("Traduction des actualités interrompue :", err.message);
+  }
+}
+
 export async function refreshNews() {
   const failed = [];
   const oldestAllowed = new Date(Date.now() - retention);
@@ -110,6 +144,7 @@ export async function refreshNews() {
   }
   await prisma.newsArticle.deleteMany({ where: { publishedAt: { lt: oldestAllowed } } });
   await fillMissingImages();
+  await translateArticles();
   return { added, failed };
 }
 
@@ -131,7 +166,7 @@ export function scheduleNewsRefresh() {
 newsRouter.get("/news", async (req, res, next) => {
   try {
     const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
-    const where = { hidden: false, ...(["fr", "en"].includes(req.query.language) ? { language: req.query.language } : {}) };
+    const where = { hidden: false };
     const [articles, total] = await Promise.all([
       prisma.newsArticle.findMany({ where, select: publicFields, orderBy: { publishedAt: "desc" }, skip: (page - 1) * pageSize, take: pageSize }),
       prisma.newsArticle.count({ where }),

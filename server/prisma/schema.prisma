@@ -119,6 +119,7 @@ model NewsArticle {
   sourceName String
   sourceUrl String @unique
   language String
+  translatedAt DateTime?
   publishedAt DateTime
   fetchedAt DateTime @default(now())
   hidden Boolean @default(false)

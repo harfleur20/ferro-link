@@ -534,24 +534,32 @@ function NewsCover({ article, className }) {
   />;
 }
 
+function NewsMeta({ article }) {
+  return <div className="news-card-meta">
+    <span>{article.sourceName}</span>
+    {article.translatedAt ? <span className="news-language">Traduit de l’anglais</span> : article.language === "en" && <span className="news-language">EN</span>}
+    <time dateTime={article.publishedAt}>{formatArticleDate(article.publishedAt)}</time>
+  </div>;
+}
+
+const articleLanguage = (article) => article.translatedAt ? "fr" : article.language;
+
 function NewsPage() {
   const [page, setPage] = useState(1);
-  const [language, setLanguage] = useState("");
-  const { data, error, loading } = useApiData(`/api/news?page=${page}${language ? `&language=${language}` : ""}`);
+  const { data, error, loading } = useApiData(`/api/news?page=${page}`);
   const articles = data?.articles || [];
   return <>
     <PageBanner kicker="Veille ferroviaire" title="L’actualité du rail." description="Une sélection d’articles de la presse ferroviaire. Chaque article reste la propriété de sa source." />
     <section className="section page-width news-section">
       <div className="news-toolbar">
         <p><strong>{data?.total ?? "…"}</strong> article{data?.total > 1 ? "s" : ""}</p>
-        <label className="jobs-filter"><span className="visually-hidden">Langue des articles</span><select value={language} onChange={(event) => { setLanguage(event.target.value); setPage(1); }}><option value="">Toutes les langues</option><option value="fr">Français</option><option value="en">Anglais</option></select></label>
       </div>
       {loading ? <p className="jobs-empty-state" role="status">Chargement des actualités…</p> : error ? <div className="jobs-empty-state" role="alert"><h3>Les actualités sont momentanément indisponibles.</h3><p>Merci de réessayer dans quelques instants.</p></div> : !articles.length ? <div className="jobs-empty-state"><h3>Aucun article pour le moment.</h3></div> : <div className="news-grid">{articles.map((article) => <article className="news-card" key={article.id}>
         <a className="news-card-image" href={`${paths.news}/${article.slug}`} tabIndex="-1" aria-hidden="true"><NewsCover article={article} /></a>
         <div className="news-card-body">
-          <div className="news-card-meta"><span>{article.sourceName}</span>{article.language === "en" && <span className="news-language">EN</span>}<time dateTime={article.publishedAt}>{formatArticleDate(article.publishedAt)}</time></div>
-          <h2 lang={article.language}><a href={`${paths.news}/${article.slug}`}>{article.title}</a></h2>
-          {article.excerpt && <p lang={article.language}>{article.excerpt}</p>}
+          <NewsMeta article={article} />
+          <h2 lang={articleLanguage(article)}><a href={`${paths.news}/${article.slug}`}>{article.title}</a></h2>
+          {article.excerpt && <p lang={articleLanguage(article)}>{article.excerpt}</p>}
           <a className="button button-lime news-card-button" href={article.sourceUrl} target="_blank" rel="noopener noreferrer" aria-label={`Consulter l’article complet sur ${article.sourceName} : ${article.title}`}>Consulter <span aria-hidden="true">↗</span></a>
         </div>
       </article>)}</div>}
@@ -572,12 +580,12 @@ function NewsDetailPage({ slug }) {
   if (!article) return <section className="section page-width job-not-found"><h1>Cet article n’est pas disponible.</h1><p>Il n’existe pas ou n’est plus accessible.</p><a className="button button-lime" href={paths.news}>Retour aux actualités</a></section>;
   return <section className="section page-width news-detail">
     <a className="news-back-link" href={paths.news}>← Toutes les actualités</a>
-    <div className="news-card-meta"><span>{article.sourceName}</span>{article.language === "en" && <span className="news-language">EN</span>}<time dateTime={article.publishedAt}>{formatArticleDate(article.publishedAt)}</time></div>
-    <h1 lang={article.language}>{article.title}</h1>
+    <NewsMeta article={article} />
+    <h1 lang={articleLanguage(article)}>{article.title}</h1>
     <NewsCover article={article} className="news-detail-image" />
-    {article.excerpt && <p className="news-detail-excerpt" lang={article.language}>{article.excerpt}</p>}
+    {article.excerpt && <p className="news-detail-excerpt" lang={articleLanguage(article)}>{article.excerpt}</p>}
     <a className="button button-lime" href={article.sourceUrl} target="_blank" rel="noopener noreferrer">Consulter l’article complet <span aria-hidden="true">↗</span></a>
-    <p className="news-detail-note">Extrait et image publiés par {article.sourceName}. ferroLink n’est pas l’auteur de cet article.</p>
+    <p className="news-detail-note">{article.translatedAt ? `Extrait traduit automatiquement de l’anglais. L’article complet, en anglais, et l’image sont publiés par ${article.sourceName}.` : `Extrait et image publiés par ${article.sourceName}.`} ferroLink n’est pas l’auteur de cet article.</p>
   </section>;
 }
 
@@ -610,7 +618,7 @@ function LegalNoticePage() {
       </dl>
       <h2>Propriété intellectuelle</h2>
       <p>Les textes, images et logos de ce site appartiennent à {legal.companyName} ou à leurs titulaires. Toute reproduction sans autorisation est interdite.</p>
-      <p>La rubrique Actualités présente le titre, l’image de couverture et un court extrait d’articles publiés par des médias tiers, avec un lien vers leur source. Ces contenus restent la propriété de leurs éditeurs, qui peuvent demander leur retrait à {contact.emails[0]}.</p>
+      <p>La rubrique Actualités présente le titre, l’image de couverture et un court extrait d’articles publiés par des médias tiers, avec un lien vers leur source. Les articles en langue étrangère sont traduits automatiquement et peuvent comporter des imprécisions. Ces contenus restent la propriété de leurs éditeurs, qui peuvent demander leur retrait à {contact.emails[0]}.</p>
       <h2>Données personnelles</h2>
       <p>Le traitement de vos données est décrit dans notre <a href={paths.privacy}>politique de confidentialité</a>.</p>
     </section>
