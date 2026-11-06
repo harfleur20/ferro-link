@@ -11,6 +11,7 @@ import session from "express-session";
 import { PrismaSessionStore } from "@quixo3/prisma-session-store";
 import { prisma } from "./db.js";
 import { authRouter } from "./auth.js";
+import { jobsRouter } from "./jobs.js";
 import { requireAuth, requireBusinessManager, requireStaff, requireSuperAdmin } from "./middleware.js";
 
 const app = express();
@@ -40,6 +41,7 @@ app.use(session({
 }));
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 app.use("/api/auth", authRouter);
+app.use("/api", jobsRouter);
 
 app.post("/api/site-assets", requireAuth, requireBusinessManager, (req, res, next) => {
   logoUpload.single("logo")(req, res, err => {
@@ -284,44 +286,6 @@ app.put("/api/site-settings", requireAuth, requireBusinessManager, async (req, r
   } catch (err) { next(err); }
 });
 
-app.get("/api/jobs", async (req, res, next) => {
-  try {
-    const jobs = await prisma.job.findMany({
-      where: req.session?.user?.role && ["RECRUITER","RECRUITMENT_ADMIN","SUPER_ADMIN"].includes(req.session.user.role)
-        ? {} : { status: "PUBLISHED" },
-      orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }]
-    });
-    res.json({ jobs });
-  } catch (err) { next(err); }
-});
-app.post("/api/jobs", requireAuth, requireBusinessManager, async (req, res, next) => {
-  try {
-    const { title, department, location, contractType, description, requirements, status } = req.body || {};
-    if (!title?.trim() || !description?.trim()) return res.status(400).json({ error: "Le titre et la description sont obligatoires." });
-    const published = status === "PUBLISHED";
-    const job = await prisma.job.create({ data: {
-      title: title.trim(), department, location, contractType, description: description.trim(), requirements,
-      status: published ? "PUBLISHED" : "DRAFT", publishedAt: published ? new Date() : null, createdById: req.session.user.id
-    }});
-    res.status(201).json({ job });
-  } catch (err) { next(err); }
-});
-app.patch("/api/jobs/:id", requireAuth, requireBusinessManager, async (req, res, next) => {
-  try {
-    const data = { ...req.body };
-    delete data.id; delete data.createdById; delete data.createdAt; delete data.updatedAt;
-    if (data.status === "PUBLISHED") data.publishedAt ||= new Date();
-    if (data.status === "DRAFT") data.publishedAt = null;
-    const job = await prisma.job.update({ where: { id: req.params.id }, data });
-    res.json({ job });
-  } catch (err) { next(err); }
-});
-app.delete("/api/jobs/:id", requireAuth, requireBusinessManager, async (req, res, next) => {
-  try {
-    const job = await prisma.job.update({ where: { id: req.params.id }, data: { status: "CLOSED" } });
-    res.json({ job });
-  } catch (err) { next(err); }
-});
 app.post("/api/applications/public", upload.fields([{ name: "cv", maxCount: 1 }, { name: "letter", maxCount: 1 }]), async (req, res, next) => {
  try {
   const body=req.body||{};
@@ -330,8 +294,10 @@ app.post("/api/applications/public", upload.fields([{ name: "cv", maxCount: 1 },
   const email=String(body.email).trim().toLowerCase();
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return res.status(400).json({error:"Adresse e-mail invalide."});
   const cv=req.files.cv[0],letter=req.files.letter?.[0];
-  const jobTitle=String(body.offre||"Candidature spontanée").trim().slice(0,180);
-  const application=await prisma.application.create({data:{jobTitle,applicantName:String(body.name).trim().slice(0,120),applicantEmail:email,applicantPhone:String(body.telephone).trim().slice(0,30),applicantCity:String(body.ville).trim().slice(0,100),experience:String(body.experience||"").slice(0,100)||null,availability:String(body.disponibilite||"").slice(0,100)||null,coverLetter:String(body.motivation).trim().slice(0,3000),resumeUrl:cv.filename+(letter?"|"+letter.filename:""),consentAt:new Date()},include:{job:{select:{id:true,title:true,location:true}}}});
+  const job=body.jobId?await prisma.job.findFirst({where:{id:String(body.jobId),status:"PUBLISHED"},select:{id:true,title:true}}):null;
+  if(body.jobId&&!job)return res.status(400).json({error:"Cette offre n’est plus disponible."});
+  const jobTitle=job?.title||"Candidature spontanée";
+  const application=await prisma.application.create({data:{jobId:job?.id,jobTitle,applicantName:String(body.name).trim().slice(0,120),applicantEmail:email,applicantPhone:String(body.telephone).trim().slice(0,30),applicantCity:String(body.ville).trim().slice(0,100),experience:String(body.experience||"").slice(0,100)||null,availability:String(body.disponibilite||"").slice(0,100)||null,coverLetter:String(body.motivation).trim().slice(0,3000),resumeUrl:cv.filename+(letter?"|"+letter.filename:""),consentAt:new Date()},include:{job:{select:{id:true,title:true,location:true}}}});
   res.status(201).json({message:"Votre candidature a bien été envoyée.",application:{id:application.id}});
  }catch(err){next(err)}
 });

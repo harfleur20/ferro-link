@@ -13,6 +13,7 @@ import {
   FaTrainSubway,
   FaUsers,
 } from "react-icons/fa6";
+import JobEditor from "./JobEditor.jsx";
 import SiteEditor from "./SiteEditor.jsx";
 import { defaultSiteSettings, mergeSiteSettings } from "../siteSettings.js";
 import "../styles/portals.css";
@@ -85,6 +86,7 @@ export default function AdminPortal() {
   const [error, setError] = useState("");
   const [applications, setApplications] = useState([]);
   const [jobs, setJobs] = useState([]);
+  const [jobEditor, setJobEditor] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [users, setUsers] = useState([]);
   const [userSearch, setUserSearch] = useState("");
@@ -119,7 +121,7 @@ export default function AdminPortal() {
         setUser(currentUser);
         const requests = [
           api("/api/applications"),
-          api("/api/jobs"),
+          api("/api/staff/jobs"),
           api("/api/notifications"),
           ...(currentUser.role === "SUPER_ADMIN" ? [api("/api/users")] : []),
           ...(roleDetails[currentUser.role].canManageSite
@@ -156,6 +158,7 @@ export default function AdminPortal() {
 
   const selectPage = (page) => {
     setActive(page);
+    setJobEditor(null);
     setMenuOpen(false);
     setAccountOpen(false);
   };
@@ -227,21 +230,14 @@ export default function AdminPortal() {
     }
   };
 
-  const publishJob = async () => {
-    const title = window.prompt("Titre de l’offre");
-    if (!title?.trim()) return;
-    const description = window.prompt("Description de l’offre");
-    if (!description?.trim()) return;
-    setError("");
-    try {
-      const { job } = await api("/api/jobs", {
-        method: "POST",
-        body: JSON.stringify({ title: title.trim(), description: description.trim(), status: "PUBLISHED" }),
-      });
-      setJobs((previous) => [job, ...previous]);
-    } catch (createError) {
-      setError(createError.message);
-    }
+  const saveJob = async (payload) => {
+    const current = jobEditor.job;
+    const { job } = await api(current ? `/api/jobs/${current.id}` : "/api/jobs", {
+      method: current ? "PATCH" : "POST",
+      body: JSON.stringify(payload),
+    });
+    setJobs((previous) => current ? previous.map((item) => item.id === job.id ? job : item) : [job, ...previous]);
+    setJobEditor(null);
   };
 
   const updateUserRole = async (account, role) => {
@@ -407,21 +403,24 @@ export default function AdminPortal() {
           </div>}
         </section>}
 
-        {active === "offers" && <section className="portal-panel">
+        {active === "offers" && jobEditor && <JobEditor job={jobEditor.job} onSave={saveJob} onCancel={() => setJobEditor(null)} />}
+
+        {active === "offers" && !jobEditor && <section className="portal-panel">
           <div className="portal-panel-heading">
             <div><span className="portal-eyebrow">EMPLOI & RECRUTEMENT</span><h3>Offres d’emploi</h3></div>
-            {permissions.canManageJobs && <button className="portal-primary-button portal-add-job" type="button" onClick={publishJob}>+ Publier une offre</button>}
+            {permissions.canManageJobs && <button className="portal-primary-button portal-add-job" type="button" onClick={() => setJobEditor({ job: null })}>+ Nouvelle offre</button>}
           </div>
           {!permissions.canManageJobs && <p className="portal-muted portal-permission-note">Consultation des offres en lecture seule pour votre rôle.</p>}
           {jobs.length === 0 ? <p className="portal-empty">Aucune offre disponible.</p> : <div className="portal-table-wrap">
             <table className="portal-table">
-              <thead><tr><th>Titre</th><th>Lieu</th><th>Contrat</th><th>Statut</th>{permissions.canManageJobs && <th>Modifier</th>}</tr></thead>
+              <thead><tr><th>Titre</th><th>Lieu</th><th>Contrat</th><th>Statut</th>{permissions.canManageJobs && <th>Changer le statut</th>}{permissions.canManageJobs && <th>Action</th>}</tr></thead>
               <tbody>{jobs.map((job) => <tr key={job.id}>
                 <td>{job.title}</td><td>{job.location || "—"}</td><td>{job.contractType || "—"}</td>
                 <td><Status value={job.status} /></td>
                 {permissions.canManageJobs && <td><select aria-label={`Statut de l’offre ${job.title}`} value={job.status} onChange={(event) => updateJobStatus(job, event.target.value)}>
                   <option value="DRAFT">Brouillon</option><option value="PUBLISHED">Publiée</option><option value="CLOSED">Fermée</option>
                 </select></td>}
+                {permissions.canManageJobs && <td><button className="portal-text-button" type="button" onClick={() => setJobEditor({ job })}>Modifier</button></td>}
               </tr>)}</tbody>
             </table>
           </div>}

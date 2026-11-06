@@ -43,10 +43,17 @@ model User {
 model Job {
   id String @id @default(cuid())
   title String
+  slug String @unique
+  category String?
   department String?
   location String?
   contractType String?
+  experience String?
+  salary String?
+  imageUrl String?
+  imageAlt String?
   description String @db.Text
+  missions String[] @default([])
   requirements String? @db.Text
   status JobStatus @default(DRAFT)
   publishedAt DateTime?

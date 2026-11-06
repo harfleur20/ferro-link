@@ -14,6 +14,7 @@ const paths = {
   about: "/a-propos",
   jobs: "/offres-emploi",
   contact: "/contact",
+  spontaneous: "/candidature-spontanee",
 };
 
 function ExpertiseIcon({ number }) {
@@ -66,7 +67,7 @@ function Header({ current }) {
           <div className="nav-dropdown-heading"><a className="nav-dropdown-link" href={href} onClick={closeMenu}>{label}</a><button className="nav-dropdown-trigger" type="button" aria-label={jobsMenuOpen ? "Fermer le sous-menu des offres d'emploi" : "Ouvrir le sous-menu des offres d'emploi"} aria-expanded={jobsMenuOpen} aria-haspopup="true" onClick={() => setJobsMenuOpen(!jobsMenuOpen)}><svg className="nav-chevron" viewBox="0 0 16 16" aria-hidden="true"><path d="m3 6 5 5 5-5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg></button></div>
           <div className="nav-dropdown-menu">
             <a href={paths.jobs} className={current === paths.jobs ? "is-active" : ""} aria-current={current === paths.jobs ? "page" : undefined} onClick={closeMenu}>{siteSettings.navigation.jobsOffers}</a>
-            <a href={paths.contact} onClick={closeMenu}>{siteSettings.navigation.spontaneous}</a>
+            <a href={paths.spontaneous} onClick={closeMenu}>{siteSettings.navigation.spontaneous}</a>
           </div>
         </div> : <a key={href} className={current === href ? "is-active" : ""} aria-current={current === href ? "page" : undefined} href={href} onClick={closeMenu}>{label}</a>)}
         <a className="button button-small" href={paths.contact} onClick={closeMenu}>{siteSettings.navigation.cta}</a>
@@ -264,116 +265,97 @@ function AboutPage() {
   </>;
 }
 
-const jobOffers = [
-  {
-    id: "ingenieur-signalisation",
-    title: "Ingénieur signalisation ferroviaire H/F",
-    category: "Signalisation & CBTC",
-    contract: "CDI",
-    location: "Île-de-France",
-    experience: "3 à 5 ans",
-    salary: "42–52 k€ brut/an",
-    date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?fm=webp&fit=crop&w=800&q=65",
-    imageAlt: "Voies ferrées traversant un paysage",
-    summary: "Participez aux études et à la validation de systèmes de signalisation qui contribuent à la sécurité et à la performance des réseaux.",
-    missions: ["Contribuer aux études de signalisation et à la rédaction des livrables techniques.", "Coordonner les interfaces avec les équipes systèmes, travaux et essais.", "Participer aux revues techniques, à la vérification et à la validation."],
-    profile: "Formation ingénieur ou équivalent en systèmes ferroviaires, automatique ou électronique. Une expérience en signalisation ferroviaire est appréciée."
-  },
-  {
-    id: "chef-projet-travaux",
-    title: "Chef de projet travaux ferroviaires H/F",
-    category: "Génie civil & voie ferrée",
-    contract: "CDI",
-    location: "Lyon",
-    experience: "5 ans et +",
-    salary: "45–58 k€ brut/an",
-    date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?fm=webp&fit=crop&w=800&q=65",
-    imageAlt: "Infrastructure ferroviaire et lignes de rails",
-    summary: "Pilotez la préparation et le suivi d’opérations ferroviaires en lien avec les équipes terrain, les partenaires et le client.",
-    missions: ["Planifier les phases de travaux et suivre les jalons du projet.", "Coordonner les entreprises et les parties prenantes.", "Suivre la qualité, les risques, la sécurité et le reporting d’avancement."],
-    profile: "Expérience en conduite de projets d’infrastructure, travaux publics ou ferroviaires. Organisation, communication et culture sécurité indispensables."
-  },
-  {
-    id: "technicien-essais",
-    title: "Technicien essais & mise en service H/F",
-    category: "Essais & validation",
-    contract: "Mission",
-    location: "Lille",
-    experience: "1 à 3 ans",
-    salary: "Selon profil",
-    date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?fm=webp&fit=crop&w=800&q=65",
-    imageAlt: "Infrastructure de transport et équipements techniques",
-    summary: "Contribuez aux essais sur site et à la mise en service d’équipements ferroviaires, dans le respect des procédures et exigences de sécurité.",
-    missions: ["Préparer les séquences d’essais et les moyens de contrôle.", "Réaliser les vérifications et consigner les résultats.", "Remonter les écarts et participer à leur résolution avec les équipes projet."],
-    profile: "Formation technique en électrotechnique, électronique ou systèmes industriels. Mobilité sur site et rigueur documentaire attendues."
-  },
-  {
-    id: "ingenieur-materiel",
-    title: "Ingénieur matériel roulant H/F",
-    category: "Matériel roulant",
-    contract: "CDI",
-    location: "Île-de-France",
-    experience: "3 à 5 ans",
-    salary: "40–50 k€ brut/an",
-    date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1532105956626-9569c03602f6?fm=webp&fit=crop&w=800&q=60",
-    imageAlt: "Train de voyageurs sur une ligne ferroviaire",
-    summary: "Accompagnez les équipes dans l’analyse technique, la fiabilité et le suivi des évolutions du matériel roulant.",
-    missions: ["Analyser les exigences et les dossiers techniques.", "Assurer le suivi des anomalies et des modifications.", "Participer aux échanges entre fournisseurs, exploitants et équipes d’ingénierie."],
-    profile: "Formation ingénieur en mécanique, électromécanique ou systèmes embarqués. Une expérience ferroviaire constitue un atout."
-  },
-  {
-    id: "ingenieur-energie",
-    title: "Ingénieur énergie & traction électrique H/F",
-    category: "Courants forts & énergie",
-    contract: "CDI",
-    location: "Bordeaux",
-    experience: "3 à 5 ans",
-    salary: "40–52 k€ brut/an",
-    date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?fm=webp&fit=crop&w=800&q=65",
-    imageAlt: "Réseau de transport et infrastructure électrique",
-    summary: "Intervenez sur les études d’alimentation électrique et les interfaces énergie des projets ferroviaires.",
-    missions: ["Réaliser ou vérifier les études techniques et notes de calcul.", "Analyser les interfaces entre alimentation, équipements et exploitation.", "Participer aux réunions de coordination et au suivi des livrables."],
-    profile: "Diplôme en génie électrique ou électrotechnique. Connaissance des installations de traction ou des réseaux électriques appréciée."
-  },
-  {
-    id: "ingenieur-telecom",
-    title: "Ingénieur systèmes télécoms ferroviaires H/F",
-    category: "Courants faibles & télécoms",
-    contract: "CDI",
-    location: "Marseille",
-    experience: "3 à 5 ans",
-    salary: "40–50 k€ brut/an",
-    date: "2026-10-30",
-    image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?fm=webp&fit=crop&w=800&q=65",
-    imageAlt: "Équipements et technologies de communication",
-    summary: "Contribuez à la conception et à l’intégration des systèmes de communication et de sûreté des infrastructures ferroviaires.",
-    missions: ["Analyser les besoins et exigences systèmes.", "Suivre les interfaces entre réseaux, équipements et lots techniques.", "Préparer les essais d’intégration et la documentation associée."],
-    profile: "Formation ingénieur ou universitaire en télécoms, réseaux ou systèmes. Une expérience dans les transports est appréciée."
-  }
-];
+function ApplicationForm({ job, onCancel }) {
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [cvName, setCvName] = useState("");
+  const [letterName, setLetterName] = useState("");
+  const submitApplication = async (event) => {
+    event.preventDefault();
+    setError("");
+    setSuccess("");
+    const form = event.currentTarget;
+    const data = new FormData(form);
+    const cv = data.get("cv");
+    const letter = data.get("letter");
+    if (!cv?.size) return setError("Merci de joindre votre CV.");
+    if (cv.size + (letter?.size || 0) > 10 * 1024 * 1024) return setError("Le CV et la lettre ne doivent pas dépasser 10 Mo au total.");
+    if (job) data.set("jobId", job.id);
+    setSubmitting(true);
+    try {
+      const response = await fetch(`${API}/api/applications/public`, { method: "POST", body: data });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "Impossible d'envoyer la candidature.");
+      setSuccess("Votre candidature a bien été envoyée. Merci !");
+      form.reset();
+      setCvName("");
+      setLetterName("");
+    } catch (e) {
+      setError(e.message || "Une erreur est survenue. Réessayez.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+  return <form className="application-form" encType="multipart/form-data" onSubmit={submitApplication}>
+    <input type="text" name="_honey" tabIndex="-1" autoComplete="off" aria-hidden="true" className="application-honeypot" />
+    <label>Nom et prénom *<input name="name" autoComplete="name" required maxLength="120" /></label>
+    <div className="application-form-row"><label>Adresse e-mail *<input type="email" name="email" autoComplete="email" required maxLength="160" /></label><label>Téléphone *<input type="tel" name="telephone" autoComplete="tel" required maxLength="30" /></label></div>
+    <div className="application-form-row"><label>Ville de résidence *<input name="ville" autoComplete="address-level2" required maxLength="100" /></label><label>Expérience professionnelle<select name="experience" defaultValue=""><option value="">Sélectionner</option><option>Débutant</option><option>Moins de 2 ans</option><option>2 à 5 ans</option><option>5 à 10 ans</option><option>Plus de 10 ans</option></select></label></div>
+    <label>Disponibilité<input name="disponibilite" placeholder="Ex. : immédiate, sous un mois…" maxLength="100" /></label>
+    <label>Message de motivation *<textarea name="motivation" rows="5" required minLength="20" maxLength="3000" placeholder={job ? "Présentez brièvement votre parcours et votre intérêt pour ce poste." : "Présentez brièvement votre parcours et le type de mission que vous recherchez."} /></label>
+    <div className="application-file-grid"><label className="application-file-field">CV (PDF, DOC ou DOCX) *<input name="cv" type="file" accept=".pdf,.doc,.docx" required onChange={(e) => setCvName(e.target.files?.[0]?.name || "")} /><small>{cvName || "Document obligatoire — 10 Mo maximum"}</small></label><label className="application-file-field">Lettre de motivation (facultatif)<input name="letter" type="file" accept=".pdf,.doc,.docx" onChange={(e) => setLetterName(e.target.files?.[0]?.name || "")} /><small>{letterName || "PDF, DOC ou DOCX"}</small></label></div>
+    <label className="application-consent"><input type="checkbox" name="consentement" value="Oui" required /><span>J’accepte que mes informations soient utilisées par ferroLink pour examiner ma candidature et me recontacter. *</span></label>
+    {error && <p className="application-error" role="alert">{error}</p>}
+    {success && <p role="status">{success}</p>}
+    <p className="application-privacy">Votre candidature est enregistrée dans la base ferroLink. Les documents restent privés et accessibles à l’équipe de recrutement autorisée.</p>
+    <div className="application-form-actions"><button className="button button-lime" type="submit" disabled={submitting}>{submitting ? "Envoi en cours…" : "Envoyer ma candidature"} <span aria-hidden="true">↗</span></button>{onCancel && <button className="button button-outline" type="button" onClick={onCancel}>Annuler</button>}</div>
+  </form>;
+}
 
 function ApplicationModal({ job, onClose }) {
- const [error,setError]=useState(""),[success,setSuccess]=useState(""),[submitting,setSubmitting]=useState(false),[cvName,setCvName]=useState(""),[letterName,setLetterName]=useState("");
- const submitApplication=async event=>{event.preventDefault();setError("");setSuccess("");const form=event.currentTarget,data=new FormData(form),cv=data.get("cv"),letter=data.get("letter");if(!cv?.size)return setError("Merci de joindre votre CV.");if((cv.size+(letter?.size||0))>10*1024*1024)return setError("Le CV et la lettre ne doivent pas dépasser 10 Mo au total.");setSubmitting(true);try{const api=import.meta.env.VITE_API_URL||"http://localhost:4000";data.set("offre", job.title); data.set("offreSlug", job.id); const response=await fetch(`${api}/api/applications/public`,{method:"POST",body:data});const result=await response.json().catch(()=>({}));if(!response.ok)throw new Error(result.error||"Impossible d'envoyer la candidature.");setSuccess("Votre candidature a bien été envoyée. Merci !");form.reset();setCvName("");setLetterName("")}catch(e){setError(e.message||"Une erreur est survenue. Réessayez.")}finally{setSubmitting(false)}};
- return <div className="job-modal-backdrop application-backdrop" role="presentation" onMouseDown={event=>{if(event.target===event.currentTarget)onClose()}}><section className="job-modal application-modal" role="dialog" aria-modal="true" aria-labelledby="application-modal-title"><button className="job-modal-close application-close" type="button" aria-label="Fermer le formulaire" onClick={onClose}>×</button><div className="application-modal-heading"><p className="section-kicker"><span>Candidature ferroLink</span></p><h2 id="application-modal-title">Postuler : {job.title}</h2><p>Pas besoin de créer un compte. Les champs marqués d’un * sont obligatoires.</p></div>
- <form className="application-form" encType="multipart/form-data" onSubmit={submitApplication}><input type="text" name="_honey" tabIndex="-1" autoComplete="off" aria-hidden="true" className="application-honeypot"/>
- <label>Nom et prénom *<input name="name" autoComplete="name" required maxLength="120"/></label><div className="application-form-row"><label>Adresse e-mail *<input type="email" name="email" autoComplete="email" required maxLength="160"/></label><label>Téléphone *<input type="tel" name="telephone" autoComplete="tel" required maxLength="30"/></label></div>
- <div className="application-form-row"><label>Ville de résidence *<input name="ville" autoComplete="address-level2" required maxLength="100"/></label><label>Expérience professionnelle<select name="experience" defaultValue=""><option value="">Sélectionner</option><option>Débutant</option><option>Moins de 2 ans</option><option>2 à 5 ans</option><option>5 à 10 ans</option><option>Plus de 10 ans</option></select></label></div>
- <label>Disponibilité<input name="disponibilite" placeholder="Ex. : immédiate, sous un mois…" maxLength="100"/></label><label>Message de motivation *<textarea name="motivation" rows="5" required minLength="20" maxLength="3000" placeholder="Présentez brièvement votre parcours et votre intérêt pour ce poste."/></label>
- <div className="application-file-grid"><label className="application-file-field">CV (PDF, DOC ou DOCX) *<input name="cv" type="file" accept=".pdf,.doc,.docx" required onChange={e=>setCvName(e.target.files?.[0]?.name||"")}/><small>{cvName||"Document obligatoire — 10 Mo maximum"}</small></label><label className="application-file-field">Lettre de motivation (facultatif)<input name="letter" type="file" accept=".pdf,.doc,.docx" onChange={e=>setLetterName(e.target.files?.[0]?.name||"")}/><small>{letterName||"PDF, DOC ou DOCX"}</small></label></div>
- <label className="application-consent"><input type="checkbox" name="consentement" value="Oui" required/><span>J’accepte que mes informations soient utilisées par ferroLink pour examiner ma candidature et me recontacter. *</span></label>{error&&<p className="application-error" role="alert">{error}</p>}{success&&<p role="status">{success}</p>}<p className="application-privacy">Votre candidature est enregistrée dans la base ferroLink. Les documents restent privés et accessibles à l’équipe de recrutement autorisée.</p><div className="application-form-actions"><button className="button button-lime" type="submit" disabled={submitting}>{submitting?"Envoi en cours…":"Envoyer ma candidature"} <span aria-hidden="true">↗</span></button><button className="button button-outline" type="button" onClick={onClose}>Annuler</button></div></form></section></div>;
+  return <div className="job-modal-backdrop application-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+    <section className="job-modal application-modal" role="dialog" aria-modal="true" aria-labelledby="application-modal-title">
+      <button className="job-modal-close application-close" type="button" aria-label="Fermer le formulaire" onClick={onClose}>×</button>
+      <div className="application-modal-heading"><p className="section-kicker"><span>Candidature ferroLink</span></p><h2 id="application-modal-title">Postuler : {job.title}</h2><p>Pas besoin de créer un compte. Les champs marqués d’un * sont obligatoires.</p></div>
+      <ApplicationForm job={job} onCancel={onClose} />
+    </section>
+  </div>;
 }
+
+function SpontaneousPage() {
+  return <>
+    <PageBanner kicker="Candidature spontanée" title="Proposez-nous votre profil." description="Aucune offre ne correspond à votre recherche ? Présentez votre parcours et le type de mission qui vous intéresse." />
+    <section className="section page-width"><div className="spontaneous-form"><ApplicationForm /></div></section>
+  </>;
+}
+
+function useApiData(path) {
+  const [state, setState] = useState({ data: null, error: false, loading: true });
+  useEffect(() => {
+    let active = true;
+    fetch(`${API}${path}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (active) setState({ data, error: false, loading: false });
+      })
+      .catch(() => { if (active) setState({ data: null, error: true, loading: false }); });
+    return () => { active = false; };
+  }, [path]);
+  return state;
+}
+
+const jobImage = (job) => job.imageUrl ? resolveSiteAssetUrl(job.imageUrl, API) : "/images/access-team-background.webp";
+
 function formatPublicationDate(date) {
-  return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(`${date}T12:00:00Z`));
+  return new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(new Date(date));
 }
 
 function JobsPage() {
   const siteSettings = useContext(SiteSettingsContext);
+  const { data, error: jobsError, loading: jobsLoading } = useApiData("/api/jobs");
+  const jobOffers = data?.jobs || [];
   const [search, setSearch] = useState("");
   const [contract, setContract] = useState("Tous les contrats");
   const [location, setLocation] = useState("Toutes les localisations");
@@ -382,8 +364,8 @@ function JobsPage() {
   const pageSize = 6;
   const filteredJobs = jobOffers.filter((job) => {
     const query = search.trim().toLocaleLowerCase("fr");
-    const matchesSearch = !query || [job.title, job.category, job.location, job.summary].some((value) => value.toLocaleLowerCase("fr").includes(query));
-    return matchesSearch && (contract === "Tous les contrats" || job.contract === contract) && (location === "Toutes les localisations" || job.location === location);
+    const matchesSearch = !query || [job.title, job.category, job.location, job.description].filter(Boolean).some((value) => value.toLocaleLowerCase("fr").includes(query));
+    return matchesSearch && (contract === "Tous les contrats" || job.contractType === contract) && (location === "Toutes les localisations" || job.location === location);
   });
   const pageCount = Math.ceil(filteredJobs.length / pageSize);
   const visibleJobs = filteredJobs.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -399,19 +381,19 @@ function JobsPage() {
     <section className="section page-width jobs-marketplace">
       <div className="jobs-marketplace-heading">
         <div><div className="section-kicker"><span>Carrières</span> / Offres d’emploi</div><h2>Les opportunités du moment</h2><p>Parcourez les postes et filtrez les annonces selon votre recherche.</p></div>
-        <a className="button button-outline" href={paths.contact}>Candidature spontanée <span aria-hidden="true">↗</span></a>
+        <a className="button button-outline" href={paths.spontaneous}>Candidature spontanée <span aria-hidden="true">↗</span></a>
       </div>
-      <div className="jobs-search-panel" role="search" aria-label="Filtrer les offres d’emploi">
+      {jobOffers.length > 0 && <><div className="jobs-search-panel" role="search" aria-label="Filtrer les offres d’emploi">
         <label className="jobs-search-field"><span aria-hidden="true">⌕</span><span className="visually-hidden">Rechercher une offre</span><input type="search" placeholder="Intitulé, compétence, domaine…" value={search} onChange={(event) => { setSearch(event.target.value); resetPagination(); }} /></label>
         <label className="jobs-filter"><span className="visually-hidden">Type de contrat</span><select value={contract} onChange={(event) => { setContract(event.target.value); resetPagination(); }}><option>Tous les contrats</option><option>CDI</option><option>Mission</option><option>CDD</option><option>Stage</option><option>Alternance</option></select></label>
-        <label className="jobs-filter"><span className="visually-hidden">Localisation</span><select value={location} onChange={(event) => { setLocation(event.target.value); resetPagination(); }}><option>Toutes les localisations</option>{[...new Set(jobOffers.map((job) => job.location))].map((place) => <option key={place}>{place}</option>)}</select></label>
+        <label className="jobs-filter"><span className="visually-hidden">Localisation</span><select value={location} onChange={(event) => { setLocation(event.target.value); resetPagination(); }}><option>Toutes les localisations</option>{[...new Set(jobOffers.map((job) => job.location).filter(Boolean))].map((place) => <option key={place}>{place}</option>)}</select></label>
         <button className="jobs-reset" type="button" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); resetPagination(); }}>Réinitialiser</button>
       </div>
-      <div className="jobs-results-line"><p><strong>{filteredJobs.length}</strong> offre{filteredJobs.length > 1 ? "s" : ""} trouvée{filteredJobs.length > 1 ? "s" : ""}</p><span>{filteredJobs.length > 0 && `Affichage de ${(currentPage - 1) * pageSize + 1} à ${Math.min(currentPage * pageSize, filteredJobs.length)}`}</span></div>
-      {filteredJobs.length ? <div className="jobs-offer-grid">{visibleJobs.map((job) => <article className="job-card" key={job.id}>
-        <a className="job-card-image-button" href={`${paths.jobs}/${job.id}`} aria-label={`Voir le détail : ${job.title}`}><img src={job.image} alt={job.imageAlt} loading="lazy" /><span className="job-category">{job.category}</span><span className="job-image-arrow" aria-hidden="true">↗</span></a>
-        <div className="job-card-content"><div className="job-card-meta"><span>{job.contract}</span><span>{job.experience}</span><span className="job-published-date">Publié le {formatPublicationDate(job.date)}</span></div><h3><a href={`${paths.jobs}/${job.id}`}>{job.title}</a></h3><p className="job-card-summary">{job.summary}</p><div className="job-card-location"><span className="job-location-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" strokeWidth="1.8"/></svg></span>{job.location}<span className="job-card-salary">{job.salary}</span></div><div className="job-card-actions"><a className="job-details-link" href={`${paths.jobs}/${job.id}`}>Voir l’offre <span aria-hidden="true">→</span></a><button type="button" className="job-apply-link" onClick={() => setApplicationJob(job)} aria-label={`Candidater à ${job.title}`}>Postuler ↗</button></div></div>
-      </article>)}</div> : <div className="jobs-empty-state"><h3>Aucune offre ne correspond à ces filtres.</h3><p>Modifiez votre recherche ou envoyez-nous une candidature spontanée.</p><button type="button" className="button button-lime" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); resetPagination(); }}>Voir toutes les offres</button><a className="text-link" href={paths.contact}>Candidature spontanée</a></div>}
+      <div className="jobs-results-line"><p><strong>{filteredJobs.length}</strong> offre{filteredJobs.length > 1 ? "s" : ""} trouvée{filteredJobs.length > 1 ? "s" : ""}</p><span>{filteredJobs.length > 0 && `Affichage de ${(currentPage - 1) * pageSize + 1} à ${Math.min(currentPage * pageSize, filteredJobs.length)}`}</span></div></>}
+      {jobsLoading ? <p className="jobs-empty-state" role="status">Chargement des offres…</p> : jobsError ? <div className="jobs-empty-state" role="alert"><h3>Les offres sont momentanément indisponibles.</h3><p>Merci de réessayer dans quelques instants.</p></div> : !jobOffers.length ? <div className="jobs-empty-state"><h3>Aucune offre n’est publiée pour le moment.</h3><p>Vous pouvez tout de même nous envoyer votre candidature.</p><a className="button button-lime" href={paths.spontaneous}>Candidature spontanée</a></div> : filteredJobs.length ? <div className="jobs-offer-grid">{visibleJobs.map((job) => <article className="job-card" key={job.id}>
+        <a className="job-card-image-button" href={`${paths.jobs}/${job.slug}`} aria-label={`Voir le détail : ${job.title}`}><img src={jobImage(job)} alt={job.imageAlt || ""} loading="lazy" />{job.category && <span className="job-category">{job.category}</span>}<span className="job-image-arrow" aria-hidden="true">↗</span></a>
+        <div className="job-card-content"><div className="job-card-meta"><span>{job.contractType}</span>{job.experience && <span>{job.experience}</span>}<span className="job-published-date">Publié le {formatPublicationDate(job.publishedAt)}</span></div><h3><a href={`${paths.jobs}/${job.slug}`}>{job.title}</a></h3><p className="job-card-summary">{job.description}</p><div className="job-card-location"><span className="job-location-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="10" r="2.5" fill="none" stroke="currentColor" strokeWidth="1.8"/></svg></span>{job.location}{job.salary && <span className="job-card-salary">{job.salary}</span>}</div><div className="job-card-actions"><a className="job-details-link" href={`${paths.jobs}/${job.slug}`}>Voir l’offre <span aria-hidden="true">→</span></a><button type="button" className="job-apply-link" onClick={() => setApplicationJob(job)} aria-label={`Candidater à ${job.title}`}>Postuler ↗</button></div></div>
+      </article>)}</div> : <div className="jobs-empty-state"><h3>Aucune offre ne correspond à ces filtres.</h3><p>Modifiez votre recherche ou envoyez-nous une candidature spontanée.</p><button type="button" className="button button-lime" onClick={() => { setSearch(""); setContract("Tous les contrats"); setLocation("Toutes les localisations"); resetPagination(); }}>Voir toutes les offres</button><a className="text-link" href={paths.spontaneous}>Candidature spontanée</a></div>}
       {pageCount > 1 && <nav className="jobs-pagination" aria-label="Pagination des offres d’emploi">
         <button type="button" className="jobs-page-arrow" onClick={() => setCurrentPage((page) => Math.max(1, page - 1))} disabled={currentPage === 1} aria-label="Page précédente">← <span>Précédent</span></button>
         <div className="jobs-page-numbers">{paginationItems.map((item) => typeof item === "number"
@@ -420,32 +402,35 @@ function JobsPage() {
         <button type="button" className="jobs-page-arrow" onClick={() => setCurrentPage((page) => Math.min(pageCount, page + 1))} disabled={currentPage === pageCount} aria-label="Page suivante"><span>Suivant</span> →</button>
       </nav>}
     </section>
-    <section className="jobs-spontaneous"><div className="page-width jobs-spontaneous-inner"><div><p className="eyebrow"><span /> Vous ne trouvez pas votre poste ?</p><h2>Votre parcours a aussi sa place chez ferroLink.</h2><p>Présentez-nous vos compétences et le type de mission que vous recherchez. Nous pourrons étudier votre candidature spontanée.</p></div><a className="button button-lime" href={paths.contact}>Envoyer une candidature <span aria-hidden="true">↗</span></a></div></section>
+    <section className="jobs-spontaneous"><div className="page-width jobs-spontaneous-inner"><div><p className="eyebrow"><span /> Vous ne trouvez pas votre poste ?</p><h2>Votre parcours a aussi sa place chez ferroLink.</h2><p>Présentez-nous vos compétences et le type de mission que vous recherchez. Nous pourrons étudier votre candidature spontanée.</p></div><a className="button button-lime" href={paths.spontaneous}>Envoyer une candidature <span aria-hidden="true">↗</span></a></div></section>
     <section className="section page-width jobs-values-section"><div className="section-heading"><div><div className="section-kicker"><span>Pourquoi ferroLink ?</span></div><h2>Des métiers au cœur du ferroviaire</h2></div><a className="text-link" href="/#expertises">{siteSettings.about.visionLink}</a></div><div className="jobs-domain-list">{siteSettings.home.expertiseAreas.map((area) => <div key={area.title}><FaTrainSubway className="train-icon" aria-hidden="true" /><strong>{area.title}</strong></div>)}</div></section>
     {applicationJob && <ApplicationModal job={applicationJob} onClose={() => setApplicationJob(null)} />}
   </>;
 }
 
-function JobDetailPage({ job }) {
+function JobDetailPage({ slug }) {
   const [applicationOpen, setApplicationOpen] = useState(false);
+  const { data, loading } = useApiData(`/api/jobs/${encodeURIComponent(slug)}`);
+  const job = data?.job;
+  if (loading) return <section className="section page-width job-not-found"><p role="status">Chargement de l’offre…</p></section>;
   if (!job) return <section className="section page-width job-not-found"><p className="section-kicker"><span>Carrières</span> / Offres d’emploi</p><h1>Cette offre n’est pas disponible.</h1><p>L’offre recherchée n’existe pas ou n’est plus accessible.</p><a className="button button-lime" href={paths.jobs}>Retour aux offres d’emploi</a></section>;
   return <>
     <section className="job-detail-hero">
-      <img src={job.image} alt={job.imageAlt} />
+      <img src={jobImage(job)} alt={job.imageAlt || ""} />
       <div className="job-detail-hero-overlay" />
       <div className="page-width job-detail-hero-content">
         <a href={paths.jobs} className="job-back-link">← Toutes les offres</a>
-        <p className="section-kicker"><span>{job.category}</span></p>
+        {job.category && <p className="section-kicker"><span>{job.category}</span></p>}
         <h1>{job.title}</h1>
-        <div className="job-modal-tags"><span>{job.contract}</span><span>{job.location}</span><span>{job.experience}</span><span>{job.salary}</span></div>
+        <div className="job-modal-tags">{[job.contractType, job.location, job.experience, job.salary].filter(Boolean).map((tag) => <span key={tag}>{tag}</span>)}</div>
       </div>
     </section>
     <section className="section page-width job-detail-layout">
       <article className="job-detail-content">
-        <p className="job-detail-lead">{job.summary}</p>
-        <section><h2>Vos missions</h2><ul>{job.missions.map((mission) => <li key={mission}>{mission}</li>)}</ul></section>
-        <section><h2>Votre profil</h2><p>{job.profile}</p></section>
-        <section><h2>Informations sur le poste</h2><dl className="job-detail-facts"><div><dt>Contrat</dt><dd>{job.contract}</dd></div><div><dt>Localisation</dt><dd>{job.location}</dd></div><div><dt>Expérience</dt><dd>{job.experience}</dd></div><div><dt>Rémunération</dt><dd>{job.salary}</dd></div><div><dt>Date de publication</dt><dd>{formatPublicationDate(job.date)}</dd></div></dl></section>
+        <p className="job-detail-lead">{job.description}</p>
+        {job.missions.length > 0 && <section><h2>Vos missions</h2><ul>{job.missions.map((mission) => <li key={mission}>{mission}</li>)}</ul></section>}
+        {job.requirements && <section><h2>Votre profil</h2><p>{job.requirements}</p></section>}
+        <section><h2>Informations sur le poste</h2><dl className="job-detail-facts"><div><dt>Contrat</dt><dd>{job.contractType}</dd></div><div><dt>Localisation</dt><dd>{job.location}</dd></div>{job.experience && <div><dt>Expérience</dt><dd>{job.experience}</dd></div>}{job.salary && <div><dt>Rémunération</dt><dd>{job.salary}</dd></div>}<div><dt>Date de publication</dt><dd>{formatPublicationDate(job.publishedAt)}</dd></div></dl></section>
         <div className="job-detail-apply-mobile"><button className="button button-lime" type="button" onClick={() => setApplicationOpen(true)}>Postuler à cette offre <span aria-hidden="true">↗</span></button></div>
       </article>
       <aside className="job-detail-sidebar"><p className="section-kicker"><span>Votre prochaine étape</span></p><h2>Ce poste vous intéresse ?</h2><p>Envoyez votre candidature avec vos coordonnées, votre CV et un message de motivation.</p><button className="button button-lime" type="button" onClick={() => setApplicationOpen(true)}>Postuler maintenant <span aria-hidden="true">↗</span></button><a className="job-sidebar-back" href={paths.jobs}>← Consulter les autres offres</a></aside>
@@ -554,8 +539,9 @@ export default function App() {
   const pages = {
     [paths.accueil]: <HomePage />,
     [paths.about]: <AboutPage />,
-    [paths.jobs]: window.location.pathname.replace(/\/+$/, "") === paths.jobs ? <JobsPage /> : <JobDetailPage job={jobOffers.find((job) => job.id === window.location.pathname.replace(/\/+$/, "").split("/").pop())} />,
+    [paths.jobs]: window.location.pathname.replace(/\/+$/, "") === paths.jobs ? <JobsPage /> : <JobDetailPage slug={decodeURIComponent(window.location.pathname.replace(/\/+$/, "").split("/").pop())} />,
     [paths.contact]: <ContactPage />,
+    [paths.spontaneous]: <SpontaneousPage />,
     [notFoundRoute]: <NotFoundPage />,
   };
   const preview = new URLSearchParams(window.location.search).get("sitePreview") === "1";

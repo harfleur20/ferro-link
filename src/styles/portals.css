@@ -648,3 +648,8 @@
     padding: 14px;
   }
 }
+
+.job-editor { display:grid; gap:18px; }
+.job-editor-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; }
+.job-editor-actions { display:flex; flex-wrap:wrap; gap:12px; }
+.job-editor-actions button { width:auto; max-width:none; min-width:220px; margin-top:0; padding-inline:18px; }
