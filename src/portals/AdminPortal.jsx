@@ -376,6 +376,7 @@ export default function AdminPortal() {
         <a href="/"><FaArrowLeft aria-hidden="true" /> Retour au site</a>
       </div>
     </aside>
+    {menuOpen && <button className="portal-sidebar-backdrop" type="button" aria-label="Fermer le menu" onClick={() => setMenuOpen(false)} />}
 
     <div className="portal-main-column">
       <header className="portal-topbar">
